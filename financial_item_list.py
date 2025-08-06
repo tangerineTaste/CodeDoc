@@ -217,9 +217,6 @@ class FinancialProductAPI:
             print("  - 금융회사 목록...")
             all_data['products']['companies'] = self.get_company_list('020000')
             
-            print("  - 저축은행 예금...")
-            all_data['products']['savings_bank_deposits'] = self.get_deposit_products('030300')
-            
             # JSON 파일로 저장 (덮어쓰기)
             with open(full_filename, 'w', encoding='utf-8') as f:
                 json.dump(all_data, f, ensure_ascii=False, indent=2)
