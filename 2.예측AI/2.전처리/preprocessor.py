@@ -485,7 +485,7 @@ def main_preprocessing_pipeline(file_path):
 # 실행 예시
 if __name__ == "__main__":
     # 파일 경로 설정
-    file_path = "data/SCFP/selected_SCFP2022_한글.csv"
+    file_path = "data/SCFP/SCFP2022_한글.csv"
     
     # 전처리 실행
     cleaned_df, X, y, features, encoders = main_preprocessing_pipeline(file_path)
