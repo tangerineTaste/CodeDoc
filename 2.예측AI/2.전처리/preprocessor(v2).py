@@ -34,11 +34,11 @@ def load_and_clean_scf_data(file_path):
             if amount_col in df.columns:
                 df[target] = (df[amount_col] > 0).astype(int)
                 holding_rate = df[target].mean()
-                print(f"  ✅ {target} ({amount_col}): 보유율 {holding_rate*100:.1f}%")
+                print(f"  {target} ({amount_col}): 보유율 {holding_rate*100:.1f}%")
     
     # cleaned_scf_data.csv인 경우 필요한 컬럼만 선택
     if df.shape[1] > 100:  # 전체 데이터인 경우
-        print("🔧 전체 데이터에서 필요한 컬럼만 선택 중...")
+        print(" 전체 데이터에서 필요한 컬럼만 선택 중...")
         
         # 필요한 독립변수 (14개)
         feature_columns = [
@@ -77,19 +77,19 @@ def load_and_clean_scf_data(file_path):
 def check_data_quality(df):
     """데이터 품질 확인"""
     
-    print("\n🔍 데이터 품질 확인...")
+    print("\n 데이터 품질 확인...")
     
     # 결측값 확인
     missing_count = df.isnull().sum().sum()
     print(f"총 결측값: {missing_count}개")
     
     if missing_count == 0:
-        print("✅ 결측값 없음 - 데이터 품질 양호!")
+        print("★ 결측값 없음 - 데이터 품질 양호!")
     else:
-        print("⚠️ 결측값 발견 - 처리 필요")
+        print("※ 결측값 발견 - 처리 필요")
     
     # 기본 통계 확인
-    print(f"\n📊 기본 정보:")
+    print(f"\n 기본 정보:")
     print(f"  - 총 샘플 수: {len(df):,}개")
     print(f"  - 총 변수 수: {len(df.columns)}개")
     print(f"  - 메모리 사용량: {df.memory_usage(deep=True).sum() / 1024**2:.1f} MB")
@@ -99,7 +99,7 @@ def check_data_quality(df):
 def remove_outliers(df):
     """이상값 제거"""
     
-    print("\n🚨 이상값 제거 중...")
+    print("\n※ 이상값 제거 중...")
     original_len = len(df)
     
     # 나이 이상값 (18-100세 범위)
@@ -128,7 +128,7 @@ def remove_outliers(df):
         print(f"  - 순자산 이상값 제거 완료")
     
     removed_count = original_len - len(df)
-    print(f"✅ 이상값 {removed_count}개 제거 완료 ({removed_count/original_len*100:.1f}%)")
+    print(f"★ 이상값 {removed_count}개 제거 완료 ({removed_count/original_len*100:.1f}%)")
     print(f"정제 후 데이터 크기: {df.shape}")
     
     return df
@@ -160,14 +160,14 @@ def create_derived_features(df):
         df['교육수준분류'] = df['교육수준'].apply(map_education_level)
         print("  - 교육수준분류 생성 완료")
     
-    print("✅ 파생 변수 생성 완료")
+    print("★ 파생 변수 생성 완료")
     
     return df
 
 def create_target_variable(df):
     """SCFP2022 실제 금융상품 보유 데이터 기반 타겟 생성"""
     
-    print("\n🎯 종속변수 생성 중 (5개 실제 금융상품)...")
+    print("\n 종속변수 생성 중 (5개 실제 금융상품)...")
     
     # SCFP2022의 실제 금액 컬럼명에 맞춰 종속변수 생성
     target_mapping = {
@@ -188,17 +188,17 @@ def create_target_variable(df):
             
             # 보유율 확인
             holding_rate = df[target].mean()
-            print(f"  ✅ {target} ({amount_col}): 보유율 {holding_rate*100:.1f}%")
+            print(f"  ★ {target} ({amount_col}): 보유율 {holding_rate*100:.1f}%")
             created_targets.append(target)
         else:
-            print(f"  ⚠️ {amount_col} 컬럼을 찾을 수 없습니다.")
+            print(f"  ※ {amount_col} 컬럼을 찾을 수 없습니다.")
             
             # 대안: 보유여부 컬럼 사용
             backup_col = amount_col + '보유여부'
             if backup_col in df.columns:
                 df[target] = df[backup_col]
                 holding_rate = df[target].mean()
-                print(f"  ✅ {target} (대안: {backup_col}): 보유율 {holding_rate*100:.1f}%")
+                print(f"  ★ {target} (대안: {backup_col}): 보유율 {holding_rate*100:.1f}%")
                 created_targets.append(target)
             else:
                 print(f"      대안 컬럼({backup_col})도 없음")
@@ -209,7 +209,7 @@ def create_target_variable(df):
 def prepare_ml_features(df):
     """특성 중요도 분석 결과 기반 ML용 특성 데이터 준비"""
     
-    print("\n⚙️ 특성 중요도 분석 결과 기반 ML 특성 데이터 준비 중...")
+    print("\n 특성 중요도 분석 결과 기반 ML 특성 데이터 준비 중...")
     
     # 14개 독립변수 (고정)
     all_features = [
@@ -238,29 +238,29 @@ def prepare_ml_features(df):
     if len(available_features) > 0:
         X = df[available_features].copy()
     else:
-        print("⚠️ 사용 가능한 독립변수가 없습니다!")
+        print("※ 사용 가능한 독립변수가 없습니다!")
         X = pd.DataFrame()
     
     y_dict = {}
     for target in available_targets:
         y_dict[target] = df[target].copy()
     
-    print(f"✅ 선택된 특성 변수: {len(available_features)}개")
+    print(f"★ 선택된 특성 변수: {len(available_features)}개")
     if missing_features:
-        print(f"⚠️ 누락된 특성 변수: {len(missing_features)}개")
-    print(f"✅ 타겟 변수: {len(available_targets)}개")
-    print(f"✅ 샘플 수: {len(X)}개")
+        print(f"※ 누락된 특성 변수: {len(missing_features)}개")
+    print(f"★ 타겟 변수: {len(available_targets)}개")
+    print(f"★ 샘플 수: {len(X)}개")
     
     if missing_features:
-        print(f"\n⚠️ 누락된 특성 변수:")
+        print(f"\n※ 누락된 특성 변수:")
         for feature in missing_features:
             print(f"  - {feature}")
     
-    print(f"\n📊 사용된 특성 변수:")
+    print(f"\n 사용된 특성 변수:")
     for i, feature in enumerate(available_features):
         print(f"  {i+1}. {feature}")
     
-    print(f"\n🎯 타겟 변수 (5개 실제 금융상품):")
+    print(f"\n 타겟 변수 (5개 실제 금융상품):")
     product_names = {
         'LIQ': '유동성자산',
         'CDS': '양도성예금증서', 
@@ -296,7 +296,7 @@ def encode_categorical_variables(df):
         df['교육수준분류'] = df['교육수준분류'].astype(int)
         processed_count += 1
     
-    print(f"✅ 범주형 변수 처리 완료: {processed_count}개")
+    print(f"★ 범주형 변수 처리 완료: {processed_count}개")
     print("  - 대부분 수치형 코드로 유지 (Tree-based 모델에 적합)")
     
     return df, {}
@@ -304,7 +304,7 @@ def encode_categorical_variables(df):
 def data_summary(df, X, y_dict):
     """데이터 요약 정보 출력"""
     
-    print("\n📊 최종 데이터 요약")
+    print("\n 최종 데이터 요약")
     print("=" * 60)
     print(f"총 샘플 수: {len(df):,}개")
     print(f"총 변수 수: {len(df.columns)}개")
@@ -329,7 +329,7 @@ def data_summary(df, X, y_dict):
 def main_preprocessing_pipeline(file_path):
     """전체 전처리 파이프라인"""
     
-    print("🚀 SCF 데이터 전처리 시작!")
+    print(" SCF 데이터 전처리 시작!")
     print("=" * 60)
     
     try:
@@ -343,7 +343,7 @@ def main_preprocessing_pipeline(file_path):
         target_exists = any(col in df.columns for col in ['LIQ', 'CDS', 'NMMF', 'STOCKS', 'RETQLIQ'])
         
         if not target_exists:
-            print("\n🎯 타겟 변수가 없어서 추가 처리가 필요합니다!")
+            print("\n※ 타겟 변수가 없어서 추가 처리가 필요합니다!")
             
             # 3. 이상값 제거
             df = remove_outliers(df)
@@ -357,7 +357,7 @@ def main_preprocessing_pipeline(file_path):
             # 6. 범주형 변수 처리
             df, encoders = encode_categorical_variables(df)
         else:
-            print("\n✅ 타겟 변수가 이미 존재합니다!")
+            print("\n★ 타겟 변수가 이미 존재합니다!")
             # 간단한 처리만 수행
             df = remove_outliers(df)
             df = create_derived_features(df)
@@ -369,12 +369,12 @@ def main_preprocessing_pipeline(file_path):
         # 8. 데이터 요약
         data_summary(df, X, y_dict)
         
-        print("\n✅ 전처리 완료!")
+        print("\n★ 전처리 완료!")
         
         return df, X, y_dict, feature_names, encoders
         
     except Exception as e:
-        print(f"\n❌ 전처리 중 오류 발생: {str(e)}")
+        print(f"\n※ 전처리 중 오류 발생: {str(e)}")
         raise e
 
 # 실행 예시
@@ -388,34 +388,34 @@ if __name__ == "__main__":
         cleaned_df, X, y_dict, features, encoders = main_preprocessing_pipeline(file_path)
         
         # 결과 확인
-        print("\n📊 최종 결과:")
+        print("\n 최종 결과:")
         print(f"독립변수: {len(features)}개")
         print(f"타겟변수: {len(y_dict)}개")
         print(f"샘플 수: {len(X)}개")
         
         # 타겟 변수별 보유율 출력
-        print("\n🎯 상품별 보유율:")
+        print("\n 상품별 보유율:")
         for target, target_data in y_dict.items():
             print(f"  {target}: {target_data.mean():.1%}")
         
         # 결과 저장 (기존 코드와 동일한 형식으로)
         cleaned_df.to_csv("data/SCFP/cleaned_scf_data.csv", index=False, encoding='utf-8')
-        print("\n💾 정제된 데이터가 'cleaned_scf_data.csv'로 저장되었습니다!")
+        print("\n 정제된 데이터가 'cleaned_scf_data.csv'로 저장되었습니다!")
         
         # 기존 변수명 호환을 위해 y_dict를 y로 변환 (선택사항)
         y = y_dict  # 또는 필요에 따라 특정 타겟만 선택
         
         # 다음 단계 안내
-#        print("\n🔄 다음 단계:")
+#        print("\n 다음 단계:")
 #        print("1. Random Forest 모델 학습")
 #        print("2. 특성 중요도 분석")
 #        print("3. 모델 성능 평가")
 #        print("4. Django API 구축")
         
     except FileNotFoundError:
-        print(f"❌ 파일을 찾을 수 없습니다: {file_path}")
+        print(f"※ 파일을 찾을 수 없습니다: {file_path}")
         print("파일 경로를 확인해주세요.")
         
     except Exception as e:
-        print(f"❌ 실행 중 오류 발생: {str(e)}")
+        print(f"※ 실행 중 오류 발생: {str(e)}")
         print("데이터 파일의 형식이나 컬럼명을 확인해주세요.")
