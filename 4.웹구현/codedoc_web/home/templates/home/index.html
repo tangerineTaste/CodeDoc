@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}CodeDoc - 메인페이지{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- car_banner.html -->
+<div class="banner-container">
+    <div class="content-wrapper">
+        <!-- 왼쪽 메인 슬라이드 영역 -->
+        <div class="main-slide">
+            <div class="slide-content">
+                <div class="text-content">
+                    <div class="subtitle">AI 기반 맞춤형 금융상품 추천</div>
+                    <h1 class="main-title">
+                        나에게 딱 맞는 금융상품을<br>
+                        AI가 똑똑하게 찾아드려요
+                    </h1>
+                    <p class="description">머신러닝 기술로 개인 맞춤 추천!</p>
+                    <button class="cta-button">상품 추천받기</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 오른쪽 섹션 -->
+        <div class="right-section">
+            <!-- 로그인 박스 -->
+            <div class="login-box">
+                <div class="greeting">
+                    <span><b>로그인 후</b> 모든 서비스를 이용해보세요!</span>
+                </div>
+                <button type="button" class="login-button">로그인</button>
+                <div class="login-links">
+                    <a href="#" class="login-link">회원가입</a>
+                    <span class="separator">|</span>
+                    <a href="#" class="login-link">아이디찾기</a>
+                    <span class="separator">|</span>
+                    <a href="#" class="login-link">비밀번호찾기</a>
+                </div>
+            </div>
+            
+            <!-- 자주 찾는 메뉴 -->
+            <div class="frequent-menu">
+                <h3 class="menu-title">자주 찾는 메뉴</h3>
+                <div class="menu-grid">
+                    <div class="menu-item">
+                        <div class="menu-icon menu-icon-1"></div>
+                        <div class="menu-text">대출상품</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-icon menu-icon-2"></div>
+                        <div class="menu-text">예적금</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-icon menu-icon-3"></div>
+                        <div class="menu-text">투자상품</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock %}
