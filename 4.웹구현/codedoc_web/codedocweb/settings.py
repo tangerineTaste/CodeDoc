@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "home",
     "chatbot",
+    "product_recommendation",
+
 ]
 
 MIDDLEWARE = [
@@ -58,7 +60,10 @@ ROOT_URLCONF = "codedocweb.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'codedocweb/templates'],
+        "DIRS": [
+            BASE_DIR / 'codedocweb/templates',
+            BASE_DIR / 'templates',
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

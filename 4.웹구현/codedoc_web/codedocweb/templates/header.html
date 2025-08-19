@@ -1,4 +1,6 @@
 {% load static %}
+<link rel="stylesheet" href="{% static 'css/ex.css' %}">
+
 <nav class="meritz-nav">
     <div class="nav-container">
         <!-- 로고 -->
@@ -11,7 +13,7 @@
         <!-- 메인 메뉴 (가운데) -->
         <ul class="nav-menu">
             <li class="nav-item">
-                <a href="#" class="nav-link">상품추천</a>
+                <a href="{% url 'product_recommendation:product_list' %}" class="nav-link">상품추천</a>
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link">금융정보</a>
@@ -37,8 +39,8 @@
             <!-- 메뉴 컬럼들 -->
             <div class="dropdown-columns">
                 <div class="menu-column">
-                    <a href="#" class="menu-item">상품소개</a>
-                    <a href="#" class="menu-item">내게맞는상품찾기</a>
+                    <a href="{% url 'product_recommendation:product_list' %}" class="menu-item">상품소개</a>
+                    <a href="{% url 'product_recommendation:product_recommend' %}" class="menu-item">내게맞는상품찾기</a>
                 </div>
                 
                 <div class="menu-column">
@@ -57,3 +59,5 @@
         </div>
     </div>
 </nav>
+
+<script src="{% static 'js/main.js' %}"></script>

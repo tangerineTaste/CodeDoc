@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.home, name="home"),
     path("chatbot/", include("chatbot.urls")),
+    path('products/', include('product_recommendation.urls')),
 ]
