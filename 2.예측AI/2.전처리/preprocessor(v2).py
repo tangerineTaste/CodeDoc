@@ -16,14 +16,14 @@ def load_and_clean_scf_data(file_path):
         df = df.drop(df.columns[0], axis=1)
     
     # 원본 SCFP2022 데이터인 경우 바로 타겟 변수 생성
-    target_amount_columns = ['유동성자산', '양도성예금증서', '비머니마켓펀드', '주식보유', '퇴직준비금유동성']
+    target_amount_columns = ['머니마켓펀드', '양도성예금증서', '비머니마켓펀드', '주식보유', '퇴직준비금유동성']
     has_amount_columns = any(col in df.columns for col in target_amount_columns)
     
     if has_amount_columns:
         print("🎯 SCFP2022 원본 데이터 감지 - 타겟 변수 생성 중...")
         # 금액 컬럼에서 타겟 변수 생성
         target_mapping = {
-            'LIQ': '유동성자산',
+            'MMMF': '단기금융상품펀드',
             'CDS': '양도성예금증서', 
             'NMMF': '비머니마켓펀드',
             'STOCKS': '주식보유',
@@ -42,21 +42,27 @@ def load_and_clean_scf_data(file_path):
         
         # 필요한 독립변수 (14개)
         feature_columns = [
-            # 최고 중요도 (4개)
-            '연령대분류', '교육수준분류', '사업농업소득', '자본이득소득',
+            # 최고 중요도 (5개) - 모든 상품에서 상위권
+            '교육수준분류', '연령대분류', '사업농업소득', '자본이득소득',
             
-            # 기본 변수 (3개)
-            '연령', '금융위험감수', '저축여부',
+            # 금융 성향 (3개) - 금융상품 선택의 핵심
+            '금융위험감수', '금융위험회피', '저축여부',
             
-            # 추가 보완 (4개)
-            '급여소득', '금융위험회피', '교육수준', '가구주성별',
+            # 소득 관련 (1개) - 경제력 지표  
+            '급여소득',
+            
+            # 인구통계 (4개) - 기본 특성
+            '연령', '가구주성별', '결혼상태', '자녀수',
+            
+            # 직업 관련 (1개)
+            '직업분류1',
 
-            # 모든 상품에서 안정적으로 중요한 변수들 (3개)
-            '결혼상태', '자녀수', '직업분류1'
+            # 추가 중요 변수 (1개) - RETQLIQ에서 높은 중요도
+            '정상소득'        # 또는 다른 중요한 변수
         ]
         
         # 종속변수 (5개) - 생성된 것 또는 기존 것
-        target_columns = ['LIQ', 'CDS', 'NMMF', 'STOCKS', 'RETQLIQ']
+        target_columns = ['MMMF', 'CDS', 'NMMF', 'STOCKS', 'RETQLIQ']
         
         # 존재하는 컬럼만 필터링
         all_needed_columns = []
@@ -171,8 +177,8 @@ def create_target_variable(df):
     
     # SCFP2022의 실제 금액 컬럼명에 맞춰 종속변수 생성
     target_mapping = {
-        'LIQ': '유동성자산',           # 유동성자산 금액이 0 이상이면 1
-        'CDS': '양도성예금증서',       # 양도성예금증서 금액이 0 이상이면 1  
+        'MMMF': '단기금융상품펀드',           # 유동성자산 금액이 0 이상이면 1
+        'CDS': '양도성예금증서',       # 예금 금액이 0 이상이면 1  
         'NMMF': '비머니마켓펀드',      # 비머니마켓펀드 금액이 0 이상이면 1
         'STOCKS': '주식보유',         # 주식보유 금액이 0 이상이면 1
         'RETQLIQ': '퇴직준비금유동성'  # 퇴직준비금유동성 금액이 0 이상이면 1
@@ -227,7 +233,7 @@ def prepare_ml_features(df):
     ]
     
     # 5개 종속변수 (고정)
-    target_features = ['LIQ', 'CDS', 'NMMF', 'STOCKS', 'RETQLIQ']
+    target_features = ['MMMF', 'CDS', 'NMMF', 'STOCKS', 'RETQLIQ']
     
     # 존재하는 컬럼만 선택
     available_features = [col for col in all_features if col in df.columns]
@@ -262,7 +268,7 @@ def prepare_ml_features(df):
     
     print(f"\n 타겟 변수 (5개 실제 금융상품):")
     product_names = {
-        'LIQ': '유동성자산',
+        'MMMF': '단기금융상품펀드',
         'CDS': '양도성예금증서', 
         'NMMF': '비머니마켓펀드',
         'STOCKS': '주식보유',
@@ -340,7 +346,7 @@ def main_preprocessing_pipeline(file_path):
         df = check_data_quality(df)
         
         # 타겟 변수가 있는지 확인
-        target_exists = any(col in df.columns for col in ['LIQ', 'CDS', 'NMMF', 'STOCKS', 'RETQLIQ'])
+        target_exists = any(col in df.columns for col in ['MMMF', 'CDS', 'NMMF', 'STOCKS', 'RETQLIQ'])
         
         if not target_exists:
             print("\n※ 타겟 변수가 없어서 추가 처리가 필요합니다!")
