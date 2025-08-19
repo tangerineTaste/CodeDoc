@@ -1,7 +1,0 @@
-bank_deposits.json - 예금 상품
-bank_savings.json - 적금 상품
-companies.json - 금융회사 목록
-credit_loans.json - 개인신용대출 상품
-financial_data.json - 통합 데이터
-mortgage_loans.json - 주택담보대출 상폼
-rent_loans.json - 전세자금대출 상품
