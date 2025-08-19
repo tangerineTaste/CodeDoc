@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- 나눔스퀘어 폰트 로드 -->
+  <link href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/nanumsquare.css" rel="stylesheet">
   
   <style>
     body {position: relative;}
@@ -12,6 +15,9 @@
   {% comment %} <link href="{% static 'img/brand.png' %}" rel="icon"> {% endcomment %}
   <link href="{% static 'css/ex.css' %}" rel="stylesheet">
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+  {% block extra_css %}{% endblock %}
+
   <script src="{% static 'js/main.js' %}"></script>
   
   <title>{% block title %}{% endblock %}</title>
