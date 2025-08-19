@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}상품소개 - CODEDOC{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'product_recommendation/css/product_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+        <h1 class="page-title">무엇을 보장해 드릴까요?</h1>
+        <p class="page-subtitle">고객님께 맞는 최적의 금융상품을 찾아보세요</p>
+    </div>
+
+    <!-- 필터 탭 -->
+    <div class="filter-tabs">
+        <button class="filter-btn active" data-filter="all">전체</button>
+        <button class="filter-btn" data-filter="deposit">예금</button>
+        <button class="filter-btn" data-filter="saving">적금</button>
+        <button class="filter-btn" data-filter="loan">대출</button>
+    </div>
+
+    {% if error %}
+        <div class="error-message">
+            <h3>오류가 발생했습니다</h3>
+            <p>{{ error }}</p>
+        </div>
+    {% else %}
+        <!-- 전체 상품 섹션 -->
+        <div class="products-section" data-category="all">
+            <h2 class="section-title">전체 {{ all_total }}개 상품</h2>
+            <div class="products-grid">
+                {% for product in all_products %}
+                    <div class="product-card">
+                        <span class="product-badge">{{ product.product_type_name }}/보장</span>
+                        <h3 class="product-name">{{ product.fin_prdt_nm }}</h3>
+                        <p class="product-subtitle">
+                            {% if product.product_type == 'deposit' %}
+                                소중한 내 가족을 위한 현명한 선택!
+                            {% else %}
+                                세바를골고의 든든한 세가지 약속!
+                            {% endif %}
+                        </p>
+                        
+                        <div class="product-info">
+                            <div class="info-label">상품 유형</div>
+                            <div class="info-value">{{ product.product_type_name }}</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">금융회사</div>
+                            <div class="info-value">{{ product.kor_co_nm }}</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">가입방법</div>
+                            <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                        </div>
+                        
+                        <div class="product-tags">
+                            {% if product.product_type == 'deposit' %}
+                                <span class="tag">#보장</span>
+                                <span class="tag">#예금</span>
+                                <span class="tag">#안전</span>
+                            {% else %}
+                                <span class="tag">#성인우대혜택</span>
+                                <span class="tag">#적금</span>
+                                <span class="tag">#저축</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>상품이 없습니다.</p>
+                {% endfor %}
+            </div>
+            
+            <!-- 전체 상품 페이지네이션 -->
+            {% if all_products.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination">
+                        {% if all_products.has_previous %}
+                            <a href="?page={{ all_products.previous_page_number }}">&lsaquo; 이전</a>
+                        {% endif %}
+                        
+                        {% for num in all_products.paginator.page_range %}
+                            {% if num <= 5 %}
+                                {% if all_products.number == num %}
+                                    <span class="current">{{ num }}</span>
+                                {% else %}
+                                    <a href="?page={{ num }}">{{ num }}</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if all_products.has_next %}
+                            <a href="?page={{ all_products.next_page_number }}">다음 &rsaquo;</a>
+                        {% endif %}
+                    </div>
+                    <div class="pagination-info">
+                        {{ all_products.start_index }}-{{ all_products.end_index }} / 총 {{ all_total }}개
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 예금 상품 섹션 -->
+        <div class="products-section" data-category="deposit" style="display: none;">
+            <h2 class="section-title">예금 {{ deposits_total }}개 상품</h2>
+            <div class="products-grid">
+                {% for product in deposits %}
+                    <div class="product-card">
+                        <span class="product-badge">예금/보장</span>
+                        <h3 class="product-name">{{ product.fin_prdt_nm }}</h3>
+                        <p class="product-subtitle">소중한 내 가족을 위한 현명한 선택!</p>
+                        
+                        <div class="product-info">
+                            <div class="info-label">금융회사</div>
+                            <div class="info-value">{{ product.kor_co_nm }}</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">가입방법</div>
+                            <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                        </div>
+                        
+                        <div class="product-tags">
+                            <span class="tag">#보장</span>
+                            <span class="tag">#예금</span>
+                            <span class="tag">#안전</span>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>예금 상품이 없습니다.</p>
+                {% endfor %}
+            </div>
+            
+            <!-- 예금 페이지네이션 -->
+            {% if deposits.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination">
+                        {% if deposits.has_previous %}
+                            <a href="?deposits_page={{ deposits.previous_page_number }}">&lsaquo; 이전</a>
+                        {% endif %}
+                        
+                        {% for num in deposits.paginator.page_range %}
+                            {% if num <= 5 %}
+                                {% if deposits.number == num %}
+                                    <span class="current">{{ num }}</span>
+                                {% else %}
+                                    <a href="?deposits_page={{ num }}">{{ num }}</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if deposits.has_next %}
+                            <a href="?deposits_page={{ deposits.next_page_number }}">다음 &rsaquo;</a>
+                        {% endif %}
+                    </div>
+                    <div class="pagination-info">
+                        {{ deposits.start_index }}-{{ deposits.end_index }} / 총 {{ deposits_total }}개
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 적금 상품 섹션 -->
+        <div class="products-section" data-category="saving" style="display: none;">
+            <h2 class="section-title">적금 {{ savings_total }}개 상품</h2>
+            <div class="products-grid">
+                {% for product in savings %}
+                    <div class="product-card">
+                        <span class="product-badge">적금/보장</span>
+                        <h3 class="product-name">{{ product.fin_prdt_nm }}</h3>
+                        <p class="product-subtitle">세바를골고의 든든한 세가지 약속!</p>
+                        
+                        <div class="product-info">
+                            <div class="info-label">금융회사</div>
+                            <div class="info-value">{{ product.kor_co_nm }}</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">가입방법</div>
+                            <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                        </div>
+                        
+                        <div class="product-tags">
+                            <span class="tag">#성인우대혜택</span>
+                            <span class="tag">#적금</span>
+                            <span class="tag">#저축</span>
+                            {% if "만15세부터" in product.join_way %}
+                                <span class="tag">#만15세부터 가입가능</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>적금 상품이 없습니다.</p>
+                {% endfor %}
+            </div>
+            
+            <!-- 적금 페이지네이션 -->
+            {% if savings.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination">
+                        {% if savings.has_previous %}
+                            <a href="?savings_page={{ savings.previous_page_number }}">&lsaquo; 이전</a>
+                        {% endif %}
+                        
+                        {% for num in savings.paginator.page_range %}
+                            {% if num <= 5 %}
+                                {% if savings.number == num %}
+                                    <span class="current">{{ num }}</span>
+                                {% else %}
+                                    <a href="?savings_page={{ num }}">{{ num }}</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if savings.has_next %}
+                            <a href="?savings_page={{ savings.next_page_number }}">다음 &rsaquo;</a>
+                        {% endif %}
+                    </div>
+                    <div class="pagination-info">
+                        {{ savings.start_index }}-{{ savings.end_index }} / 총 {{ savings_total }}개
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 대출 상품 섹션 -->
+        <div class="products-section" data-category="loan" style="display: none;">
+            <h2 class="section-title">대출 상품 (준비중)</h2>
+            <div class="products-grid">
+                <div class="product-card">
+                    <span class="product-badge">대출/지원</span>
+                    <h3 class="product-name">대출 상품 준비중</h3>
+                    <p class="product-subtitle">곧 다양한 대출 상품을 만나보실 수 있습니다.</p>
+                    
+                    <div class="product-info">
+                        <div class="info-label">상태</div>
+                        <div class="info-value">준비중</div>
+                    </div>
+                    
+                    <div class="product-tags">
+                        <span class="tag">#준비중</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script src="{% static 'product_recommendation/js/product_list.js' %}"></script>
+{% endblock %}

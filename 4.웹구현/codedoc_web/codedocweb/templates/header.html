@@ -1,0 +1,63 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/ex.css' %}">
+
+<nav class="meritz-nav">
+    <div class="nav-container">
+        <!-- 로고 -->
+        <div class="nav-logo">
+            <a href="/">
+                <span class="logo-red">CODEDOC</span>
+            </a>
+        </div>
+
+        <!-- 메인 메뉴 (가운데) -->
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="{% url 'product_recommendation:product_list' %}" class="nav-link">상품추천</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">금융정보</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">고객지원</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">마이페이지</a>
+            </li>
+        </ul>
+
+        <!-- 오른쪽 버튼들 -->
+        <div class="nav-buttons">
+            <a href="#" class="nav-login-btn">로그인</a>
+            <a href="#" class="signup-btn">회원가입</a>
+        </div>
+    </div>
+
+    <!-- 메가 드롭다운 -->
+    <div class="mega-dropdown">
+        <div class="dropdown-container">
+            <!-- 메뉴 컬럼들 -->
+            <div class="dropdown-columns">
+                <div class="menu-column">
+                    <a href="{% url 'product_recommendation:product_list' %}" class="menu-item">상품소개</a>
+                    <a href="{% url 'product_recommendation:product_recommend' %}" class="menu-item">내게맞는상품찾기</a>
+                </div>
+                
+                <div class="menu-column">
+                    <a href="#" class="menu-item">금융뉴스</a>
+                </div>
+                
+                <div class="menu-column">
+                    <a href="#" class="menu-item">공지사항</a>
+                    <a href="#" class="menu-item">서비스 가이드</a>
+                </div>
+                
+                <div class="menu-column">
+                    <a href="#" class="menu-item">내 정보</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script src="{% static 'js/main.js' %}"></script>
