@@ -1,0 +1,378 @@
+/* ===============================
+    CSS 변수 정의 (Root Variables)
+   =============================== */
+:root {
+    /* 메인 컬러 */
+    --primary-color: #0078FE;
+    --primary-hover: #0056b3;
+    
+    /* 폰트 컬러 */
+    --text-primary: #333;
+    --text-secondary: #666;
+    --text-muted: #999;
+    
+    /* 배경 컬러 */
+    --bg-primary: #fff;
+    --bg-secondary: #f8f9fa;
+    --bg-light: #e9ecef;
+    
+    /* 보더 컬러 */
+    --border-primary: #e0e0e0;
+    --border-light: #ddd;
+
+    /* 보더 radius */
+    --border-radius-small: 8px;
+    --border-radius-normal: 15px;
+    --border-radius-large: 25px;
+    
+    /* 레이아웃 */
+    --container-width: 1200px;
+    --nav-height: 65px;
+    --box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body{
+    font-family: 'NanumSquare', sans-serif;
+}
+
+/* * * * * * * * * * * * nav 부분 시작 * * * * * * * * * * * */
+#nav{
+    border-bottom: 1px solid var(--border-light);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 65px;
+    position: relative;
+}
+
+.meritz-nav {
+    background: var(--bg-primary);
+    position: relative;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+/* 로고 링크 밑줄 제거 */
+.nav-logo a {
+    text-decoration: none;
+}
+
+/* 또는 더 확실하게 */
+.navbar-brand {
+    text-decoration: none !important;
+}
+
+.navbar-brand:hover {
+    text-decoration: none !important;
+}
+
+/* 로고 텍스트 스타일 */
+.logo-red {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* 메인 메뉴 정렬 */
+.nav-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 560px;
+}
+
+/* 기본 상태에서 active 클래스 제거 */
+.nav-item {
+    position: relative;
+    width: 140px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* active 클래스가 있을 때만 스타일 적용 */
+.nav-item.active .nav-link {
+    color: var(--primary-color);
+}
+
+.nav-item.active .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-color);
+}
+
+/* 호버시에만 스타일 적용 */
+.nav-item:hover .nav-link {
+    color: var(--primary-color);
+}
+
+.nav-item:hover .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-color);
+}
+
+.nav-link {
+    display: block;
+    padding: 22px 0;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    position: relative;
+    width: 100%;
+}
+
+.nav-item:hover .nav-link,
+.nav-item.active .nav-link {
+    color: var(--primary-color);
+}
+
+/* 호버시 밑줄 */
+.nav-item:hover .nav-link::after,
+.nav-item.active .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-color);
+}
+
+/* 오른쪽 버튼들 */
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    z-index: 10;
+}
+
+.nav-login-btn, .signup-btn {
+    padding: 8px 16px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: var(--border-radius-small);
+    transition: all 0.3s;
+}
+
+.nav-login-btn {
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-light);
+}
+
+.nav-login-btn:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.signup-btn {
+    color: var(--bg-primary);
+    background: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.signup-btn:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+/* 메가 드롭다운 */
+.mega-dropdown {
+    position: absolute;
+    top: 101%;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-primary);
+    /*border-top: 1px solid var(--border-primary);*/
+    display: none;
+    z-index: 1000;
+    min-height: 126px;
+}
+
+.mega-dropdown.show {
+    display: block;
+}
+
+.dropdown-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    /*padding: 30px 20px;*/
+    gap: 40px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    position: relative;
+}
+
+/* 드롭다운 컬럼들 - 대메뉴와 정확히 수직 정렬 */
+.dropdown-columns {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 560px;
+    display: flex;
+    background: var(--bg-primary);
+    border-left: 1px solid var(--border-primary);
+    border-top: none;
+}
+
+.menu-column {
+    width: 140px;
+    flex-shrink: 0;
+    padding: 30px 15px;
+    background: var(--bg-primary);
+    transition: all 0.3s;
+    border-right: 1px solid var(--border-primary);
+    text-align: center;
+}
+
+/*.menu-column:last-child {
+    border-right: none;
+}*/
+
+.menu-column.active-column {
+    background: var(--bg-light) !important;
+}
+
+.menu-column h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.menu-column.active-column h5 {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.menu-item {
+    display: block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 6px 0;
+}
+
+.menu-item:hover {
+    color: var(--primary-color);
+}
+/* * * * * * * * * * * * nav 부분 끝 * * * * * * * * * * * */
+
+/* * * * * * * * * * * * footer 부분 시작 * * * * * * * * * * * */
+footer {
+    background-color: #010101;
+    color: var(--text-secondary);
+    padding: 40px 0 30px;
+    font-family: 'NanumSquare', sans-serif;
+    margin: 5px auto;
+    min-height: 150px;
+    overflow: visible;
+    position: relative;
+    width: 100%;
+}
+
+.footer-container {
+    width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 상단 네비게이션 메뉴 */
+.footer-nav {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--text-secondary);
+}
+
+.footer-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: var(--primary-color);
+}
+
+/* 회사 정보 섹션 */
+.footer-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+}
+
+.company-logo {
+    flex-shrink: 0;
+}
+
+.logo-text {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+
+.company-info {
+    flex: 1;
+}
+
+.address-info,
+.contact-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.footer-separator {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.new-copyright {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 15px;
+    font-weight: 400;
+}
+
+
+/* * * * * * * * * * * * footer 부분 끝 * * * * * * * * * * * */
