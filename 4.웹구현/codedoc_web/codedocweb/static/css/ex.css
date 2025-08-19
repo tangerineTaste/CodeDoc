@@ -215,7 +215,7 @@ html, body{
     /*border-top: 1px solid var(--border-primary);*/
     display: none;
     z-index: 1000;
-    min-height: 128px;
+    min-height: 126px;
 }
 
 .mega-dropdown.show {
