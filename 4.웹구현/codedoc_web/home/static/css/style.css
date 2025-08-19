@@ -1,7 +1,52 @@
+/* ===============================
+    CSS 변수 정의 (Root Variables)
+   =============================== */
+:root {
+    /* 메인 컬러 */
+    --primary-color: #0078FE;
+    --primary-hover: #0056b3;
+    
+    /* 폰트 컬러 */
+    --text-primary: #333;
+    --text-secondary: #666;
+    --text-muted: #999;
+    
+    /* 배경 컬러 */
+    --bg-primary: #fff;
+    --bg-secondary: #f8f9fa;
+    --bg-light: #e9ecef;
+    
+    /* 보더 컬러 */
+    --border-primary: #e0e0e0;
+    --border-light: #ddd;
+
+    /* 보더 radius */
+    --border-radius-small: 8px;
+    --border-radius-normal: 15px;
+    --border-radius-large: 25px;
+    
+    /* 레이아웃 */
+    --container-width: 1200px;
+    --nav-height: 65px;
+    --box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body{
+    font-family: 'NanumSquare', sans-serif;
+}
+
+/* * * * * * * * * * * * banner 부분 시작 * * * * * * * * * * * */
 /* car_banner.css */
 .banner-container {
     width: 1200px;
     margin: 0 auto;
+    padding: 80px 0;
     background: transparent;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
 }
@@ -14,11 +59,11 @@
 /* 왼쪽 메인 슬라이드 영역 */
 .main-slide {
     flex: 1;
-    background: linear-gradient(135deg, #fff5f0 0%, #ffe4d6 100%);
+    background: linear-gradient(125deg, #d2e7ff 0%, #59a6ff 100%);
     padding: 40px;
     position: relative;
     min-height: 400px;
-    border-radius: 15px;
+    border-radius: var(--border-radius-large);
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
@@ -35,7 +80,7 @@
 }
 
 .subtitle {
-    color: #ff6b35;
+    color: var(--primary-color);
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 15px;
@@ -44,170 +89,90 @@
 
 .main-title {
     font-size: 32px;
-    font-weight: bold;
-    color: #333;
+    font-weight: 400;
+    color: var(--text-primary);
     line-height: 1.3;
     margin-bottom: 20px;
     letter-spacing: -1px;
 }
 
 .description {
-    color: #666;
+    color: var(--text-primary);
     font-size: 16px;
     margin-bottom: 30px;
     line-height: 1.5;
 }
 
 .cta-button {
-    background-color: #fff;
-    color: #333;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     border: none;
     padding: 14px 28px;
-    border-radius: 25px;
+    border-radius: 50px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: var(--box-shadow);
 }
 
 .cta-button:hover {
-    background-color: #ff6b35;
-    color: #fff;
+    background-color: var(--primary-color);
+    color: var(--bg-primary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    box-shadow: var(--box-shadow);
 }
 
-/* 자동차 일러스트 */
-.image-content {
-    flex: 1;
+/* 슬라이드 컨트롤 */
+.carousel-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    position: relative;
+    gap: 8px;
 }
 
-.car-illustration {
-    position: relative;
-    width: 280px;
-    height: 160px;
+.carousel-btn {
+    background: var(--bg-primary);
+    border: none;
+    border-radius: var(--border-radius);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
 }
 
-.car-body {
-    width: 200px;
-    height: 80px;
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-    border-radius: 40px 40px 15px 15px;
-    position: absolute;
-    top: 40px;
-    left: 20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.carousel-btn:hover {
+    background: var(--bg-primary);
+    transform: translateY(-1px);
 }
 
-.car-body::before {
-    content: '';
-    position: absolute;
-    top: -20px;
-    left: 30px;
-    width: 100px;
-    height: 40px;
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-    border-radius: 20px 20px 5px 5px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+.carousel-indicators {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0 5px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    background: var(--bg-primary);
+    padding: 4px 8px;
+    border-radius: var(--border-radius);
 }
 
-.car-window {
-    position: absolute;
-    top: 25px;
-    left: 55px;
-    width: 70px;
-    height: 25px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-}
-
-.car-wheel {
-    width: 35px;
-    height: 35px;
-    background: #333;
-    border-radius: 50%;
-    position: absolute;
-    top: 105px;
-    border: 3px solid #666;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
-}
-
-.car-wheel-front {
-    left: 170px;
-}
-
-.car-wheel-rear {
-    left: 35px;
-}
-
-.car-wheel::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 15px;
-    height: 15px;
-    background: #999;
-    border-radius: 50%;
-}
-
-.oil-bottle {
-    position: absolute;
-    right: -30px;
-    top: 10px;
-    animation: float 3s ease-in-out infinite;
-}
-
-.bottle-body {
-    width: 45px;
-    height: 80px;
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-    border-radius: 8px;
-    position: relative;
-    box-shadow: 0 4px 12px rgba(255,165,0,0.3);
-}
-
-.bottle-cap {
-    width: 25px;
-    height: 15px;
-    background: #FF6B35;
-    border-radius: 5px 5px 0 0;
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.bottle-label {
-    position: absolute;
-    right: -80px;
-    top: 10px;
-    background: #fff;
-    padding: 8px 12px;
-    border-radius: 8px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-    min-width: 90px;
-    text-align: center;
-}
-
-.price-tag {
-    font-size: 16px;
+.indicator.active {
+    color: var(--primary-color);
     font-weight: bold;
-    color: #ff6b35;
-    margin-bottom: 2px;
 }
 
-.discount-text {
+.pause-btn {
     font-size: 10px;
-    color: #666;
-    line-height: 1.2;
 }
 
 /* 오른쪽 섹션 */
@@ -221,9 +186,9 @@
 /* 로그인 박스 */
 .login-box {
     padding: 30px 25px;
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow);
 }
 
 .greeting {
@@ -232,7 +197,7 @@
     justify-content: flex-start;
     margin-bottom: 25px;
     font-size: 16px;
-    color: #333;
+    color: var(--text-primary);
     max-width: 160px;
     word-break: keep-all;
 }
@@ -256,16 +221,16 @@
 .login-input {
     width: 100%;
     padding: 14px 16px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
+    border: 2px solid var(--bg-light);
+    border-radius: var(--border-radius);
     font-size: 14px;
     transition: border-color 0.3s ease;
     outline: none;
-    background: #fff;
+    background: var(--bg-primary);
 }
 
 .login-input:focus {
-    border-color: #ff6b35;
+    border-color: var(--primary-color);
 }
 
 .login-input::placeholder {
@@ -273,11 +238,11 @@
 }
 
 .login-button {
-    background: #ff6b35;
-    color: #fff;
+    background: var(--primary-color);
+    color: var(--bg-primary);
     border: none;
     padding: 14px;
-    border-radius: 8px;
+    border-radius: var(--border-radius-normal);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -287,7 +252,7 @@
 }
 
 .login-button:hover {
-    background: #ff6b35;
+    background: var(--primary-hover);
     opacity: 0.9;
     transform: translateY(-1px);
 }
@@ -301,30 +266,30 @@
 }
 
 .login-link {
-    color: #666;
+    color: var(--text-secondary);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .login-link:hover {
-    color: #ff6b35;
+    color: var(--primary-color);
 }
 
 .separator {
-    color: #ddd;
+    color: var(--border-light);
 }
 
 /* 자주 찾는 메뉴 */
 .frequent-menu {
     padding: 25px;
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow);
 }
 
 .menu-title {
     font-size: 16px;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 20px;
     font-weight: 600;
     text-align: center;
@@ -336,22 +301,22 @@
     gap: 15px;
 }
 
-.menu-item {
+.quik {
     display: flex;
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    /*transition: transform 0.3s ease;*/
+    transition: transform 0.3s ease;
 }
 
-/*.menu-item:hover {
+.quik:hover {
     transform: translateY(-3px);
-}*/
+}
 
 .menu-icon {
     width: 60px;
     height: 60px;
-    border-radius: 12px;
+    border-radius: var(--border-radius-small);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -361,23 +326,23 @@
 }
 
 .menu-icon-1 {
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
+    background: var(--bg-secondary);
+    border: 2px solid var(--bg-light);
 }
 
 .menu-icon-2 {
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
+    background: var(--bg-secondary);
+    border: 2px solid var(--bg-light);
 }
 
 .menu-icon-3 {
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
+    background: var(--bg-secondary);
+    border: 2px solid var(--bg-light);
 }
 
 .menu-text {
     font-size: 12px;
-    color: #333;
+    color: var(--text-primary);
     font-weight: 500;
     text-align: center;
 }
@@ -390,4 +355,195 @@
     50% {
         transform: translateY(-5px);
     }
+}
+
+/* * * * * * * * * * * * banner 부분 끝 * * * * * * * * * * * */
+
+/* ===============================
+    금융상품 섹션 스타일 
+   =============================== */
+
+.financial-products-section {
+    padding: 80px 0; 
+    background: var(--bg-secondary);
+    width: 100%;
+    max-width: 1920px;
+    margin: 0 auto;
+}
+
+.financial-products-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 80px; /* 60px에서 80px로 변경 */
+}
+
+.products-content {
+    display: flex;
+    gap: 80px;
+    overflow: visible; /* 이 줄 추가 */
+}
+
+/* 왼쪽 텍스트 섹션 */
+.left-text-section {
+    flex: 0 0 400px;
+    padding-right: 40px;
+}
+
+.main-text {
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: 1.4;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+}
+
+.sub-description {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 60px;
+    letter-spacing: -0.5px;
+}
+
+.search-btn {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 25px;
+    padding: 12px 34px;
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: var(--box-shadow);
+}
+
+.search-btn:hover {
+    background: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+}
+
+/* 오른쪽 상품 슬라이드 섹션 */
+.right-products-section {
+    flex: 1;
+    position: relative;
+    overflow: hidden; /* visible → hidden으로 변경 */
+    max-width: 700px; /* 3개 카드만 보이도록 너비 조정 */
+    padding: 0 40px;
+}
+
+.products-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden; /* visible → hidden으로 변경 */
+}
+
+.products-container {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.4s ease;
+    padding: 10px 0;
+    width: calc(4 * 235px); /* 4개 카드 전체 너비는 유지 */
+}
+
+.product-card {
+    background: var(--bg-primary);
+    border-radius: 15px;
+    padding: 30px 20px;
+    text-align: center;
+    width: 215px;
+    height: 272px;
+    flex: 0 0 215px; /* 고정 크기 */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow);
+    border-color: var(--primary-color);
+}
+
+.product-card.active {
+    border-color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow);
+}
+
+.product-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70px;
+    height: 70px;
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    transition: all 0.3s ease;
+}
+
+.product-card:hover .product-icon {
+    transform: scale(1.1);
+    background: var(--bg-secondary);
+}
+
+.product-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    transition: color 0.3s ease;
+}
+
+.product-card:hover .product-title {
+    color:var(--primary-color);
+}
+
+.product-description {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* 슬라이더 버튼 */
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    color: var(--text-secondary);
+    box-shadow: var(--box-shadow);
+}
+
+.slider-btn:hover {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border-color: var(--primary-color);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev-btn {
+    left: -40px; /* -30px에서 -40px로 변경 */
+}
+
+.next-btn {
+    right: -40px; /* -30px에서 -40px로 변경 */
 }
