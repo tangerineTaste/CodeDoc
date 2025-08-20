@@ -55,6 +55,104 @@
         }, 1000); // 1초 후 실행
 
         // =================================
+        // main slide
+        // =================================
+
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.main-slide .slide-content');
+        const indicators = document.querySelectorAll('.carousel-indicators .indicator');
+        const prevBtn = document.querySelector('.carousel-btn.prev');
+        const nextBtn = document.querySelector('.carousel-btn.next');
+
+        function showSlide(index) {
+            // 먼저 모든 슬라이드 비활성화
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                indicators[i].classList.remove('active');
+            });
+            
+            // 짧은 지연 후 새 슬라이드 활성화
+            setTimeout(() => {
+                slides[index].classList.add('active');
+                indicators[index].classList.add('active');
+                currentSlide = index;
+            }, 50);
+        }
+
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', () => {
+                let newIndex = (currentSlide - 1 + slides.length) % slides.length;
+                showSlide(newIndex);
+            });
+
+            nextBtn.addEventListener('click', () => {
+                let newIndex = (currentSlide + 1) % slides.length;
+                showSlide(newIndex);
+            });
+        }
+
+        // 인디케이터 클릭
+        indicators.forEach((indicator, i) => {
+            indicator.addEventListener('click', () => showSlide(i));
+        });
+
+        // =================================
+        // 챗봇 아이콘 클릭 이벤트
+        // =================================
+        var chatbotBtn = document.getElementById('chatbotBtn');
+        if (chatbotBtn) {
+            chatbotBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 클릭 애니메이션
+                this.style.transform = 'translateY(-1px) scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+                
+                // 챗봇 페이지로 이동
+                window.location.href = '/chatbot/';
+            });
+        }
+
+        // =================================
+        // 공지사항 아이템 클릭 이벤트
+        // =================================
+        var noticeItems = document.querySelectorAll('.notice-item-card');
+        noticeItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                // 클릭 애니메이션
+                this.style.transform = 'translateX(8px) scale(0.98)';
+                this.style.transition = 'transform 0.15s ease';
+                
+                var self = this;
+                setTimeout(function() {
+                    // 공지사항 목록 페이지로 이동
+                    window.location.href = '/customer_support/notices/';
+                }, 150);
+            });
+        });
+
+        // =================================
+        // 더보기 버튼 클릭 이벤트
+        // =================================
+        var moreBtn = document.querySelector('.more-btn');
+        if (moreBtn) {
+            moreBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 클릭 애니메이션
+                this.style.transform = 'translateY(-3px) scale(0.95)';
+                this.style.transition = 'transform 0.15s ease';
+                
+                var self = this;
+                setTimeout(function() {
+                    window.location.href = '/customer_support/notices/';
+                }, 150);
+            });
+        }
+
+        // =================================
         // 기타 UI 기능들
         // =================================
         

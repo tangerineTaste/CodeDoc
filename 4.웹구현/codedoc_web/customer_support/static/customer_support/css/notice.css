@@ -1,0 +1,256 @@
+/* customer_support/static/customer_support/css/notice.css */
+
+.notice-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: white;
+    min-height: 100vh;
+    margin-top: var(--nav-height);
+}
+
+/* 페이지 헤더에 추가 */
+.page-header {
+    text-align: center;
+    margin: 0px 0 45px 0;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.page-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0;
+}
+
+/* 기존 .notice-header 스타일 수정 */
+.notice-header {
+    margin-bottom: 40px;
+}
+
+/* .breadcrumb {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.breadcrumb .separator {
+    margin: 0 8px;
+    color: #999;
+}
+
+.breadcrumb .current {
+    color: #0078FE;
+    font-weight: 500;
+} */
+
+/* 검색 및 탭 영역 */
+.search-section {
+    margin-bottom: 30px;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.search-input {
+    width: 400px;
+    height: 45px;
+    padding: 0 15px;
+    border: 2px solid #0078FE;
+    border-radius: 25px 0 0 25px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-btn {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 25px;
+    padding: 12px 34px;
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: var(--box-shadow);
+}
+
+.search-btn:hover {
+    background: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+}
+
+/* 탭 메뉴 */
+.notice-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tab-btn {
+    padding: 15px 30px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    color: #0078FE;
+    border-bottom-color: #0078FE;
+}
+
+.tab-btn:hover {
+    color: #0078FE;
+}
+
+/* 공지사항 컨텐츠 */
+.notice-content {
+    margin-top: 40px;
+}
+
+.notice-stats {
+    margin-bottom: 20px;
+    padding-left: 10px;
+}
+
+.total-count {
+    font-size: 0.95rem;
+    color: #0078FE;
+    font-weight: 600;
+}
+
+/* 공지사항 목록 */
+.notice-list {
+    border-top: 2px solid #0078FE;
+}
+
+.notice-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.notice-item:hover {
+    background-color: #f8f9ff;
+}
+
+.notice-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.notice-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.notice-title a {
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notice-title a:hover {
+    color: #0078FE;
+}
+
+.new-badge {
+    background: #ff4757;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.notice-date {
+    font-size: 0.9rem;
+    color: #999;
+    white-space: nowrap;
+}
+
+.notice-arrow {
+    color: #ccc;
+    font-size: 1.2rem;
+    margin-left: 15px;
+}
+
+/* 빈 목록 */
+.no-notices {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+/* 페이지네이션 스타일 (상품소개와 동일) */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px 0;
+    gap: 10px;
+}
+
+.pagination {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.pagination a, .pagination span {
+    padding: 10px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #666;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.pagination a:hover {
+    background-color: #0078FE;
+    color: white;
+    border-color: #0078FE;
+}
+
+.pagination .current {
+    background-color: #0078FE;
+    color: white;
+    border-color: #0078FE;
+}
+
+.pagination-info {
+    color: #999;
+    font-size: 0.9rem;
+    margin-left: 20px;
+}

@@ -23,5 +23,6 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("chatbot/", include("chatbot.urls")),
     path('products/', include('product_recommendation.urls')),
+    path('support/', include('customer_support.urls')),
     path('news/', include('news.urls'))
 ]
