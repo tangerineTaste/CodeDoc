@@ -2,7 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('페이지 로드 완료');
-
+    
     // 서비스별 상세 정보
     const serviceDetails = {
         '맞춤설계로 Smart하게': {
