@@ -34,7 +34,7 @@
             <h2 class="section-title">전체 {{ all_total }}개 상품</h2>
             <div class="products-grid">
                 {% for product in all_products %}
-                    <div class="product-card">
+                    <div class="product-cards">
                         <span class="product-badge">{{ product.product_type_name }}/보장</span>
                         <h3 class="product-name">{{ product.fin_prdt_nm }}</h3>
                         <p class="product-subtitle">
@@ -111,7 +111,7 @@
             <h2 class="section-title">예금 {{ deposits_total }}개 상품</h2>
             <div class="products-grid">
                 {% for product in deposits %}
-                    <div class="product-card">
+                    <div class="product-cards">
                         <span class="product-badge">예금/보장</span>
                         <h3 class="product-name">{{ product.fin_prdt_nm }}</h3>
                         <p class="product-subtitle">소중한 내 가족을 위한 현명한 선택!</p>
@@ -171,7 +171,7 @@
             <h2 class="section-title">적금 {{ savings_total }}개 상품</h2>
             <div class="products-grid">
                 {% for product in savings %}
-                    <div class="product-card">
+                    <div class="product-cards">
                         <span class="product-badge">적금/보장</span>
                         <h3 class="product-name">{{ product.fin_prdt_nm }}</h3>
                         <p class="product-subtitle">세바를골고의 든든한 세가지 약속!</p>
@@ -233,7 +233,7 @@
         <div class="products-section" data-category="loan" style="display: none;">
             <h2 class="section-title">대출 상품 (준비중)</h2>
             <div class="products-grid">
-                <div class="product-card">
+                <div class="product-cards">
                     <span class="product-badge">대출/지원</span>
                     <h3 class="product-name">대출 상품 준비중</h3>
                     <p class="product-subtitle">곧 다양한 대출 상품을 만나보실 수 있습니다.</p>

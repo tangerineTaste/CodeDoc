@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 카드 호버 효과 강화
-    const productCards = document.querySelectorAll('.product-card');
+    const productCards = document.querySelectorAll('.product-cards');
     
     productCards.forEach(card => {
         card.addEventListener('mouseenter', function() {
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // // 스크롤 애니메이션
     // function animateOnScroll() {
-    //     const cards = document.querySelectorAll('.product-card');
+    //     const cards = document.querySelectorAll('.product-cards');
         
     //     cards.forEach(card => {
     //         const cardTop = card.getBoundingClientRect().top;
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 상품 검색 함수
     function searchProducts(searchTerm) {
-        const productCards = document.querySelectorAll('.product-card');
+        const productCards = document.querySelectorAll('.product-cards');
         
         productCards.forEach(card => {
             const productName = card.querySelector('.product-name').textContent.toLowerCase();
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
 //         }
 //     }
     
-//     .product-card {
+//     .product-cards {
 //         opacity: 0;
 //         transform: translateY(30px);
 //         transition: all 0.3s ease;

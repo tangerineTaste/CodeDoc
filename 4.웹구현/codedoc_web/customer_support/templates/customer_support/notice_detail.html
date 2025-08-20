@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ notice.title }} - CODEDOC{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'customer_support/css/notice_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <!-- 메인 컨텐츠 -->
+    <div class="detail-main">
+        <article class="notice-article">
+            <!-- 제목 -->
+            <header class="article-header">
+                <h1 class="article-title">{{ notice.title }}</h1>
+            </header>
+
+            <!-- 본문 내용 -->
+            <div class="article-content">
+                {% if notice.content %}
+                    <div class="content-text">
+                        {{ notice.content|linebreaks }}
+                    </div>
+                {% else %}
+                    <div class="content-text">
+                        <p>안녕하세요.</p>
+                        <p>CODEDOC 운영팀입니다.</p>
+                        <br>
+                        <p>{{ notice.title }}에 대해 안내드립니다.</p>
+                        <br>
+                        <p>조각투자 플랫폼 CODEDOC 웹 사이트를 방문하시는 고객님들께 편안한 정보를 더욱 쉽고 빠르게 접할 수 있도록 다양한 개편과 함께 새로운 기능이 추가되었습니다.</p>
+                        <br>
+                        <p>• 투자상품 검색</p>
+                        <p>• 심플 라이언</p>
+                        <p>• 상익 가이드</p>
+                        <p>• 투자에 도움되는 금융지식 A to Z</p>
+                        <p>• 고객센터</p>
+                        <p>• CODEDOC 비즈니스 소개</p>
+                        <p>• 제휴문의</p>
+                        <br>
+                        <p>CODEDOC는 앞으로도 조각투자 생태계 성장을 선도하며 건전한 혁신 금융 플랫폼으로 나아가겠습니다.</p>
+                        <br>
+                        <p>CODEDOC를 사랑해 주시는 모든 분들께 진심으로 감사합니다.</p>
+                        <br>
+                        <p>-CODEDOC 운영팀 올림</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- 목록으로 버튼 -->
+            <footer class="article-footer">
+                <button class="back-to-list-btn" onclick="location.href='/support/notice/'">
+                    목록으로
+                </button>
+            </footer>
+        </article>
+    </div>
+</div>
+{% endblock %}

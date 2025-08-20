@@ -85,66 +85,58 @@
 </div>
 
 <script>
+    // --- 1. HTML 요소 가져오기 ---
     const chatWindow = document.getElementById('chat-window');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
 
-    // 딜레이를 위한 Promise 기반 함수
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
+    // --- 2. 메시지 전송 함수 ---
     async function sendMessage() {
         const query = messageInput.value.trim();
-        if (query === '') return;
+        if (query === '') return; // 입력 내용이 없으면 중단
 
+        // 사용자의 메시지를 화면에 표시
         addMessage(query, 'user');
-        messageInput.value = '';
-
-        const botMessageElement = addMessage('', 'bot');
+        messageInput.value = ''; // 입력창 비우기
 
         try {
+            // --- 3. Django API 호출---
             const response = await fetch('/chatbot/api/', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: query })
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: query }) // 보낼 데이터를 JSON으로 변환
             });
 
             if (!response.ok) {
                 throw new Error('서버에 문제가 발생했습니다.');
             }
 
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
+            const data = await response.json();
+            const botAnswer = data.answer;
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                const chunk = decoder.decode(value, { stream: true });
-                // 청크를 한 글자씩 타이핑 효과로 표시
-                for (const char of chunk) {
-                    botMessageElement.textContent += char;
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                    await sleep(30); // 글자당 딜레이 (30ms)
-                }
-            }
+            // 챗봇의 답변을 화면에 표시
+            addMessage(botAnswer, 'bot');
 
         } catch (error) {
             console.error('Error:', error);
-            botMessageElement.textContent = '죄송합니다, 답변을 가져오는 데 실패했습니다.';
+            addMessage('죄송합니다, 답변을 가져오는 데 실패했습니다.', 'bot');
         }
     }
 
+    // --- 4. 화면에 메시지를 추가하는 함수 ---
     function addMessage(text, sender) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
         messageElement.textContent = text;
         chatWindow.appendChild(messageElement);
+
+        // 스크롤을 항상 아래로 이동
         chatWindow.scrollTop = chatWindow.scrollHeight;
-        return messageElement;
     }
 
+    // --- 5. 이벤트 리스너 설정 ---
     sendButton.addEventListener('click', sendMessage);
     messageInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
