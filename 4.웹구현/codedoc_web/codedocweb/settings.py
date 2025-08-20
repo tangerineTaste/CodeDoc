@@ -131,7 +131,8 @@ STATIC_URL = "static/"
 # 실제 존재하는 폴더만 포함하거나 아예 제거
 STATICFILES_DIRS = [
     BASE_DIR / 'codedocweb' / 'static', 
-    BASE_DIR / 'home' / 'static',        
+    BASE_DIR / 'home' / 'static',
+    BASE_DIR / 'chatbot' / 'static',
 ]
 
 # 배포시 사용

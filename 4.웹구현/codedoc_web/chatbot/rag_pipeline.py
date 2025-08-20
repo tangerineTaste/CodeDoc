@@ -9,6 +9,8 @@ import numpy as np
 from langchain.chains import RetrievalQA
 import os
 import json
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 
 def setup_components():
     load_dotenv()
@@ -20,10 +22,10 @@ def setup_components():
 
     database = PineconeVectorStore(embedding=embedding, index_name=index_name)
 
-    retriever = database.as_retriever(search_kwargs={"k": 5})
-
-    prompt = hub.pull('rlm/rag-prompt')
     rag_llm = ChatOpenAI(model="gpt-5-nano") 
+    retriever = database.as_retriever(search_kwargs={"k": 5})
+    prompt = hub.pull('rlm/rag-prompt')
+
     qa_chain = RetrievalQA.from_chain_type(
         rag_llm,
         retriever=retriever,
@@ -37,12 +39,13 @@ def setup_components():
 
 QA_CHAIN, CLASSIFIER_LLM,EMBEDDING_MODEL = setup_components()
 
-def get_rag_response(query: str) -> str:
-    classification_prompt = f"Is the following question related to finance, investment, or economics? Answer with only 'Yes' or 'No'.\n\nQuestion: {query}"
+def get_rag_response(query: str):
+    classification_prompt = f"Is the following question related to finance, investment, or economics? Answer with only 'Yes' or 'No'. \n\nQuestion: {query}"
+
     classification_result = CLASSIFIER_LLM.invoke(classification_prompt).content.strip().lower() # type: ignore
 
     if 'no' in classification_result:
-        return '금융, 투자, 경제와 관련된 질문만 답변할 수 있습니다.'
+        return '죄송합니다. 금융, 투자, 경제와 관련된 질문에만 답변해 드릴 수 있습니다.'
     return "OK" 
 
 def stream_rag_response(query: str):
