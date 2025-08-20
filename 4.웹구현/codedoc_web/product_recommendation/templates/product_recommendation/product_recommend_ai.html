@@ -522,6 +522,29 @@ document.querySelectorAll('.example-item').forEach(function(item) {
         document.getElementById('user_input').value = text;
     });
 });
+
+// 페이지 로드 후 추천 결과가 있으면 스크롤
+window.addEventListener('load', function() {
+    // 추천 결과가 있는지 확인
+    const resultsContainer = document.querySelector('.results-container');
+    if (resultsContainer) {
+        // 추천 이유 카드로 스크롤
+        const reasonCard = document.querySelector('.reason-card');
+        if (reasonCard) {
+            // 부드러운 스크롤 애니메이션
+            reasonCard.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start'
+            });
+        } else {
+            // 추천 이유가 없으면 결과 컨테이너로 스크롤
+            resultsContainer.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start'
+            });
+        }
+    }
+});
 </script>
 {% endblock %}
 
