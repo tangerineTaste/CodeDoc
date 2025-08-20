@@ -1,0 +1,76 @@
+/* customer_support/static/customer_support/css/notice_detail.css */
+
+.detail-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    background: white;
+    min-height: 100vh;
+}
+
+/* 메인 콘텐츠 */
+.detail-main {
+    background: white;
+}
+
+/* 아티클 */
+.notice-article {
+    background: white;
+}
+
+.article-header {
+    text-align: center;
+    margin-bottom: 60px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.article-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* 본문 내용 */
+.article-content {
+    margin-bottom: 80px;
+}
+
+.content-text {
+    line-height: 1.8;
+    color: #333;
+    font-size: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.content-text p {
+    margin-bottom: 16px;
+}
+
+/* 아티클 푸터 */
+.article-footer {
+    text-align: center;
+    padding: 40px 0 80px 0;
+    background: white;
+}
+
+.back-to-list-btn {
+    padding: 12px 40px;
+    background: transparent;
+    color: #0078FE;
+    border: 1px solid #0078FE;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-to-list-btn:hover {
+    background: #0078FE;
+    color: white;
+    transform: translateY(-2px);
+}

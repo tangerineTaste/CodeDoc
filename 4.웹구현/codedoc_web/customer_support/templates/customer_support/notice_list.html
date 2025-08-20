@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}공지사항 - CODEDOC{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'customer_support/css/notice.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="notice-container">
+    <!-- 페이지 헤더 -->
+    <div class="notice-header">
+        {% comment %} <div class="breadcrumb">
+            <span>고객지원</span>
+            <span class="separator">></span>
+            <span class="current">공지사항</span>
+        </div> {% endcomment %}
+        
+        <!-- 메인 제목 추가 -->
+        <div class="page-header">
+            <h1 class="page-title">무엇을 도와드릴까요?</h1>
+            <p class="page-subtitle">중요한 공지사항과 업데이트 소식을 확인하세요</p>
+        </div>
+    </div>
+
+    <!-- 검색 및 탭 영역 -->
+    <div class="search-section">
+        <div class="search-bar">
+            <input type="text" placeholder="검색어 입력" class="search-input">
+            <button class="search-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <circle cx="11" cy="11" r="8" stroke="white" stroke-width="2"/>
+                    <path d="m21 21-4.35-4.35" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="notice-tabs">
+            <button class="tab-btn active" data-tab="all">전체</button>
+            <button class="tab-btn" data-tab="financial">퇴직연금</button>
+            <button class="tab-btn" data-tab="personal">인재개발원</button>
+        </div>
+    </div>
+
+    <!-- 공지사항 목록 -->
+    <div class="notice-content">
+        <div class="notice-stats">
+            <span class="total-count">총 {{ total_count }}건</span>
+        </div>
+
+        <div class="notice-list">
+            {% for notice in notices %}
+                <div class="notice-item">
+                    <div class="notice-main">
+                        <h3 class="notice-title">
+                            <a href="{% url 'customer_support:notice_detail' notice.id %}">
+                                {{ notice.title }}
+                                {% if notice.is_new %}
+                                    <span class="new-badge">N</span>
+                                {% endif %}
+                            </a>
+                        </h3>
+                        <span class="notice-date">{{ notice.date }}</span>
+                    </div>
+                    <div class="notice-arrow">
+                        <span>›</span>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="no-notices">
+                    <p>등록된 공지사항이 없습니다.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- 페이지네이션 -->
+        {% if notices.has_other_pages %}
+            <div class="pagination-container">
+                <div class="pagination">
+                    {% if notices.has_previous %}
+                        <a href="?page={{ notices.previous_page_number }}">&lsaquo; 이전</a>
+                    {% endif %}
+                    
+                    {% for num in notices.paginator.page_range %}
+                        {% if num <= 5 %}
+                            {% if notices.number == num %}
+                                <span class="current">{{ num }}</span>
+                            {% else %}
+                                <a href="?page={{ num }}">{{ num }}</a>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if notices.has_next %}
+                        <a href="?page={{ notices.next_page_number }}">다음 &rsaquo;</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'customer_support/js/notice.js' %}"></script>
+{% endblock %}

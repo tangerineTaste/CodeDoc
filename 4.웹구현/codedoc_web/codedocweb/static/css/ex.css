@@ -80,7 +80,8 @@ html, body{
 /* 로고 텍스트 스타일 */
 .logo-red {
     font-size: 1.8rem;
-    font-weight: bold;
+    font-weight: 900;
+    letter-spacing: -0.05rem;
     color: var(--primary-color);
     text-decoration: none;
 }
@@ -138,7 +139,7 @@ html, body{
 
 .nav-link {
     display: block;
-    padding: 22px 0;
+    padding: 23px 0;
     color: var(--text-primary);
     text-decoration: none;
     font-size: 1rem;
@@ -215,7 +216,7 @@ html, body{
     /*border-top: 1px solid var(--border-primary);*/
     display: none;
     z-index: 1000;
-    min-height: 126px;
+    min-height: 123px;
 }
 
 .mega-dropdown.show {
@@ -287,16 +288,15 @@ html, body{
 
 .menu-item:hover {
     color: var(--primary-color);
-}
+} 
 /* * * * * * * * * * * * nav 부분 끝 * * * * * * * * * * * */
 
 /* * * * * * * * * * * * footer 부분 시작 * * * * * * * * * * * */
 footer {
     background-color: #010101;
     color: var(--text-secondary);
-    padding: 40px 0 30px;
+    padding: 50px 0 60px;
     font-family: 'NanumSquare', sans-serif;
-    margin: 5px auto;
     min-height: 150px;
     overflow: visible;
     position: relative;
@@ -313,9 +313,8 @@ footer {
 .footer-nav {
     display: flex;
     gap: 30px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     padding-bottom: 20px;
-    border-bottom: 1px solid var(--text-secondary);
 }
 
 .footer-link {
@@ -342,8 +341,9 @@ footer {
 }
 
 .logo-text {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 24px;
+    letter-spacing: -0.05rem;
+    font-weight: 900;
     color: var(--text-secondary);
 }
 
@@ -356,7 +356,7 @@ footer {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     font-size: 13px;
     color: var(--text-secondary);
     line-height: 1.4;
