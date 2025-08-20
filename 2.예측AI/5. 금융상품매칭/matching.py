@@ -15,11 +15,13 @@ class HighPerformanceFinancialRecommender:
         
         print("== 고성능 금융상품 추천 시스템 초기화 중...==")
         
-        # 현재 폴더의 파일 직접 로드
-        model_file = 'multilabel_lgbm.joblib'
+        # Django 앱 내 파일 경로 설정
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        model_file = os.path.join(current_dir, 'multilabel_lgbm.joblib')
         
-        print(f" 현재 작업 디렉토리: {os.getcwd()}")
-        print(f" 파일 존재 확인: {model_file} -> {' 존재' if os.path.exists(model_file) else ' 없음'}")
+        print(f" Django 앱 디렉토리: {current_dir}")
+        print(f" 모델 파일 경로: {model_file}")
+        print(f" 모델 파일 존재: {' 존재' if os.path.exists(model_file) else ' 없음'}")
         
         # 모델 로드
         self.model = None
@@ -40,35 +42,41 @@ class HighPerformanceFinancialRecommender:
         self._cache_lock = threading.Lock()
     
     def _load_products(self):
+        current_dir = os.path.dirname(os.path.abspath(__file__))
         """상품 데이터 로드 - 병렬 처리"""
         products = {}
+        
+        # Django 앱 내 data 폴더 경로
+        data_path = os.path.join(current_dir, 'data')
+        
         files = {
-            'housing': '../1.데이터수집/data/mortgage_loans.json',
-            'rent': '../1.데이터수집/data/rent_loans.json',
-            'credit': '../1.데이터수집/data/credit_loans.json',
-            'deposit': '../1.데이터수집/data/bank_deposits.json',
-            'saving': '../1.데이터수집/data/bank_savings.json'
+            'housing': os.path.join(data_path, 'mortgage_loans.json'),
+            'rent': os.path.join(data_path, 'rent_loans.json'),
+            'credit': os.path.join(data_path, 'credit_loans.json'),
+            'deposit': os.path.join(data_path, 'bank_deposits.json'),
+            'saving': os.path.join(data_path, 'bank_savings.json')
         }
         
-        # 병렬로 파일 로드
-        def load_category(category, filepath):
+        print(f" 데이터 폴더 경로: {data_path}")
+        print(f" 데이터 폴더 존재: {' 존재' if os.path.exists(data_path) else ' 없음'}")
+        
+        # 각 파일 존재 여부 확인
+        for category, filepath in files.items():
+            exists = os.path.exists(filepath)
+            print(f" {category} 파일: {filepath} -> {' 존재' if exists else ' 없음'}")
+        
+        # 간단한 단일 스레드 로드
+        for category, filepath in files.items():
             try:
+                print(f" {category} 로드 시도: {filepath}")
                 with open(filepath, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                return category, self._parse_product_data(data, category)
-            except:
-                print(f" {filepath} 로드 실패")
-                return category, []
-        
-        # 멀티스레딩으로 빠른 로드
-        import concurrent.futures
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            futures = [executor.submit(load_category, cat, path) for cat, path in files.items()]
-            
-            for future in concurrent.futures.as_completed(futures):
-                category, data = future.result()
-                products[category] = data
-                print(f" {category} 로드: {len(data)}개")
+                parsed_products = self._parse_product_data(data, category)
+                products[category] = parsed_products
+                print(f" {category} 로드 성공: {len(parsed_products)}개 상품")
+            except Exception as e:
+                print(f" {category} 로드 실패: {e}")
+                products[category] = []
         
         return products
     
@@ -205,12 +213,13 @@ class HighPerformanceFinancialRecommender:
     def parse_input(self, user_input):
         """사용자 입력 파싱 - 캐싱으로 성능 향상"""
         result = {}
+        user_input_lower = user_input.lower()
         
         # 정규식 컴파일된 패턴 사용
         age_pattern = re.compile(r'(\d{1,2})살|(\d{1,2})세|(\d{2})대')
         age_match = age_pattern.search(user_input)
         if age_match:
-            if age_match.group(3):
+            if age_match.group(3):  # 20대, 30대 등
                 result['age'] = int(age_match.group(3)) + 5
             else:
                 result['age'] = int(age_match.group(1) or age_match.group(2))
@@ -220,38 +229,53 @@ class HighPerformanceFinancialRecommender:
             (re.compile(r'월급.*?(\d+)만'), 1),
             (re.compile(r'월.*?(\d+)만'), 1),
             (re.compile(r'연봉.*?(\d+)만'), 12),
-            (re.compile(r'소득.*?(\d+)만'), 1)
+            (re.compile(r'소득.*?(\d+)만'), 1),
+            (re.compile(r'세전.*?(\d+)'), 1)  # 세전 400 등
         ]
         
         for pattern, divisor in income_patterns:
             income_match = pattern.search(user_input)
             if income_match:
-                result['monthly_income'] = int(income_match.group(1)) // divisor
+                income_value = int(income_match.group(1))
+                if divisor == 12:  # 연봉의 경우
+                    result['monthly_income'] = income_value // 12
+                else:
+                    result['monthly_income'] = income_value
                 break
         
-        # 성별, 결혼 여부 등 빠른 키워드 검색
+        # 성별 판단
         if any(word in user_input for word in ['남자', '남성']):
             result['gender'] = 'male'
         elif any(word in user_input for word in ['여자', '여성']):
             result['gender'] = 'female'
         
-        if any(word in user_input for word in ['결혼', '신혼', '부부']):
+        # 결혼 여부 판단 개선 - 더 정확한 키워드 매칭
+        married_keywords = ['기혼', '부부', '신혼부부', '아내', '남편', '배우자']
+        unmarried_keywords = ['미혼', '독신', '솔로']
+        
+        # 미혼 키워드가 명시적으로 있는 경우
+        if any(word in user_input for word in unmarried_keywords):
+            result['married'] = False
+        # 기혼 키워드가 명시적으로 있는 경우
+        elif any(word in user_input for word in married_keywords):
             result['married'] = True
-        elif any(word in user_input for word in ['미혼', '독신']):
+        # '결혼준비', '결혼자금' 등은 미혼으로 판단
+        elif '결혼준비' in user_input or '결혼자금' in user_input or '결혼자금' in user_input:
             result['married'] = False
         
-        # 목적 추출 - 우선순위 기반
+        # 목적 추출 - 우선순위 기반 (더 정확한 키워드)
         purpose_keywords = [
-            ('housing', ['주택', '집', '내집마련']),
-            ('rent', ['전세']),
-            ('credit', ['대출']),
-            ('saving', ['적금']),
-            ('deposit', ['예금']),
-            ('investment', ['투자'])
+            ('housing', ['주택대출', '주택상품', '내집마련', '주택구입', '주택', '집', '마이홈', '주택배정', '매매', '분양']),
+            ('rent', ['전세대출', '전세자금', '전세']),
+            ('credit', ['신용대출', '개인대출', '대출']),  # 대출을 마지막에 배치
+            ('saving', ['적금', '저축', '모으기']),
+            ('deposit', ['예금', '예치']),
+            ('investment', ['투자', '재테크', '폀드'])
         ]
         
         for purpose, keywords in purpose_keywords:
             if any(keyword in user_input for keyword in keywords):
+                # 주택대출, 전세대출은 일반 '대출'보다 우선
                 if purpose == 'credit' and any(word in user_input for word in ['주택', '전세']):
                     continue  # 주택대출, 전세대출은 제외
                 result['purpose'] = purpose
@@ -480,6 +504,71 @@ class HighPerformanceFinancialRecommender:
                 reasons.append("최고 등급 금리 상품")
             elif top_product['rate_grade'] == 'good':
                 reasons.append("우수한 금리 조건")
+        
+    def _generate_recommendation_reason(self, user_info, top_product):
+        """추천 이유 생성 - 개선된 버전"""
+        reasons = []
+        age = user_info.get('age', 30)
+        income = user_info.get('monthly_income', 300)
+        purpose = user_info.get('purpose', 'general')
+        married = user_info.get('married')
+        gender = user_info.get('gender')
+        
+        # 나이대별 맞춤 이유
+        if age <= 30:
+            if purpose in ['saving', 'deposit']:
+                reasons.append("젊은 연령대로 장기 자산 형성에 유리")
+            elif purpose == 'housing':
+                reasons.append("청년층 주택 지원 상품 우대")
+        elif age <= 40:
+            if purpose in ['saving', 'deposit']:
+                reasons.append("안정적인 생애 계획 단계로 중기 자산 관리 적합")
+            elif purpose == 'housing':
+                reasons.append("주택 구입 적령기로 우수한 대출 조건")
+        else:
+            reasons.append("안정적인 중장년층으로 안전한 상품 추천")
+        
+        # 소득별 맞춤 이유
+        if income >= 500:
+            reasons.append("고소득으로 프리미엄 상품 이용 가능")
+        elif income >= 300:
+            reasons.append("안정적인 소득으로 안정적인 금융상품 이용 가능")
+        elif income > 0:
+            reasons.append("소득 수준에 맞는 적절한 상품 선별")
+        
+        # 결혼 여부별 맞춤 이유
+        if married == False:  # 명시적으로 미혼인 경우
+            if purpose == 'housing':
+                reasons.append("미혼으로 첫 주택 마련에 적합")
+            elif purpose in ['saving', 'deposit']:
+                reasons.append("미혼으로 미래 준비를 위한 자산 형성")
+        elif married == True:  # 명시적으로 기혼인 경우
+            if purpose == 'housing':
+                reasons.append("기혼 가정으로 안정적인 주택 자금 지원")
+            elif purpose in ['saving', 'deposit']:
+                reasons.append("가족을 위한 안정적인 자산 관리")
+        
+        # 목적별 맞춤 이유
+        if purpose == 'housing':
+            reasons.append("주택 구입/분양 전문 상품")
+        elif purpose == 'saving':
+            reasons.append("착실한 저축 습관 형성에 적합")
+        elif purpose == 'deposit':
+            reasons.append("안전한 예금 상품으로 안정성 중시")
+        
+        # 최고 상품 금리 조건
+        if top_product:
+            if top_product['rate_grade'] == 'excellent':
+                if top_product['is_loan']:
+                    reasons.append("최저 금리 대출 상품")
+                else:
+                    reasons.append("최고 금리 예적금 상품")
+            elif top_product['rate_grade'] == 'good':
+                reasons.append("우수한 금리 조건 제공")
+        
+        # 성별별 특화 메시지 (선택적)
+        if gender == 'male' and age <= 35 and purpose == 'housing':
+            reasons.append("남성 청년층 주택 지원 프로그램 대상")
         
         return " | ".join(reasons) if reasons else "고객님 상황에 최적화된 상품 추천"
     
