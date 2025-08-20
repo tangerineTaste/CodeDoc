@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "home",
     "chatbot",
     "product_recommendation",
-
+    "news",
 ]
 
 MIDDLEWARE = [
