@@ -111,7 +111,7 @@
                 }, 150);
                 
                 // 챗봇 페이지로 이동
-                window.location.href = '/chatbot/';
+                window.open('/chatbot/', '_blank', 'width=400,height=550');
             });
         }
 

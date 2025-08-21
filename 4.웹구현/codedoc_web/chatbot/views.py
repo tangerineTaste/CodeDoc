@@ -21,6 +21,8 @@ def chatbot_api(request):
             risk_profile = analyze_profile_with_llm(query)
             print("===== 사용자 성향 분석 결과 =====")
             print(risk_profile)
+            # if risk_profile.isdigit():
+                # User.attitude = risk_profile
             print("==============================")
 
             # 1. 먼저 질문이 금융 관련인지 확인

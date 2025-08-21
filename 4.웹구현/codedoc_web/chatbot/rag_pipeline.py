@@ -1,16 +1,11 @@
 from dotenv import load_dotenv
 from pinecone import Pinecone
 from langchain_upstage import UpstageEmbeddings
-import os
 from langchain_pinecone import PineconeVectorStore
-from langchain import hub
 from langchain_openai import ChatOpenAI
-import numpy as np
 from langchain.chains import RetrievalQA
 import os
-import json
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 def setup_components():
     load_dotenv()
@@ -24,12 +19,30 @@ def setup_components():
 
     rag_llm = ChatOpenAI(model="gpt-5-nano") 
     retriever = database.as_retriever(search_kwargs={"k": 5})
-    prompt = hub.pull('rlm/rag-prompt')
+    custom_prompt_template = """당신은 주어진 정보를 바탕으로 사용자의 질문에 답변하는 전문적인 금융 상담원입니다.
+    반드시 한국어 높임말(존댓말)을 사용하여, 간결하고 명확하게 100자 이내로 답변해야 합니다.
+    답변 시작 시 '요청하신 대로' 또는 '존댓말로 답변해 드리겠습니다'와 같은 불필요한 서론을 붙이지 마세요.
+
+    [정보]
+    {context}
+
+    [질문]
+    {question}
+
+    [답변]:
+    """
+
+    # 2. PromptTemplate 객체 생성
+    custom_rag_prompt = PromptTemplate(
+        template=custom_prompt_template,
+        input_variables=["context", "question"]
+    )
 
     qa_chain = RetrievalQA.from_chain_type(
         rag_llm,
         retriever=retriever,
-        chain_type_kwargs={"prompt": prompt},
+        chain_type_kwargs={"prompt": custom_rag_prompt},
+        return_source_documents=True
     )
 
     # 2. 질문 분류용 LLM 설정
@@ -55,8 +68,7 @@ def stream_rag_response(query: str):
 
 def analyze_profile_with_llm(user_conversation: str):
     """
-    LLM을 사용하여 사용자의 대화 내용에서 '종합 금융 프로필'을 추출하고,
-    그 결과를 JSON(파이썬 딕셔너리) 형태로 반환하는 함수.
+    LLM을 사용하여 사용자의 대화 내용에서 사용자 성향 분석,
     """
     analysis_prompt = f"""
     You are an expert financial profiler. Analyze the following user conversation with a financial assistant.
