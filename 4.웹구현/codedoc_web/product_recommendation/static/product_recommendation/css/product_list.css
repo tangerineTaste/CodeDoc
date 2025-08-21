@@ -42,7 +42,7 @@ body {
 .container {
     max-width: var(--container-width);
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 20px;
     margin-top: var(--nav-height);
 }
 
@@ -223,7 +223,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 40px 0;
+    margin: 40px 0 85px;
     gap: 10px;
 }
 

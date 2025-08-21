@@ -4,7 +4,7 @@
 {% block title %}공지사항 - CODEDOC{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'customer_support/css/notice.css' %}">
+<link rel="stylesheet" href="{% static 'customer_support/css/notice.css' %}?v={{ STATIC_VERSION }}">
 {% endblock %}
 
 {% block content %}
@@ -27,8 +27,8 @@
     <!-- 검색 및 탭 영역 -->
     <div class="search-section">
         <div class="search-bar">
-            <input type="text" placeholder="검색어 입력" class="search-input">
-            <button class="search-btn">
+            <input type="text" placeholder="검색어를 입력해주세요" class="search-input">
+            <button class="notice-search-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <circle cx="11" cy="11" r="8" stroke="white" stroke-width="2"/>
                     <path d="m21 21-4.35-4.35" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -44,7 +44,7 @@
     </div>
 
     <!-- 공지사항 목록 -->
-    <div class="notice-content">
+    <div class="notice-content-list">
         <div class="notice-stats">
             <span class="total-count">총 {{ total_count }}건</span>
         </div>

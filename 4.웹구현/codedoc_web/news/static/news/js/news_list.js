@@ -1,170 +1,240 @@
+// news/static/news/js/news_list.js
+
 document.addEventListener('DOMContentLoaded', function() {
-    const refreshBtn = document.getElementById('refreshBtn');
-    const floatingRefreshBtn = document.getElementById('floatingRefreshBtn');
+    // 카테고리 드롭다운 이벤트
+    const categorySelect = document.querySelector('.category-select');
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            const form = document.querySelector('#newsFilterForm');
+            if (form) {
+                form.submit();
+            }
+        });
+    }
+
+    // 탭 버튼 클릭 이벤트
+    const tabBtns = document.querySelectorAll('.tab-btn');
     
-    // Bootstrap Modal 초기화
-    let loadingModal;
-    const loadingModalElement = document.getElementById('loadingModal');
-    if (loadingModalElement) {
-        loadingModal = new bootstrap.Modal(loadingModalElement);
-    }
-
-    // 뉴스 새로고침 함수
-    function refreshNews() {
-        if (loadingModal) {
-            loadingModal.show();
-        }
-        
-        fetch('/news/refresh/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
-            },
-            body: JSON.stringify({
-                keywords: ['금융', '경제', '투자', '주식', '부동산']
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (loadingModal) {
-                loadingModal.hide();
-            }
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // 모든 탭에서 active 클래스 제거
+            tabBtns.forEach(b => b.classList.remove('active'));
             
-            if (data.success) {
-                showAlert('success', data.message);
-                // 1.5초 후 페이지 새로고침
-                setTimeout(() => {
-                    location.reload();
-                }, 1500);
-            } else {
-                showAlert('danger', data.message);
-            }
-        })
-        .catch(error => {
-            if (loadingModal) {
-                loadingModal.hide();
-            }
-            showAlert('danger', '뉴스 새로고침 중 오류가 발생했습니다.');
-            console.error('Error:', error);
-        });
-    }
-
-    // CSRF 토큰 가져오기
-    function getCSRFToken() {
-        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-               document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
-    }
-
-    // 알림 표시 함수
-    function showAlert(type, message) {
-        // 기존 알림 제거
-        const existingAlerts = document.querySelectorAll('.alert-floating');
-        existingAlerts.forEach(alert => alert.remove());
-
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed alert-floating`;
-        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 400px;';
-        
-        // 알림 아이콘 설정
-        let icon = '';
-        switch(type) {
-            case 'success':
-                icon = '<i class="fas fa-check-circle me-2"></i>';
-                break;
-            case 'danger':
-                icon = '<i class="fas fa-exclamation-circle me-2"></i>';
-                break;
-            case 'warning':
-                icon = '<i class="fas fa-exclamation-triangle me-2"></i>';
-                break;
-            default:
-                icon = '<i class="fas fa-info-circle me-2"></i>';
-        }
-        
-        alertDiv.innerHTML = `
-            ${icon}${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        
-        document.body.appendChild(alertDiv);
-        
-        // 3초 후 자동 제거
-        setTimeout(() => {
-            if (alertDiv.parentNode) {
-                alertDiv.remove();
-            }
-        }, 3000);
-    }
-
-    // 스크롤에 따른 플로팅 버튼 표시/숨김
-    function handleScroll() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const floatingBtn = document.getElementById('floatingRefreshBtn');
-        
-        if (floatingBtn) {
-            if (scrollTop > 300) {
-                floatingBtn.style.opacity = '1';
-                floatingBtn.style.visibility = 'visible';
-            } else {
-                floatingBtn.style.opacity = '0';
-                floatingBtn.style.visibility = 'hidden';
-            }
-        }
-    }
-
-    // 카드 호버 효과
-    function addCardEffects() {
-        const newsCards = document.querySelectorAll('.news-card');
-        
-        newsCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px)';
-            });
+            // 클릭된 탭에 active 클래스 추가
+            this.classList.add('active');
             
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
+            // 탭에 따른 필터링 로직
+            const tabType = this.getAttribute('data-tab');
+            console.log('선택된 탭:', tabType);
+            
+            // 카테고리별 페이지 이동
+            filterByCategory(tabType);
+            
+            // 드롭다운도 동기화
+            if (categorySelect) {
+                categorySelect.value = tabType;
+            }
         });
-    }
+    });
 
-    // 외부 링크 클릭 시 확인
-    function handleExternalLinks() {
-        const externalLinks = document.querySelectorAll('a[target="_blank"]');
-        
-        externalLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                // 필요시 확인 대화상자 표시
-                // const confirmed = confirm('외부 사이트로 이동하시겠습니까?');
-                // if (!confirmed) {
-                //     e.preventDefault();
-                // }
-            });
-        });
-    }
-
-    // 이벤트 리스너 등록
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', refreshNews);
-    }
+    // 검색 기능
+    const searchBtn = document.querySelector('.news-search-btn');
+    const searchInput = document.querySelector('.search-input');
     
-    if (floatingRefreshBtn) {
-        floatingRefreshBtn.addEventListener('click', refreshNews);
-        // 초기 상태 설정
-        floatingRefreshBtn.style.transition = 'all 0.3s ease';
-        floatingRefreshBtn.style.opacity = '0';
-        floatingRefreshBtn.style.visibility = 'hidden';
+    if (searchBtn && searchInput) {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const searchTerm = searchInput.value.trim();
+            performSearch(searchTerm);
+        });
+        
+        // 엔터키로 검색
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchBtn.click();
+            }
+        });
     }
 
-    // 스크롤 이벤트
-    window.addEventListener('scroll', handleScroll);
+    // 뉴스 아이템 클릭 효과
+    const newsItems = document.querySelectorAll('.news-item');
+    
+    newsItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            // 링크 자체를 클릭한 경우가 아니라면
+            if (e.target.tagName !== 'A' && !e.target.closest('a')) {
+                const link = this.querySelector('.news-title a');
+                if (link) {
+                    window.open(link.href, '_blank');
+                }
+            }
+        });
+    });
 
-    // 초기화
-    addCardEffects();
-    handleExternalLinks();
+    // 페이지네이션 클릭 시 상단으로 스크롤
+    const paginationLinks = document.querySelectorAll('.pagination a');
+    
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // 페이지 전환 시 상단으로 부드럽게 스크롤
+            setTimeout(() => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 100);
+        });
+    });
 
-    // 페이지 로드 시 스크롤 위치 확인
-    handleScroll();
+    // 초기 로드 시 탭과 드롭다운 동기화
+    syncTabAndDropdown();
 
     console.log('News List JavaScript 로드 완료');
+});
+
+// 카테고리별 필터링
+function filterByCategory(category) {
+    const currentUrl = new URL(window.location);
+    const currentSearch = currentUrl.searchParams.get('search') || '';
+    
+    // URL 파라미터 업데이트
+    if (category === 'all') {
+        currentUrl.searchParams.delete('category');
+    } else {
+        currentUrl.searchParams.set('category', category);
+    }
+    
+    // 검색어가 있다면 유지
+    if (currentSearch) {
+        currentUrl.searchParams.set('search', currentSearch);
+    }
+    
+    // 페이지는 1로 리셋
+    currentUrl.searchParams.delete('page');
+    
+    // 페이지 이동
+    window.location.href = currentUrl.toString();
+}
+
+// 검색 수행
+function performSearch(searchTerm) {
+    const currentUrl = new URL(window.location);
+    const currentCategory = currentUrl.searchParams.get('category') || '';
+    
+    // 검색어 설정
+    if (searchTerm) {
+        currentUrl.searchParams.set('search', searchTerm);
+    } else {
+        currentUrl.searchParams.delete('search');
+    }
+    
+    // 카테고리 유지
+    if (currentCategory && currentCategory !== 'all') {
+        currentUrl.searchParams.set('category', currentCategory);
+    }
+    
+    // 페이지는 1로 리셋
+    currentUrl.searchParams.delete('page');
+    
+    // 페이지 이동
+    window.location.href = currentUrl.toString();
+}
+
+// 검색 함수 (실시간 검색용)
+function searchNews(searchTerm) {
+    const newsItems = document.querySelectorAll('.news-item');
+    let visibleCount = 0;
+    
+    newsItems.forEach(item => {
+        const title = item.querySelector('.news-title a').textContent.toLowerCase();
+        const isVisible = title.includes(searchTerm.toLowerCase());
+        
+        if (isVisible) {
+            item.style.display = 'flex';
+            visibleCount++;
+            
+            // 검색어 하이라이트
+            const titleElement = item.querySelector('.news-title a');
+            const originalText = titleElement.textContent;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            const highlightedText = originalText.replace(regex, '<mark style="background: #fff3cd; padding: 0 2px;">$1</mark>');
+            if (highlightedText !== originalText) {
+                titleElement.innerHTML = highlightedText;
+            }
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // 검색 결과 개수 업데이트
+    const totalCount = document.querySelector('.total-count');
+    if (totalCount) {
+        totalCount.textContent = `총 ${visibleCount}건`;
+    }
+    
+    // 검색 결과가 없을 때
+    if (visibleCount === 0) {
+        showNoResults();
+    } else {
+        hideNoResults();
+    }
+}
+
+// 검색 결과 없음 표시
+function showNoResults() {
+    let noResults = document.querySelector('.no-search-results');
+    if (!noResults) {
+        noResults = document.createElement('div');
+        noResults.className = 'no-search-results';
+        noResults.innerHTML = '<p>검색 결과가 없습니다.</p>';
+        noResults.style.textAlign = 'center';
+        noResults.style.padding = '40px';
+        noResults.style.color = '#999';
+        
+        document.querySelector('.news-list').appendChild(noResults);
+    }
+}
+
+// 검색 결과 없음 숨기기
+function hideNoResults() {
+    const noResults = document.querySelector('.no-search-results');
+    if (noResults) {
+        noResults.remove();
+    }
+}
+
+// 탭과 드롭다운 동기화
+function syncTabAndDropdown() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentCategory = urlParams.get('category') || 'all';
+    
+    // 탭 활성화
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+        const tabCategory = btn.getAttribute('data-tab');
+        if (tabCategory === currentCategory) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // 드롭다운 선택
+    const categorySelect = document.querySelector('.category-select');
+    if (categorySelect) {
+        categorySelect.value = currentCategory;
+    }
+}
+
+// 에러 처리
+window.addEventListener('error', function(e) {
+    console.error('뉴스 페이지 에러:', e.error);
+});
+
+// 페이지 가시성 변경 시 처리
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+        console.log('뉴스 페이지가 다시 활성화됨');
+    }
 });

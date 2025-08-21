@@ -216,7 +216,7 @@ html, body{
     /*border-top: 1px solid var(--border-primary);*/
     display: none;
     z-index: 1000;
-    min-height: 123px;
+    min-height: 118px;
 }
 
 .mega-dropdown.show {
@@ -376,3 +376,51 @@ footer {
 
 
 /* * * * * * * * * * * * footer 부분 끝 * * * * * * * * * * * */
+
+/* * * * * * * * * * * * 로그인 상태 스타일 시작 * * * * * * * * * * * */
+
+/* 로그인된 사용자 스타일 */
+.user-greeting {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-mypage-btn {
+    padding: 8px 16px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: var(--border-radius-small);
+    transition: all 0.3s;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-light);
+    margin-right: 10px;
+}
+
+.nav-mypage-btn:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.logout-btn {
+    padding: 8px 16px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: var(--border-radius-small);
+    transition: all 0.3s;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid #dc3545;
+}
+
+.logout-btn:hover {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}

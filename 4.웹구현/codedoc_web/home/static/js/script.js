@@ -174,15 +174,6 @@
             });
         }
 
-        // 상품찾기 버튼 클릭 이벤트
-        var searchBtn = document.getElementById('searchBtn');
-        if (searchBtn) {
-            searchBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('상품찾기 클릭됨');
-            });
-        }
-
         // 자주 찾는 메뉴 클릭 이벤트
         var menuItems = document.querySelectorAll('.frequent-menu .quik');
         for (var i = 0; i < menuItems.length; i++) {
