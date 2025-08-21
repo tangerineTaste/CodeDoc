@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}CodeDoc - 회원가입{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/auth.css' %}?v={{ STATIC_VERSION }}">
+{% endblock %}
+
+{% block content %}
+<div class="signup-page-container">
+    <div class="signup-card">
+        <!-- 진행률 표시 -->
+        <div class="progress-header">
+            <h1 class="signup-title">회원가입</h1>
+            <div class="progress-bar">
+                <div class="progress-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">약관동의</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">기본정보</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">개인정보</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">금융정보</div>
+                    </div>
+                    <div class="step" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-label">투자성향</div>
+                    </div>
+                    <div class="step" data-step="6">
+                        <div class="step-number">6</div>
+                        <div class="step-label">가입완료</div>
+                    </div>
+                </div>
+                <div class="progress-fill" style="width: 20%;"></div>
+            </div>
+        </div>
+
+        <form class="signup-form" method="post" id="signupForm">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div class="error-messages">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Step 1: 약관 동의 -->
+            <div class="form-step active" id="step1">
+                <div class="step-content">
+                    <h2 class="step-title">약관 동의</h2>
+                    <p class="step-description">안전하고 투명한 서비스 제공을 위해 다음 약관에 동의해주세요.</p>
+                    
+                    <div class="agreement-section">
+                        <div class="agreement-group">
+                            <label class="checkbox-wrapper main-agreement">
+                                <input type="checkbox" class="checkbox-input" id="agreeAll">
+                                <span class="checkbox-label">전체 약관에 동의합니다</span>
+                            </label>
+                        </div>
+
+                        <div class="agreement-list">
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" name="agree_terms" class="checkbox-input agreement-item" required>
+                                <span class="checkbox-label">
+                                    [필수] 서비스 이용약관에 동의
+                                    <a href="#" class="agreement-link">보기</a>
+                                </span>
+                            </label>
+
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" name="agree_privacy" class="checkbox-input agreement-item" required>
+                                <span class="checkbox-label">
+                                    [필수] 개인정보 처리방침에 동의
+                                    <a href="#" class="agreement-link">보기</a>
+                                </span>
+                            </label>
+
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" name="agree_financial" class="checkbox-input agreement-item" required>
+                                <span class="checkbox-label">
+                                    [필수] 금융정보 수집 및 이용에 동의
+                                    <a href="#" class="agreement-link">보기</a>
+                                </span>
+                            </label>
+
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" name="agree_marketing" class="checkbox-input agreement-item">
+                                <span class="checkbox-label">
+                                    [선택] 마케팅 정보 수신에 동의
+                                    <a href="#" class="agreement-link">보기</a>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: 기본 정보 -->
+            <div class="form-step" id="step2">
+                <div class="step-content">
+                    <h2 class="step-title">기본 정보를 입력해주세요</h2>
+                    <p class="step-description">안전한 계정 생성을 위한 기본 정보입니다.</p>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="id_username" class="form-label">아이디 <span class="required">*</span></label>
+                            <div class="input-with-button">
+                                <input type="text" name="username" id="id_username" class="form-input" 
+                                       placeholder="4자 이상의 영문, 숫자 조합" required>
+                                <button type="button" class="check-button" id="usernameCheck">중복확인</button>
+                            </div>
+                            <div class="input-help">영문, 숫자 조합 4-20자</div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="id_password1" class="form-label">비밀번호 <span class="required">*</span></label>
+                                <div class="password-input-group">
+                                    <input type="password" name="password1" id="id_password1" class="form-input" 
+                                           placeholder="8자 이상 입력하세요" required>
+                                    <button type="button" class="password-toggle" data-target="id_password1">
+                                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z" stroke="currentColor" stroke-width="2"/>
+                                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="passwordStrength"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_password2" class="form-label">비밀번호 확인 <span class="required">*</span></label>
+                                <div class="password-input-group">
+                                    <input type="password" name="password2" id="id_password2" class="form-input" 
+                                           placeholder="비밀번호를 다시 입력하세요" required>
+                                    <button type="button" class="password-toggle" data-target="id_password2">
+                                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z" stroke="currentColor" stroke-width="2"/>
+                                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_email" class="form-label">이메일 <span class="required">*</span></label>
+                            <input type="email" name="email" id="id_email" class="form-input" 
+                                   placeholder="example@codedoc.com" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: 개인 정보 -->
+            <div class="form-step" id="step3">
+                <div class="step-content">
+                    <h2 class="step-title">개인 정보를 입력해주세요</h2>
+                    <p class="step-description">맞춤 서비스 제공을 위한 개인 정보입니다.</p>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="id_full_name" class="form-label">이름 <span class="required">*</span></label>
+                            <input type="text" name="full_name" id="id_full_name" class="form-input" 
+                                placeholder="홍길동" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="id_age" class="form-label">연령 <span class="required">*</span></label>
+                                <input type="number" name="age" id="id_age" class="form-input" 
+                                    placeholder="만 나이" min="18" max="100" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_gender" class="form-label">성별 <span class="required">*</span></label>
+                                <select name="gender" id="id_gender" class="form-select" required>
+                                    <option value="">선택해주세요</option>
+                                    <option value="1">남성</option>
+                                    <option value="2">여성</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="id_education" class="form-label">교육수준 <span class="required">*</span></label>
+                                <select name="education" id="id_education" class="form-select" required>
+                                    <option value="">선택해주세요</option>
+                                    <option value="1">고등학교 중퇴 이하</option>
+                                    <option value="2">고등학교 졸업</option>
+                                    <option value="3">대학교 중퇴/전문대 졸업</option>
+                                    <option value="4">대학교 졸업 이상</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_marital_status" class="form-label">결혼상태 <span class="required">*</span></label>
+                                <select name="marital_status" id="id_marital_status" class="form-select" required>
+                                    <option value="">선택해주세요</option>
+                                    <option value="1">기혼</option>
+                                    <option value="2">미혼/기타</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_phone" class="form-label">휴대폰 번호</label>
+                            <input type="tel" name="phone" id="id_phone" class="form-input" 
+                                   placeholder="010-1234-5678">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: 금융 정보 -->
+            <div class="form-step" id="step4">
+                <div class="step-content">
+                    <h2 class="step-title">금융 정보를 입력해주세요</h2>
+                    <p class="step-description">맞춤형 금융상품 추천을 위해 필요한 정보입니다.</p>
+                    
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="id_job_category" class="form-label">직업분류 <span class="required">*</span></label>
+                                <select name="job_category" id="id_job_category" class="form-select" required>
+                                    <option value="">선택해주세요</option>
+                                    <option value="1">일반 직장인/중간관리직</option>
+                                    <option value="2">고소득 전문직/사업가/경영진</option>
+                                    <option value="3">은퇴자/연금수급자</option>
+                                    <option value="4">저소득층/학생/비정규직</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_annual_income" class="form-label">연간 소득 <span class="required">*</span></label>
+                                <select name="annual_income" id="id_annual_income" class="form-select" required>
+                                    <option value="">선택해주세요</option>
+                                    <option value="1">2,000만원 미만</option>
+                                    <option value="2">2,000만원 ~ 4,000만원</option>
+                                    <option value="3">4,000만원 ~ 6,000만원</option>
+                                    <option value="4">6,000만원 ~ 8,000만원</option>
+                                    <option value="5">8,000만원 ~ 1억원</option>
+                                    <option value="6">1억원 이상</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_savings_habit" class="form-label">저축습관 <span class="required">*</span></label>
+                            <select name="savings_habit" id="id_savings_habit" class="form-select" required>
+                                <option value="">선택해주세요</option>
+                                <option value="1">저축 안함</option>
+                                <option value="2">일부 저축</option>
+                                <option value="3">적극적 저축</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: 투자 성향 -->
+            <div class="form-step" id="step5">
+                <div class="step-content">
+                    <h2 class="step-title">투자 성향을 알려주세요</h2>
+                    <p class="step-description">투자 관련 성향을 파악하여 적합한 상품을 추천해드립니다.</p>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">금융 위험 감수 성향 <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <label class="radio-wrapper">
+                                    <input type="radio" name="risk_tolerance" value="0" class="radio-input" required>
+                                    <span class="radio-label">
+                                        <strong>안정형</strong> - 원금 손실 위험을 감수하지 않겠습니다
+                                    </span>
+                                </label>
+                                <label class="radio-wrapper">
+                                    <input type="radio" name="risk_tolerance" value="1" class="radio-input" required>
+                                    <span class="radio-label">
+                                        <strong>적극형</strong> - 수익을 위해 어느 정도 위험을 감수할 수 있습니다
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">금융 위험 회피 성향 <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <label class="radio-wrapper">
+                                    <input type="radio" name="risk_aversion" value="0" class="radio-input" required>
+                                    <span class="radio-label">
+                                        <strong>보통</strong> - 위험을 특별히 회피하지 않습니다
+                                    </span>
+                                </label>
+                                <label class="radio-wrapper">
+                                    <input type="radio" name="risk_aversion" value="1" class="radio-input" required>
+                                    <span class="radio-label">
+                                        <strong>위험회피형</strong> - 가능한 한 위험을 피하고 싶습니다
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: 회원가입 완료 -->
+            <div class="form-step" id="step6">
+                <div class="step-content">
+                    <div class="completion-step">
+                        <div class="completion-content">
+                            <div class="success-icon">
+                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                                    <circle cx="40" cy="40" r="38" stroke="#E5E5E5" stroke-width="4"/>
+                                    <circle cx="40" cy="40" r="30" fill="#4FC3F7" fill-opacity="0.1"/>
+                                    <path d="M28 40l8 8 16-16" stroke="#4FC3F7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <h2 class="completion-title">회원가입이 완료되었습니다.</h2>
+                            <p class="completion-description">
+                                본 서비스 이용하고 계신하게<br>
+                                맞춤 서비스를 이용하실 수 있습니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 네비게이션 버튼 -->
+            <div class="step-navigation">
+                <button type="button" class="nav-button prev-button" id="prevBtn" style="display: none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    이전
+                </button>
+                
+                <button type="button" class="nav-button next-button" id="nextBtn">
+                    다음
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                
+                <button type="submit" class="nav-button submit-button" id="submitBtn" style="display: none;">
+                    회원가입 완료
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'accounts/js/auth.js' %}"></script>
+<script src="{% static 'accounts/js/signup.js' %}"></script>
+<script src="{% static 'accounts/js/step-signup.js' %}"></script>
+{% endblock %}

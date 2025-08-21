@@ -4,7 +4,7 @@
 {% block title %}내게맞는상품찾기 - CODEDOC{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'product_recommendation/css/product_recommend.css' %}">
+<link rel="stylesheet" href="{% static 'product_recommendation/css/product_recommend.css' %}?v={{ STATIC_VERSION }}">
 {% endblock %}
 
 {% block content %}
@@ -91,13 +91,6 @@
         </button>
     </div>
 </div>
-
-<script>
-// "다음" 버튼 클릭 시 AI 추천 페이지로 이동
-document.getElementById('startRecommendBtn').addEventListener('click', function() {
-    window.location.href = "{% url 'product_recommendation:product_recommend_ai' %}";
-});
-</script>
 {% endblock %}
 
 {% block extra_js %}

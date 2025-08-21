@@ -219,7 +219,7 @@ html, body{
     color: var(--text-primary);
     border: none;
     padding: 14px 28px;
-    border-radius: 50px;
+    border-radius: 15px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -411,6 +411,10 @@ html, body{
     gap: 15px;
 }
 
+.menu-grid a{
+    text-decoration: none;
+}
+
 .quik {
     display: flex;
     flex-direction: column;
@@ -435,19 +439,16 @@ html, body{
     margin: 0 auto;
 }
 
-.menu-icon-1 {
+.menu-icon-1, .menu-icon-2, .menu-icon-3 {
     background: var(--bg-secondary);
     border: 2px solid var(--bg-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.menu-icon-2 {
-    background: var(--bg-secondary);
-    border: 2px solid var(--bg-light);
-}
-
-.menu-icon-3 {
-    background: var(--bg-secondary);
-    border: 2px solid var(--bg-light);
+.menu-icon-1 svg, .menu-icon-2 svg, .menu-icon-3 svg {
+    transition: all 0.3s ease;
 }
 
 .menu-text {
@@ -486,19 +487,20 @@ html, body{
 .financial-products-section .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 80px; /* 60px에서 80px로 변경 */
+    padding: 0px; 
 }
 
 .products-content {
     display: flex;
-    gap: 40px; /* 80px → 40px로 변경 */
+    gap: 20px; 
+    align-items: flex-start; 
     overflow: visible;
 }
 
-/* 왼쪽 텍스트 섹션 */
 .left-text-section {
-    flex: 0 0 350px; /* 400px → 350px로 변경 */
-    padding-right: 20px; /* 40px → 20px로 변경 */
+    flex: 0 0 400px; 
+    padding-right: 0; 
+    padding-left: 0; 
 }
 
 .main-text {
@@ -516,28 +518,6 @@ html, body{
     line-height: 1.6;
     margin-bottom: 60px;
     letter-spacing: -0.5px;
-}
-
-.search-btn {
-    background: var(--primary-color);
-    color: var(--bg-primary);
-    border: none;
-    border-radius: 25px;
-    padding: 12px 34px;
-    font-size: 16px;
-    font-weight: 400;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-    box-shadow: var(--box-shadow);
-}
-
-.search-btn:hover {
-    background: var(--primary-color);
-    transform: translateY(-2px);
-    box-shadow: var(--box-shadow);
 }
 
 /* 오른쪽 상품 슬라이드 섹션 */
@@ -710,7 +690,7 @@ html, body{
 }
 
 /* ===============================
-    공지사항 섹션 스타일 
+    공지사항 섹션 스타일 (금융상품과 동일한 레이아웃)
    =============================== */
 
 .notice-section {
@@ -724,123 +704,82 @@ html, body{
 .notice-section .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 80px;
+    padding: 0px;
 }
 
 .notice-content {
     display: flex;
-    flex-direction: column;
-    gap: 40px;
+    gap: 74px;
+    overflow: visible;
 }
 
-/* 헤더 영역 */
-.notice-header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+/* 왼쪽 텍스트 섹션 (금융상품과 동일) */
+.notice-section .left-text-section {
+    flex: 0 0 350px;
+    padding-right: 20px;
 }
 
-.notice-main-title {
+.notice-section .main-text {
     font-size: 32px;
-    font-weight: 700;
+    font-weight: 400;
     color: var(--text-primary);
-    margin: 0;
+    line-height: 1.4;
+    margin-bottom: 20px;
     letter-spacing: -0.5px;
 }
 
-.more-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    background: var(--bg-secondary);
+.notice-section .sub-description {
+    font-size: 16px;
     color: var(--text-secondary);
-    text-decoration: none;
-    border-radius: 25px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: 1px solid var(--border-light);
+    line-height: 1.6;
+    margin-bottom: 60px;
+    letter-spacing: -0.5px;
 }
 
-.more-btn:hover {
+.search-btn {
     background: var(--primary-color);
     color: var(--bg-primary);
-    border-color: var(--primary-color);
+    border: none;
+    border-radius: 15px;
+    padding: 15px 34px;
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: var(--box-shadow);
+    text-decoration: none;
+}
+
+.search-btn:hover {
+    background: var(--primary-hover);
     transform: translateY(-2px);
     box-shadow: var(--box-shadow);
 }
 
-/* ===============================
-    공지사항 섹션 스타일 
-   =============================== */
-
-.notice-section {
-    padding: 80px 0;
-    background: var(--bg-primary);
-    width: 100%;
-    max-width: 1920px;
-    margin: 0 auto;
-}
-
-.notice-section .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 80px;
-}
-
-.notice-content {
+/* 오른쪽 공지사항 목록 섹션 */
+.right-notice-section {
+    flex: 1;
+    position: relative;
     display: flex;
-    flex-direction: column;
-    gap: 40px;
+    align-items: flex-start;
+    max-width: 800px;
+    padding: 0 10px;
 }
 
-/* 헤더 영역 */
-.notice-header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.notice-main-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0;
-    letter-spacing: -0.5px;
-}
-
-.more-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0;
-    background: none;
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: none;
-}
-
-.more-btn:hover {
-    color: var(--primary-color);
-}
-
-/* 공지사항 목록 */
 .notice-list-section {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    width: 100%;
 }
 
 .notice-item-card {
-    background: #ddd;
-    border-radius: 8px;
-    padding: 20px 24px;
+    background: #f8f9f9;
+    border-radius: 15px;
+    padding: 24px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -851,7 +790,7 @@ html, body{
 }
 
 .notice-item-card:hover {
-    background: #c8c8c8;
+    background: var(--primary-color);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
@@ -874,7 +813,7 @@ html, body{
 }
 
 .notice-item-card:hover .notice-item-title {
-    color: var(--primary-color);
+    color: var(--bg-primary);
 }
 
 .notice-item-date {
@@ -882,6 +821,11 @@ html, body{
     color: var(--text-muted);
     white-space: nowrap;
     margin-left: auto;
+    transition: color 0.3s ease;
+}
+
+.notice-item-card:hover .notice-item-date {
+    color: var(--bg-primary);
 }
 
 .notice-item-arrow {
@@ -893,6 +837,6 @@ html, body{
 }
 
 .notice-item-card:hover .notice-item-arrow {
-    color: var(--text-primary);
+    color: var(--bg-primary);
     transform: translateX(3px);
 }

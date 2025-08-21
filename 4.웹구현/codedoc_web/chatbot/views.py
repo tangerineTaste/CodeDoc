@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse,StreamingHttpResponse 
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .rag_pipeline import get_rag_response
+from .rag_pipeline import get_rag_response, stream_rag_response, analyze_profile_with_llm
 
 def chatbot_view(request):
     return render(request, 'chatbot/chatbot.html')
@@ -11,19 +11,31 @@ def chatbot_view(request):
 def chatbot_api(request):
     if request.method == 'POST':
         try:
-            # request.body에서 JSON 데이터를 읽어 파이썬 dict로 변환
             data = json.loads(request.body)
             query = data.get('query')
 
-            # 필수 데이터(query)가 있는지 확인
             if not query:
                 return JsonResponse({'error': '질문(query)이 없습니다.'}, status=400)
 
-            # RAG 파이프라인 호출
-            answer = get_rag_response(query)
+            # 사용자 성향 분석 및 콘솔 출력
+            risk_profile = analyze_profile_with_llm(query)
+            print("===== 사용자 성향 분석 결과 =====")
+            print(risk_profile)
+            # if risk_profile.isdigit():
+                # User.attitude = risk_profile
+            print("==============================")
+
+            # 1. 먼저 질문이 금융 관련인지 확인
+            classification = get_rag_response(query)
             
-            # 결과를 JSON 형태로 응답
-            return JsonResponse({'answer': answer})
+            # 2. 금융 관련 질문이 아니면, 스트리밍이 아닌 일반 응답
+            if classification != "OK":
+                def error_stream():
+                    yield classification
+                return StreamingHttpResponse(error_stream(), content_type="text/plain") # type: ignore
+
+            # 3. 금융 관련 질문이면 스트리밍 응답
+            return StreamingHttpResponse(stream_rag_response(query), content_type="text/plain")
 
         except json.JSONDecodeError:
             return JsonResponse({'error': '잘못된 JSON 형식입니다.'}, status=400)

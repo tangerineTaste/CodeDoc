@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from decouple import config
 import os
+import time  # 추가
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     "product_recommendation",
     "customer_support",
     "news",
+    "accounts",
 
 ]
 
@@ -64,6 +66,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
+            BASE_DIR / 'static',
             BASE_DIR / 'codedocweb/templates',
             BASE_DIR / 'templates',
         ],
@@ -73,6 +76,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "home.context_processors.static_version",
             ],
         },
     },
@@ -114,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-kr"
 
 TIME_ZONE = "UTC"
 
@@ -137,7 +141,21 @@ STATICFILES_DIRS = [
 # 배포시 사용
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# CSS 캐시 버스팅을 위한 정적 파일 버전 관리 (추가)
+if DEBUG:
+    STATIC_VERSION = str(int(time.time()))
+else:
+    STATIC_VERSION = '1.0.0'  # 프로덕션에서는 고정값
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+

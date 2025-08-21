@@ -111,7 +111,7 @@
                 }, 150);
                 
                 // 챗봇 페이지로 이동
-                window.location.href = '/chatbot/';
+                window.open('/chatbot/', '_blank', 'width=400,height=550');
             });
         }
 
@@ -171,15 +171,6 @@
                 }, 150);
 
                 console.log('상품 추천받기 클릭됨');
-            });
-        }
-
-        // 상품찾기 버튼 클릭 이벤트
-        var searchBtn = document.getElementById('searchBtn');
-        if (searchBtn) {
-            searchBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('상품찾기 클릭됨');
             });
         }
 
