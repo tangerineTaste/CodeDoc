@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 검색 기능
-    const searchBtn = document.querySelector('.search-btn');
+    const searchBtn = document.querySelector('.notice-search-btn');
     const searchInput = document.querySelector('.search-input');
     
     if (searchBtn && searchInput) {

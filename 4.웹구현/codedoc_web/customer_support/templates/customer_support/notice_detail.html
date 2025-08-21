@@ -4,7 +4,7 @@
 {% block title %}{{ notice.title }} - CODEDOC{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'customer_support/css/notice_detail.css' %}">
+<link rel="stylesheet" href="{% static 'customer_support/css/notice_detail.css' %}?v={{ STATIC_VERSION }}">
 {% endblock %}
 
 {% block content %}

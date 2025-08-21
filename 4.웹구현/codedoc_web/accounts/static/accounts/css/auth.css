@@ -1,0 +1,882 @@
+/* ===============================
+    로그인/회원가입 페이지 기본 스타일
+   =============================== */
+
+/* 기본 페이지 컨테이너 */
+.login-page-container, 
+.signup-page-container {
+    min-height: calc(100vh - 65px - 150px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 85px 20px;
+}
+
+/* 카드 스타일 */
+.login-card {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow);
+    padding: 50px;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+}
+
+.signup-card {
+    background: var(--bg-primary);
+    border-radius: 20px;
+    box-shadow: none;
+    padding: 60px 50px;
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+}
+
+/* 헤더 스타일 */
+.login-header {
+    margin-bottom: 40px;
+}
+
+.login-title, .signup-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.signup-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+    letter-spacing: -0.5px;
+}
+
+.login-subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+/* 폼 스타일 */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.signup-form {
+    text-align: left;
+    position: relative;
+    min-height: 500px;
+}
+
+.form-group {
+    position: relative;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    border: 2px solid var(--border-light);
+    border-radius: var(--border-radius-normal);
+    font-family: 'NanumSquare', sans-serif;
+    transition: all 0.3s ease;
+    outline: none;
+    background: var(--bg-primary);
+    box-sizing: border-box;
+}
+
+/* 로그인 페이지용 입력 필드 */
+.login-form .form-input {
+    padding: 16px 20px;
+    font-size: 16px;
+}
+
+/* 회원가입 페이지용 입력 필드 */
+.signup-form .form-input,
+.signup-form .form-select {
+    padding: 14px 18px;
+    font-size: 15px;
+}
+
+.form-input:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+}
+
+.signup-form .form-input:focus,
+.signup-form .form-select:focus {
+    transform: translateY(-1px);
+}
+
+.form-input::placeholder {
+    color: #adb5bd;
+}
+
+/* 비밀번호 입력 그룹 */
+.password-input-group {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
+
+/* 체크박스 스타일 */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.checkbox-input {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-color);
+}
+
+.checkbox-label {
+    user-select: none;
+}
+
+/* 버튼 스타일 */
+.login-button {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border: none;
+    padding: 18px 24px;
+    border-radius: var(--border-radius-normal);
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'NanumSquare', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+.login-button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 120, 254, 0.3);
+}
+
+.login-button:active {
+    transform: translateY(0);
+}
+
+/* 버튼 로딩 상태 */
+.button-loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 링크 스타일 */
+.login-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.auth-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+    color: var(--primary-color);
+}
+
+.separator {
+    color: var(--border-light);
+    font-size: 12px;
+}
+
+/* 회원가입/로그인 섹션 */
+.signup-section {
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+}
+
+.signup-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+.signup-link {
+    display: inline-block;
+    background: var(--bg-secondary);
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: var(--border-radius-normal);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid var(--border-light);
+}
+
+.signup-link:hover {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+/* 에러 메시지 */
+.error-messages {
+    background: #fee;
+    border: 1px solid #fcc;
+    border-radius: var(--border-radius-small);
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: #c33;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.error-message:last-child {
+    margin-bottom: 0;
+}
+
+/* ===============================
+    단계별 회원가입 전용 스타일
+   =============================== */
+
+/* 진행률 표시 바 */
+.progress-header {
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0;
+    position: relative;
+    gap: 50px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    border: none;
+    position: relative;
+}
+
+.step-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #999;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+}
+
+.step.active .step-number {
+    background: var(--primary-color);
+    color: white;
+}
+
+.step.active .step-label {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.step.completed .step-number {
+    background: var(--primary-color);
+    color: white;
+}
+
+.step.completed .step-label {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* 단계 연결선 */
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 25px;
+    left: calc(50% + 25px);
+    width: 50px;
+    height: 2px;
+    background: #e0e0e0;
+    z-index: -1;
+    transition: background 0.3s ease;
+}
+
+.step.completed:not(:last-child)::after {
+    background: var(--primary-color);
+}
+
+/* ===============================
+    단계별 프로그레스 바 표시/숨김
+   =============================== */
+
+/* 모든 단계에서 프로그레스 바 표시 */
+.progress-header {
+    display: block;
+}
+
+/* 약관동의 단계에서도 프로그레스 바 표시 */
+.signup-card.no-progress {
+    padding-top: 60px;
+}
+
+.signup-card.with-progress {
+    padding-top: 60px;
+}
+
+/* 폼 단계 스타일 */
+.form-step {
+    display: none;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: all 0.4s ease;
+}
+
+.form-step.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.step-content {
+    /*padding: 20px 0;*/
+}
+
+.step-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.step-description {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    margin-bottom: 40px;
+    line-height: 1.5;
+    max-width: 350px;
+    word-break: keep-all;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 폼 그리드 레이아웃 */
+.form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* ===============================
+    약관 동의 섹션 - 새로운 디자인
+   =============================== */
+.agreement-section {
+    margin-top: 30px;
+    padding-top: 0;
+    border-top: none;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.agreement-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 40px;
+    text-align: center;
+    letter-spacing: -0.5px;
+}
+
+/* 전체 약관 동의 */
+.agreement-group {
+    margin-bottom: 30px;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+}
+
+.main-agreement {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
+
+.main-agreement .checkbox-input {
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+    accent-color: var(--primary-color);
+}
+
+.main-agreement .checkbox-label {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+}
+
+/* 개별 약관 리스트 */
+.agreement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.agreement-list .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 18px 0;
+    background: none;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #f5f5f5;
+    transition: none;
+    cursor: pointer;
+    gap: 15px;
+}
+
+.agreement-list .checkbox-wrapper:hover {
+    background: rgba(0, 120, 254, 0.02);
+}
+
+.agreement-list .checkbox-wrapper:last-child {
+    border-bottom: none;
+}
+
+.agreement-list .checkbox-input {
+    width: 18px;
+    height: 18px;
+    margin-right: 0;
+    accent-color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.agreement-list .checkbox-label {
+    flex: 1;
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    line-height: 1.4;
+}
+
+/* 약관 보기 링크 */
+.agreement-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    margin-left: auto;
+    flex-shrink: 0;
+    border: 1px solid #e0e0e0;
+    background: #f9f9f9;
+}
+
+.agreement-link:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* 체크박스 커스텀 스타일링 */
+.agreement-section .checkbox-input:checked + .checkbox-label {
+    color: var(--primary-color);
+}
+
+/* 필수/선택 표시 스타일 */
+.agreement-list .checkbox-label::before {
+    content: '';
+    margin-right: 0;
+}
+
+/* 필수 표시 스타일 */
+.agreement-list .checkbox-label:contains('[필수]') {
+    color: #333;
+}
+
+.agreement-list .checkbox-label:contains('[선택]') {
+    color: #666;
+}
+
+/* 추가 폼 요소들 */
+.input-with-button {
+    display: flex;
+    gap: 10px;
+}
+
+.input-with-button .form-input {
+    flex: 1;
+}
+
+.check-button {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-light);
+    border-radius: var(--border-radius-small);
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.check-button:hover {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border-color: var(--primary-color);
+}
+
+.check-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.input-help {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+.required {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* 라디오 버튼 스타일 */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.radio-wrapper {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    padding: 20px;
+    border: 2px solid var(--border-light);
+    border-radius: var(--border-radius-normal);
+    transition: all 0.3s ease;
+    background: var(--bg-primary);
+}
+
+.radio-wrapper:hover {
+    border-color: var(--primary-color);
+    background: rgba(0, 120, 254, 0.02);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 120, 254, 0.1);
+}
+
+.radio-wrapper.selected {
+    border-color: var(--primary-color);
+    background: rgba(0, 120, 254, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 120, 254, 0.15);
+}
+
+.radio-input {
+    margin-right: 15px;
+    margin-top: 2px;
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.radio-label {
+    flex: 1;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.radio-label strong {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* 네비게이션 버튼 */
+.step-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 1px solid #f0f0f0;
+    gap: 0;
+}
+
+.nav-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 40px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'NanumSquare', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    min-width: 120px;
+}
+
+.prev-button {
+    background: #f5f5f5;
+    color: #666;
+    margin-right: 20px;
+}
+
+.prev-button:hover {
+    background: #e0e0e0;
+    color: #333;
+    transform: translateX(-3px);
+}
+
+.next-button,
+.submit-button {
+    background: var(--primary-color);
+    color: white;
+}
+
+.next-button:hover,
+.submit-button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 120, 254, 0.3);
+}
+
+.submit-button {
+    background: #10B981;
+    font-size: 18px;
+    padding: 18px 50px;
+}
+
+.submit-button:hover {
+    background: #0D9668;
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+/* 로그인 섹션 */
+.login-section {
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+}
+
+.login-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+.login-link {
+    display: inline-block;
+    background: var(--bg-secondary);
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: var(--border-radius-normal);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid var(--border-light);
+}
+
+.login-link:hover {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+/* 단계별 에러 메시지 */
+.step-error-messages {
+    background: #fee;
+    border: 1px solid #fcc;
+    border-radius: var(--border-radius-normal);
+    padding: 15px;
+    margin-bottom: 20px;
+    animation: slideDown 0.3s ease;
+}
+
+.error-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.error-text {
+    flex: 1;
+    color: #c33;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.error-text div {
+    margin-bottom: 5px;
+}
+
+.error-text div:last-child {
+    margin-bottom: 0;
+}
+
+/* 애니메이션 */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+}
+
+.form-step.slide-in {
+    animation: slideIn 0.4s ease forwards;
+}
+
+.form-step.slide-out {
+    animation: slideOut 0.4s ease forwards;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

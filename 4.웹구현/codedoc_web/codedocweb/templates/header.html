@@ -1,5 +1,5 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/ex.css' %}">
+<link rel="stylesheet" href="{% static 'css/ex.css' %}?v={{ STATIC_VERSION }}">
 
 <nav class="meritz-nav">
     <div class="nav-container">
@@ -16,20 +16,28 @@
                 <a href="{% url 'product_recommendation:product_list' %}" class="nav-link">상품추천</a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">금융정보</a>
+                <a href="{% url 'news:news_list' %}" class="nav-link">금융정보</a>
             </li>
             <li class="nav-item">
-                <a href="{% url 'customer_support:notice_list' %}" class="nav-link">고객지원</a>
+                <a href="{% url 'customer_support:service_guide' %}" class="nav-link">고객지원</a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">마이페이지</a>
+                <a href="{% url 'customer_support:notice_list' %}" class="nav-link">공지사항</a>
             </li>
         </ul>
 
-        <!-- 오른쪽 버튼들 -->
+        <!-- 오른쪽 버튼들 - 로그인 상태에 따라 다르게 표시 -->
         <div class="nav-buttons">
-            <a href="#" class="nav-login-btn">로그인</a>
-            <a href="#" class="signup-btn">회원가입</a>
+            {% if user.is_authenticated %}
+                <!-- 로그인 상태 -->
+                <span class="user-greeting">{{ user.username }}님</span>
+                <a href="#" class="nav-mypage-btn">마이페이지</a>
+                <a href="{% url 'accounts:logout' %}" class="logout-btn">로그아웃</a>
+            {% else %}
+                <!-- 비로그인 상태 -->
+                <a href="{% url 'accounts:login' %}" class="nav-login-btn">로그인</a>
+                <a href="{% url 'accounts:signup' %}" class="signup-btn">회원가입</a>
+            {% endif %}
         </div>
     </div>
 
@@ -48,13 +56,12 @@
                 </div>
                 
                 <div class="menu-column">
-                    <a href="{% url 'customer_support:notice_list' %}" class="menu-item">공지사항</a>
                     <a href="{% url 'customer_support:service_guide' %}" class="menu-item">서비스 가이드</a>
                 </div>
                 
-                <div class="menu-column">
-                    <a href="#" class="menu-item">내 정보</a>
-                </div>
+                {% comment %} <div class="menu-column">
+                    <a href="{% url 'customer_support:notice_list' %}" class="menu-item">공지사항</a>
+                </div> {% endcomment %}
             </div>
         </div>
     </div>

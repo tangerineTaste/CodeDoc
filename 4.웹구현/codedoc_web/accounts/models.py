@@ -78,3 +78,7 @@ def save_user_profile(sender, instance, **kwargs):
         instance.profile.save()
     else:
         UserProfile.objects.create(user=instance)
+
+
+# Create your models here.
+
