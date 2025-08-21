@@ -1,0 +1,102 @@
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from .models import UserProfile
+from django import forms
+from django.forms import ModelForm
+
+class SignupForm(UserCreationForm):
+    """회원가입 폼"""
+    name = forms.CharField(max_length=50, required=True, label='이름')  # 변경
+
+    # Profile 필드들
+    교육수준분류 = forms.ChoiceField(
+        choices=UserProfile.EDUCATION_CHOICES,
+        required=False,
+        label='교육수준',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    연령대분류 = forms.ChoiceField(
+        choices=UserProfile.AGE_GROUP_CHOICES,
+        required=False,
+        label='연령대',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    가구주성별 = forms.ChoiceField(
+        choices=UserProfile.GENDER_CHOICES,
+        required=False,
+        label='성별',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    결혼상태 = forms.ChoiceField(
+        choices=UserProfile.MARRIAGE_CHOICES,
+        required=False,
+        label='결혼상태',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    저축여부 = forms.ChoiceField(
+        choices=UserProfile.SAVINGS_CHOICES,
+        required=False,
+        label='저축습관',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    직업분류1 = forms.ChoiceField(
+        choices=UserProfile.JOB_CHOICES,
+        required=False,
+        label='직업분류',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    금융위험감수 = forms.BooleanField(
+        required=False,
+        label='투자 위험을 감수할 의향이 있습니다',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    금융위험회피 = forms.BooleanField(
+        required=False,
+        label='안전한 투자를 선호합니다',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    class Meta:
+        model = User
+        fields = ('username', 'password1', 'password2')
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        
+        if commit:
+            user.save()
+            # Profile 정보 저장
+            profile = user.profile
+            profile.name = self.cleaned_data['name']
+            profile.교육수준분류 = self.cleaned_data.get('교육수준분류') or None
+            profile.연령대분류 = self.cleaned_data.get('연령대분류') or None
+            profile.가구주성별 = self.cleaned_data.get('가구주성별') or None
+            profile.결혼상태 = self.cleaned_data.get('결혼상태') or None
+            profile.저축여부 = self.cleaned_data.get('저축여부') or None
+            profile.직업분류1 = self.cleaned_data.get('직업분류1') or None
+            profile.금융위험감수 = self.cleaned_data.get('금융위험감수', False)
+            profile.금융위험회피 = self.cleaned_data.get('금융위험회피', False)
+            profile.save()
+        
+        return user
+
+class ProfileForm(ModelForm):
+    """프로필 수정 폼"""
+    class Meta:
+        model = UserProfile
+        fields = [
+            'name', '교육수준분류', '연령대분류', '가구주성별', '결혼상태',
+            '저축여부', '직업분류1', '금융위험감수', '금융위험회피'
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            '교육수준분류': forms.Select(attrs={'class': 'form-control'}),
+            '연령대분류': forms.Select(attrs={'class': 'form-control'}),
+            '가구주성별': forms.Select(attrs={'class': 'form-control'}),
+            '결혼상태': forms.Select(attrs={'class': 'form-control'}),
+            '저축여부': forms.Select(attrs={'class': 'form-control'}),
+            '직업분류1': forms.Select(attrs={'class': 'form-control'}),
+            '금융위험감수': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            '금융위험회피': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+# UserEditForm은 더 이상 필요없음 (User 모델에 추가 정보 없음)
