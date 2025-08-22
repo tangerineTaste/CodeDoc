@@ -15,6 +15,37 @@
         <p class="page-subtitle">고객님께 맞는 최적의 금융상품을 찾아보세요</p>
     </div>
 
+    <!-- AI 추천 상품 섹션 -->
+    {% if recommended_products %}
+    <div class="recommendation-section">
+        <h2 class="section-title">회원님을 위한 AI 추천 상품 💎</h2>
+        <div class="products-grid">
+            {% for product in recommended_products %}
+                <div class="product-cards">
+                    <span class="product-badge recommended-badge">{{ product.product_type_name }}</span>
+                    <h3 class="product-name">{{ product.fin_prdt_nm }}</h3>
+                    <p class="product-subtitle">AI가 회원님의 프로필을 분석하여 추천하는 맞춤 상품입니다.</p>
+                    
+                    <div class="product-info">
+                        <div class="info-label">금융회사</div>
+                        <div class="info-value">{{ product.kor_co_nm }}</div>
+                    </div>
+                    
+                    <div class="product-info">
+                        <div class="info-label">가입방법</div>
+                        <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                    </div>
+                    
+                    <div class="product-tags">
+                        <span class="tag">#AI추천</span>
+                        <span class="tag">#맞춤상품</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     <!-- 필터 탭 -->
     <div class="filter-tabs">
         <button class="filter-btn active" data-filter="all">전체</button>
