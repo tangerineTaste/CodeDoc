@@ -50,12 +50,17 @@ class SignupForm(UserCreationForm):
         fields = ('username', 'password1', 'password2')
     
     def save(self, commit=True):
+        print("=== SignupForm.save() 호출됨 ===")  # 디버깅
         user = super().save(commit=False)
         
         if commit:
             user.save()
+            print(f"User 저장됨: {user.username}")  # 디버깅
+            
             # Profile 정보 저장
             profile = user.profile
+            print(f"Profile 객체: {profile}")  # 디버깅
+            
             profile.name = self.cleaned_data['name']
             profile.교육수준분류 = self.cleaned_data.get('교육수준분류') or None
             profile.연령대분류 = self.cleaned_data.get('연령대분류') or None
@@ -63,7 +68,11 @@ class SignupForm(UserCreationForm):
             profile.결혼상태 = self.cleaned_data.get('결혼상태') or None
             profile.저축여부 = self.cleaned_data.get('저축여부') or None
             profile.직업분류1 = self.cleaned_data.get('직업분류1') or None
+            
+            print(f"프로필 데이터: 이름={profile.name}, 교육수준={profile.교육수준분류}")  # 디버깅
+            
             profile.save()
+            print("Profile 저장 완료!")  # 디버깅
         
         return user
 

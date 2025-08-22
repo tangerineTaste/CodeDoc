@@ -26,5 +26,4 @@ urlpatterns = [
     path('products/', include('product_recommendation.urls')),
     path('support/', include('customer_support.urls')),
     path('news/', include('news.urls')),
-    path('accounts/', include('accounts.urls')),
 ]
