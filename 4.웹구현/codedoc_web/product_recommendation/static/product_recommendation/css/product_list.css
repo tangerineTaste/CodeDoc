@@ -328,3 +328,23 @@ body {
     font-size: 0.9rem;
     margin-left: 20px;
 }
+
+/* AI 추천 섹션 스타일 */
+.recommendation-section {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 40px;
+    border: 1px solid #e9ecef;
+}
+
+.recommendation-section .section-title {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    text-align: center;
+    color: #343a40;
+}
+
+.recommended-badge {
+    background-color: #6f42c1; /* 보라색 계열로 변경 */
+}
