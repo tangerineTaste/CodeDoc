@@ -86,7 +86,7 @@
 
     <!-- 시작 버튼 -->
     <div class="start-button-container">
-        <button class="start-button" id="startRecommendBtn">
+        <button class="start-button" id="startRecommendBtn" onclick="goToAIRecommend()">
             다음
         </button>
     </div>
@@ -94,5 +94,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'product_recommendation/js/product_recommend.js' %}"></script>
+<script src="{% static 'product_recommendation/js/product_recommend.js' %}?v={{ STATIC_VERSION }}"></script>
 {% endblock %}

@@ -1,4 +1,3 @@
-
 # product_recommendation/views.py
 from django.shortcuts import render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -16,6 +15,52 @@ import json
 import joblib
 import pandas as pd
 from datetime import date
+
+
+def calculate_risk_preference(금융위험태도):
+    """
+    금융위험태도 점수를 바탕으로 위험감수형/위험회피형 추출
+    금융위험태도 >= 0 : 위험회피형 = 1, 위험감수형 = 0
+    금융위험태도 < 0 : 위험감수형 = 1, 위험회피형 = 0
+    """
+    위험감수형 = 0
+    위험회피형 = 0
+    
+    if 금융위험태도 >= 0:
+        위험회피형 = 1
+    else:
+        위험감수형 = 1
+    
+    return 위험감수형, 위험회피형
+
+def update_financial_risk_attitude(user, chat_message):
+    """
+    채팅 내용을 분석하여 금융위험태도 점수 업데이트
+    위험감수형 패턴 감지 시: -1 점
+    위험회피형 패턴 감지 시: +1 점
+    """
+    if not user.is_authenticated or not hasattr(user, 'profile'):
+        return
+    
+    # 위험감수형 키워드 예시 (필요에 따라 수정 가능)
+    risk_taking_keywords = ['위험', '도전', '투자', '수익', '주식', '비트코인', '고수익', '모험']
+    risk_averse_keywords = ['안전', '예금', '적금', '보수', '안정', '담보', '저위험']
+    
+    chat_lower = chat_message.lower()
+    
+    # 위험감수형 패턴 감지
+    if any(keyword in chat_lower for keyword in risk_taking_keywords):
+        user.profile.금융위험태도 = (user.profile.금융위험태도 or 0) - 1
+        user.profile.save()
+        return -1  # 위험감수형 패턴
+    
+    # 위험회피형 패턴 감지
+    elif any(keyword in chat_lower for keyword in risk_averse_keywords):
+        user.profile.금융위험태도 = (user.profile.금융위험태도 or 0) + 1
+        user.profile.save()
+        return 1  # 위험회피형 패턴
+    
+    return 0  # 패턴 미감지
 
 
 def product_list(request):
@@ -217,131 +262,6 @@ def get_test_deposit_data():
             'kor_co_nm': '우리은행',
             'join_way': '온라인,영업점',
             'dcls_strt_day': '20250101',
-        # 기본적으로 은행 예금 상품 가져오기
-        recommended_products = []
-
-        # AI 추천 로직 (로그인 사용자 대상)
-        if request.user.is_authenticated:
-            try:
-                profile = request.user.profile
-                
-                # 1. 사용자 데이터 -> 모델 입력 변수 변환 (수정 필요)
-                # 이 부분은 사용자의 실제 데이터와 모델의 요구사항에 맞춰 정교한 변환 로직이 필요합니다.
-                # 현재는 플레이스홀더 값으로 채웁니다.
-                
-                # '연령' 및 '연령대분류' 계산
-                today = date.today()
-                age = today.year - profile.birth_date.year - ((today.month, today.day) < (profile.birth_date.month, profile.birth_date.day))
-                
-                # TODO: '연령대분류'의 정확한 코드로 변환하는 로직 필요 (예: 30대 -> 3)
-                age_group_code = age // 10
-
-                # TODO: 각 텍스트 선택지를 모델이 학습한 숫자 코드로 변환하는 로직 필요
-                education_level_code = 12 # 예: '대졸' -> 12
-                education_category_code = 4 # 예: '대졸' -> 4
-                gender_code = 1 if profile.gender == 'M' else 2
-                marital_status_code = 1 if profile.marital_status == 'MARRIED' else 2
-                children_count = 1 if profile.has_children else 0 # 자녀 유무를 수로 변환 (가정)
-                job_code = 1 # 예: '전문직' -> 1
-                
-                # TODO: 위험감수, 위험회피 성향 변환 로직 필요
-                risk_taking_code = 1
-                risk_averse_code = 0
-
-                # TODO: 저축여부 변환 로직 필요
-                saving_status_code = 3
-
-                model_input_data = {
-                    '연령대분류': age_group_code,
-                    '교육수준분류': education_category_code,
-                    '사업농업소득': 0,  # 누락된 정보, 0으로 가정
-                    '자본이득소득': 0,  # 누락된 정보, 0으로 가정
-                    '연령': age,
-                    '금융위험감수': risk_taking_code,
-                    '저축여부': saving_status_code,
-                    '급여소득': profile.income or 0,
-                    '금융위험회피': risk_averse_code,
-                    '교육수준': education_level_code,
-                    '가구주성별': gender_code,
-                    '결혼상태': marital_status_code,
-                    '자녀수': children_count,
-                    '직업분류1': job_code,
-                }
-                
-                # 2. 모델 로드 및 예측
-                model_path = 'product_recommendation/multilabel_lgbm.joblib'
-                model = joblib.load(model_path)
-                
-                # 모델 입력을 DataFrame으로 변환
-                input_df = pd.DataFrame([model_input_data])
-                
-                # 예측 실행
-                probabilities = model.predict_proba(input_df)
-                
-                # 3. 예측 결과 처리
-                PRODUCT_CATEGORIES = ['MMMF', 'CDS', 'NMMF', 'STOCKS', 'RETQLIQ']
-                
-                # 가장 확률이 높은 카테고리 찾기
-                top_category_index = probabilities[0].argmax()
-                top_category = PRODUCT_CATEGORIES[top_category_index]
-
-                # 'CDS' (예금)일 경우에만 추천 상품 가져오기
-                if top_category == 'CDS':
-                    deposits_data = api.get_deposit_products('020000')
-                    deposits_list = deposits_data.get('result', {}).get('baseList', [])
-                    recommended_products = deposits_list[:3] # 상위 3개 상품 추천
-                    for product in recommended_products:
-                        product['product_type_name'] = 'AI 추천 예금'
-
-
-            except Exception as e:
-                print(f"AI 추천 시스템 오류: {e}")
-                # 오류가 발생해도 전체 페이지는 정상적으로 로드되도록 함
-                recommended_products = []
-
-
-        # 기존 상품 목록 로직
-        deposits_data = api.get_deposit_products('020000')
-        savings_data = api.get_saving_products('020000')
-        
-        deposits_list = deposits_data.get('result', {}).get('baseList', [])
-        savings_list = savings_data.get('result', {}).get('baseList', [])
-        
-        for product in deposits_list:
-            product['product_type'] = 'deposit'
-            product['product_type_name'] = '예금'
-            
-        for product in savings_list:
-            product['product_type'] = 'saving'
-            product['product_type_name'] = '적금'
-        
-        all_products = deposits_list + savings_list
-        
-        all_paginator = Paginator(all_products, 9)
-        all_page = request.GET.get('page', 1)
-        all_page_obj = all_paginator.get_page(all_page)
-        
-        deposits_paginator = Paginator(deposits_list, 9)
-        deposits_page = request.GET.get('deposits_page', 1)
-        deposits_page_obj = deposits_paginator.get_page(deposits_page)
-        
-        savings_paginator = Paginator(savings_list, 9)
-        savings_page = request.GET.get('savings_page', 1)
-        savings_page_obj = savings_paginator.get_page(savings_page)
-
-        
-        
-        context = {
-            'recommended_products': recommended_products, # 추천 상품 추가
-            'all_products': all_page_obj,
-            'deposits': deposits_page_obj,
-            'savings': savings_page_obj,
-            'all_total': len(all_products),
-            'deposits_total': len(deposits_list),
-            'savings_total': len(savings_list),
-            '위험감수형': 위험감수형,
-            '위험회피형': 위험회피형,
-            '금융위험태도': 금융위험태도 if request.user.is_authenticated and hasattr(request.user, 'profile') else 0,
         }
     ]
 
@@ -387,23 +307,82 @@ def product_recommend(request):
 
 
 def product_recommend_ai(request):
-    """
-    AI 상품 추천 페이지 (기존 유지)
-    """
+    """AI 추천 페이지"""
+    import time
     context = {}
     
     if request.method == 'POST':
-        user_input = request.POST.get('user_input', '').strip()
+        user_input = request.POST.get('user_input', '')
+        context['user_input'] = user_input
         
         if user_input:
             try:
-                # AI 추천 로직 (기존 유지)
-                recommendations = get_ai_recommendations(user_input)
-                context['recommendations'] = recommendations
-                context['user_input'] = user_input
+                # 실제 AI 추천 시스템 사용
+                print(f"AI 추천 시작: {user_input}")
+                start_time = time.time()
+                
+                # HighPerformanceFinancialRecommender 임포트 및 실행
+                from .matching import HighPerformanceFinancialRecommender
+                
+                # 추천 시스템 초기화 및 실행
+                recommender = HighPerformanceFinancialRecommender()
+                result = recommender.recommend(user_input, top_n=6)  # 6개 추천
+                
+                end_time = time.time()
+                processing_time = int((end_time - start_time) * 1000)  # 밀리초로 변환
+                
+                print(f"AI 추천 완료: {len(result.get('products', []))}개 상품, {processing_time}ms")
+                
+                # 결과 포맷팅
+                context['recommendations'] = {
+                    'user_info': result.get('user_info', {}),
+                    'recommendation_reason': result.get('recommendation_reason', '고객님에게 최적화된 상품을 추천했습니다.'),
+                    'products': result.get('products', []),
+                    'total_candidates': result.get('total_candidates', 0)
+                }
+                context['processing_time'] = processing_time
+                
+                # 각 상품에 product_type 추가 (HTML 템플릿에서 사용)
+                for product in context['recommendations']['products']:
+                    if product.get('is_investment', False):
+                        product['product_type'] = '투자상품'
+                    else:
+                        product['product_type'] = '예적금'
+                        
+                print(f"추천 결과: {context['recommendations']['total_candidates']}개 후보 중 {len(context['recommendations']['products'])}개 추천")
                 
             except Exception as e:
-                context['error'] = f'추천 처리 중 오류가 발생했습니다: {str(e)}'
+                print(f"AI 추천 시스템 오류: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                
+                # 오류 발생 시 기본 추천 제공
+                context['recommendations'] = {
+                    'user_info': {'age': 30, 'monthly_income': 300},
+                    'recommendation_reason': f'추천 시스템 일시 오류로 인해 기본 상품을 안내드립니다. (오류: {str(e)})',
+                    'products': [
+                        {
+                            'name': '기본 정기예금',
+                            'bank': '시중은행',
+                            'rate': 3.5,
+                            'is_loan': False,
+                            'product_type': '예금',
+                            'join_way': '온라인/영업점',
+                            'score': 75
+                        },
+                        {
+                            'name': '기본 정기적금',
+                            'bank': '시중은행',
+                            'rate': 3.8,
+                            'is_loan': False,
+                            'product_type': '적금',
+                            'join_way': '온라인/영업점',
+                            'score': 70
+                        }
+                    ],
+                    'total_candidates': 2
+                }
+                context['error'] = f'추천 시스템 일시 오류: {str(e)}'
     
     return render(request, 'product_recommendation/product_recommend_ai.html', context)
 
@@ -423,28 +402,95 @@ def get_ai_recommendations(user_input):
         'products': [],
         'total_candidates': 50
     }
-def product_recommend_ai(request):
-    """AI 금융상품 추천 페이지"""
-    if request.method == 'POST':
-        user_input = request.POST.get('user_input', '')
+
+
+# 기존 product_list 함수 백업 (참고용)
+def product_list_old(request):
+    """상품소개 페이지 (기존 백업 버전)"""
+    try:
+        print("상품 데이터 로딩 시작...")
+        api = FinancialProductAPI()
+        print("API 객체 생성 성공")
         
-        # 여기에 AI 추천 로직 추가
-        recommendations = {
-            'user_info': {'age': 30, 'monthly_income': 400, 'gender': 'male', 'married': False},
-            'recommendation_reason': '30대 남성으로, 안정적인 소득을 바탕으로 장기적인 자산 형성에 유리한 적금 상품을 추천합니다.',
-            'products': [
-                {'name': 'AI 추천 적금 1', 'bank': '코드은행', 'rate': 5.5, 'is_loan': False, 'join_way': '스마트폰', 'score': 95, 'product_type': '적금'},
-                {'name': 'AI 추천 적금 2', 'bank': '데이터은행', 'rate': 5.2, 'is_loan': False, 'join_way': '인터넷', 'score': 92, 'product_type': '적금'},
-                {'name': 'AI 추천 예금 1', 'bank': '알고은행', 'rate': 4.8, 'is_loan': False, 'join_way': '스마트폰', 'score': 88, 'product_type': '예금'},
-            ],
-            'total_candidates': 120,
-        }
+        # 로그인된 사용자의 금융위험태도 처리
+        if request.user.is_authenticated and hasattr(request.user, 'profile'):
+            금융위험태도 = request.user.profile.금융위험태도 or 0
+            위험감수형, 위험회피형 = calculate_risk_preference(금융위험태도)
+        else:
+            위험감수형, 위험회피형 = 0, 0
         
+        print("\n=== 디버깅 정보 ===")
+        print(f"로그인 상태: {request.user.is_authenticated}")
+        if request.user.is_authenticated:
+            print(f"사용자: {request.user.username}")
+            print(f"금융위험태도: {금융위험태도}")
+            print(f"위험감수형: {위험감수형}")
+            print(f"위험회피형: {위험회피형}")
+            
+            if hasattr(request.user, 'profile'):
+                profile = request.user.profile
+                print(f"교육수준: {profile.교육수준분류}")
+                print(f"연령대: {profile.연령대분류}")
+                print(f"성별: {profile.가구주성별}")
+                print(f"결혼상태: {profile.결혼상태}")
+                print(f"저축여부: {profile.저축여부}")
+                print(f"직업분류: {profile.직업분류1}")
+            else:
+                print("프로필 없음")
+        else:
+            print("비로그인 사용자")
+        print("=====================\n")
+        
+        print("예금 상품 데이터 가져오는 중...")
+        
+        # 기본적으로 은행 예금 상품 가져오기
+        deposits_data = api.get_deposit_products('020000')
+        savings_data = api.get_saving_products('020000')
+        
+        # 데이터 추출
+        deposits_list = deposits_data.get('result', {}).get('baseList', [])
+        savings_list = savings_data.get('result', {}).get('baseList', [])
+        
+        # 상품 타입 추가 (구분을 위해)
+        for product in deposits_list:
+            product['product_type'] = 'deposit'
+            product['product_type_name'] = '예금'
+            
+        for product in savings_list:
+            product['product_type'] = 'saving'
+            product['product_type_name'] = '적금'
+        
+        # 전체 상품 통합
+        all_products = deposits_list + savings_list
+        
+        # 페이지네이션 - 전체 상품
+        all_paginator = Paginator(all_products, 9)
+        all_page = request.GET.get('page', 1)
+        all_page_obj = all_paginator.get_page(all_page)
+        
+        # 페이지네이션 - 예금만
+        deposits_paginator = Paginator(deposits_list, 9)
+        deposits_page = request.GET.get('deposits_page', 1)
+        deposits_page_obj = deposits_paginator.get_page(deposits_page)
+        
+        # 페이지네이션 - 적금만
+        savings_paginator = Paginator(savings_list, 9)
+        savings_page = request.GET.get('savings_page', 1)
+        savings_page_obj = savings_paginator.get_page(savings_page)
+
         context = {
-            'user_input': user_input,
-            'recommendations': recommendations,
-            'processing_time': 123.45
+            'all_products': all_page_obj,  # 전체 상품
+            'deposits': deposits_page_obj,
+            'savings': savings_page_obj,
+            'all_total': len(all_products),
+            'deposits_total': len(deposits_list),
+            'savings_total': len(savings_list),
+            '위험감수형': 위험감수형,
+            '위험회피형': 위험회피형,
+            '금융위험태도': 금융위험태도 if request.user.is_authenticated and hasattr(request.user, 'profile') else 0,
         }
-        return render(request, 'product_recommendation/product_recommend_ai.html', context)
+        
+        return render(request, 'product_recommendation/product_list.html', context)
     
-    return render(request, 'product_recommendation/product_recommend_ai.html')
+    except Exception as e:
+        return render(request, 'product_recommendation/product_list.html', {'error': str(e)})
