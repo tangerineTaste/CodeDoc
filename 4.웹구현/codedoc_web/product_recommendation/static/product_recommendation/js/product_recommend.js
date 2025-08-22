@@ -1,5 +1,21 @@
 // product_recommendation/static/product_recommendation/js/product_recommend.js
 
+// 전역 함수로 정의 (직접 HTML에서 호출 가능)
+function goToAIRecommend() {
+    console.log('goToAIRecommend 함수 호출');
+    alert('맞춤형 금융 상품 추천 페이지로 이동합니다!');
+    
+    // 여러 방법으로 시도
+    try {
+        console.log('페이지 이동 시도...');
+        window.location.href = '/products/recommend/ai/';
+    } catch (error) {
+        console.error('오류:', error);
+        // 대체 방법
+        window.location.assign('/products/recommend/ai/');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('페이지 로드 완료');
 
@@ -104,10 +120,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // 시작 버튼 이벤트
     const startBtn = document.getElementById('startRecommendBtn');
     if (startBtn) {
-        startBtn.addEventListener('click', function() {
-            alert('머신러닝 기반 상품 추천 페이지로 이동합니다!');
-            console.log('ML 모델 페이지로 이동');
+        console.log('시작 버튼 찾음:', startBtn);
+        
+        startBtn.addEventListener('click', function(e) {
+            console.log('버튼 클릭 이벤트 발생');
+            e.preventDefault();
+            
+            try {
+                console.log('페이지 이동 시도...');
+                
+                // 직접 이동
+                window.location.href = '/products/recommend/ai/';
+                
+                // 대체 방법 1
+                // window.location.assign('/products/recommend/ai/');
+                
+                // 대체 방법 2
+                // window.location.replace('/products/recommend/ai/');
+                
+            } catch (error) {
+                console.error('페이지 이동 오류:', error);
+                alert('페이지 이동 중 오류가 발생했습니다.');
+            }
         });
+    } else {
+        console.error('시작 버튼을 찾을 수 없습니다!');
     }
 
     // 서비스 카드들 찾기

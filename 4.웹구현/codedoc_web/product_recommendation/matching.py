@@ -289,9 +289,6 @@ class HighPerformanceFinancialRecommender:
         
         for purpose, keywords in purpose_keywords:
             if any(keyword in user_input for keyword in keywords):
-                # 주택대출, 전세대출은 일반 '대출'보다 우선
-                if purpose == 'credit' and any(word in user_input for word in ['주택', '전세']):
-                    continue  # 주택대출, 전세대출은 제외
                 result['purpose'] = purpose
                 break
         
@@ -299,14 +296,13 @@ class HighPerformanceFinancialRecommender:
         return tuple(sorted(result.items()))  # 튜플로 변환하여 캐싱 가능
     
     def _calculate_advanced_score(self, product, age, income, purpose, married=False):
-        """고급 점수 계산 알고리즘 - 수정됨"""
-        score = 40  # 기본 점수 낮춤
+        """고급 점수 계산 알고리즘"""
+        score = 40  # 기본 점수
         
-        # 1. 나이별 맞춤 점수 (실제 차이 생성)
+        # 1. 나이별 맞춤 점수
         age_score = 0
         if purpose == 'saving':
             if age <= 30:
-                # 20-30대: 장기 적금 선호
                 if product['term_type'] == 'long_term':
                     age_score = 25
                 elif product['term_type'] == 'medium_term':
@@ -314,7 +310,6 @@ class HighPerformanceFinancialRecommender:
                 else:
                     age_score = 5
             elif age <= 40:
-                # 30-40대: 중기 적금 선호
                 if product['term_type'] == 'medium_term':
                     age_score = 20
                 elif product['term_type'] == 'long_term':
@@ -322,7 +317,6 @@ class HighPerformanceFinancialRecommender:
                 else:
                     age_score = 10
             else:
-                # 40대+: 단기 적금 선호
                 if product['term_type'] == 'short_term':
                     age_score = 20
                 elif product['term_type'] == 'medium_term':
@@ -330,39 +324,26 @@ class HighPerformanceFinancialRecommender:
                 else:
                     age_score = 5
         
-        elif purpose in ['housing', 'rent']:
-            if age <= 35:
-                age_score = 20 if product['rate_grade'] in ['excellent', 'good'] else 10
-            elif age <= 50:
-                age_score = 15 if product['rate_grade'] in ['good', 'average'] else 8
-            else:
-                age_score = 10 if product['rate_grade'] != 'high' else 5
-        
-        # 2. 소득별 맞춤 점수 (실제 차이 생성)
+        # 2. 소득별 맞춤 점수
         income_score = 0
         if income >= 500:
-            # 고소득: 프리미엄 상품 선호
             if product['target_type'] == 'premium':
                 income_score = 20
             else:
                 income_score = 10
         elif income >= 300:
-            # 중간소득: 일반 상품
             income_score = 15
         elif income > 0:
-            # 저소득: 간편 상품 선호
             if product['target_type'] == 'simple':
                 income_score = 15
             else:
                 income_score = 8
         else:
-            # 소득 정보 없음
             income_score = 12
         
-        # 3. 금리 점수 (실제 금리 기반)
+        # 3. 금리 점수
         rate = product['rate']
         if product['is_loan']:
-            # 대출: 낮을수록 좋음
             if rate <= 3.0:
                 rate_score = 20
             elif rate <= 4.0:
@@ -372,7 +353,6 @@ class HighPerformanceFinancialRecommender:
             else:
                 rate_score = 5
         else:
-            # 예적금: 높을수록 좋음
             if rate >= 6.0:
                 rate_score = 20
             elif rate >= 5.0:
@@ -387,29 +367,21 @@ class HighPerformanceFinancialRecommender:
         # 4. 특화 보너스
         bonus_score = 0
         
-        # 타겟 매칭 보너스
         if age <= 35 and product['target_type'] == 'youth':
             bonus_score += 10
         elif married and product['target_type'] == 'family':
             bonus_score += 8
         
-        # 가입 방법 보너스
         if age <= 40 and '스마트폰' in product['join_way']:
             bonus_score += 3
         elif age > 40 and '영업점' in product['join_way']:
             bonus_score += 3
         
-        # 은행 신뢰도 보너스
         major_banks = ['국민은행', '신한은행', '하나은행', '우리은행']
         if any(bank in product['bank'] for bank in major_banks):
             bonus_score += 5
         
         total_score = score + age_score + income_score + rate_score + bonus_score
-        
-        # 디버깅을 위한 로그 (첫 번째 상품만)
-        if product == self.products.get('saving', [{}])[0]:
-            print(f"점수 계산 예시: 기본({score}) + 나이({age_score}) + 소득({income_score}) + 금리({rate_score}) + 보너스({bonus_score}) = {total_score}")
-        
         return min(total_score, 100)
     
     def _customize_products_advanced(self, products, user_profile):
@@ -419,7 +391,6 @@ class HighPerformanceFinancialRecommender:
         purpose = user_profile.get('purpose', 'general')
         married = user_profile.get('married', False)
         
-        # 벡터화된 점수 계산
         scored_products = []
         for product in products:
             score = self._calculate_advanced_score(product, age, income, purpose, married)
@@ -428,7 +399,6 @@ class HighPerformanceFinancialRecommender:
             product_copy['score'] = score
             scored_products.append(product_copy)
         
-        # 다중 기준 정렬 (점수 > 금리 > 은행명)
         return sorted(scored_products, 
                      key=lambda x: (x['score'], 
                                    -x['rate'] if not x['is_loan'] else x['rate'],
@@ -437,14 +407,11 @@ class HighPerformanceFinancialRecommender:
     
     def recommend(self, user_input, top_n=5):
         """고성능 상품 추천"""
-        # 파싱 결과를 딕셔너리로 변환
         parsed_tuple = self.parse_input(user_input)
         parsed = dict(parsed_tuple)
         
-        # 캐시 키 생성
         cache_key = (parsed_tuple, top_n)
         
-        # 캐시 확인
         with self._cache_lock:
             if cache_key in self._recommendation_cache:
                 print("캐시에서 결과 반환")
@@ -452,7 +419,6 @@ class HighPerformanceFinancialRecommender:
                 cached_result['user_info'] = parsed
                 return cached_result
         
-        # 기본 추천 상품 선택
         purpose = parsed.get('purpose', 'general')
         
         if purpose == 'funds':
@@ -470,10 +436,8 @@ class HighPerformanceFinancialRecommender:
         else:
             base_products = self.products['deposit'][:3] + self.products['saving'][:4]
         
-        # 고급 맞춤화 적용
         customized_products = self._customize_products_advanced(base_products, parsed)
         
-        # 추천 이유 생성
         recommendation_reason = self._generate_recommendation_reason(parsed, customized_products[0] if customized_products else None)
         
         result = {
@@ -482,10 +446,8 @@ class HighPerformanceFinancialRecommender:
             'total_candidates': len(base_products)
         }
         
-        # 캐시에 저장 (사용자 정보 제외)
         with self._cache_lock:
-            if len(self._recommendation_cache) > 100:  # 캐시 크기 제한
-                # 가장 오래된 항목 제거
+            if len(self._recommendation_cache) > 100:
                 oldest_key = next(iter(self._recommendation_cache))
                 del self._recommendation_cache[oldest_key]
             self._recommendation_cache[cache_key] = result.copy()
@@ -499,50 +461,22 @@ class HighPerformanceFinancialRecommender:
         age = user_info.get('age', 30)
         income = user_info.get('monthly_income', 300)
         purpose = user_info.get('purpose', 'general')
-        
-        if purpose == 'saving':
-            if age <= 30:
-                reasons.append("젊은 연령대로 장기 적금이 유리")
-            elif age <= 40:
-                reasons.append("중년층으로 중기 적금이 적합")
-            else:
-                reasons.append("안정적인 단기-중기 적금 추천")
-        
-        if income >= 500:
-            reasons.append("고소득으로 프리미엄 상품 이용 가능")
-        elif income >= 300:
-            reasons.append("안정적인 소득으로 꾸준한 금융상품 이용 가능")
-        
-        if top_product:
-            if top_product['rate_grade'] == 'excellent':
-                reasons.append("최고 등급 금리 상품")
-            elif top_product['rate_grade'] == 'good':
-                reasons.append("우수한 금리 조건")
-        
-    def _generate_recommendation_reason(self, user_info, top_product):
-        """추천 이유 생성 - 개선된 버전"""
-        reasons = []
-        age = user_info.get('age', 30)
-        income = user_info.get('monthly_income', 300)
-        purpose = user_info.get('purpose', 'general')
         married = user_info.get('married')
         gender = user_info.get('gender')
         
-        # 나이대별 맞춤 이유
         if age <= 30:
             if purpose in ['saving', 'deposit']:
                 reasons.append("젊은 연령대로 장기 자산 형성에 유리")
-            elif purpose == 'housing':
-                reasons.append("청년층 주택 지원 상품 우대")
+            elif purpose in ['funds', 'stocks']:
+                reasons.append("청년층으로 적극적인 투자 기회")
         elif age <= 40:
             if purpose in ['saving', 'deposit']:
                 reasons.append("안정적인 생애 계획 단계로 중기 자산 관리 적합")
-            elif purpose == 'housing':
-                reasons.append("주택 구입 적령기로 우수한 대출 조건")
+            elif purpose in ['funds', 'stocks']:
+                reasons.append("중년층으로 안정적인 포트폴리오 구성")
         else:
             reasons.append("안정적인 중장년층으로 안전한 상품 추천")
         
-        # 소득별 맞춤 이유
         if income >= 500:
             reasons.append("고소득으로 프리미엄 상품 이용 가능")
         elif income >= 300:
@@ -550,19 +484,17 @@ class HighPerformanceFinancialRecommender:
         elif income > 0:
             reasons.append("소득 수준에 맞는 적절한 상품 선별")
         
-        # 결혼 여부별 맞춤 이유
-        if married == False:  # 명시적으로 미혼인 경우
+        if married == False:
             if purpose in ['funds', 'stocks']:
                 reasons.append("미혼으로 적극적인 투자로 자산 증식 기회")
             elif purpose in ['saving', 'deposit', 'mmf']:
                 reasons.append("미혼으로 미래 준비를 위한 자산 형성")
-        elif married == True:  # 명시적으로 기혼인 경우
+        elif married == True:
             if purpose in ['funds', 'stocks']:
                 reasons.append("기혼 가정으로 안정적인 포트폴리오 구성")
             elif purpose in ['saving', 'deposit', 'mmf']:
                 reasons.append("가족을 위한 안정적인 자산 관리")
         
-        # 목적별 맞춤 이유
         if purpose == 'funds':
             reasons.append("펀드 투자로 수익성과 안정성 균형")
         elif purpose == 'stocks':
@@ -574,7 +506,6 @@ class HighPerformanceFinancialRecommender:
         elif purpose == 'deposit':
             reasons.append("안전한 예금 상품으로 안정성 중시")
         
-        # 최고 상품 금리 조건
         if top_product:
             if top_product['rate_grade'] == 'excellent':
                 if top_product['is_loan']:
@@ -584,69 +515,7 @@ class HighPerformanceFinancialRecommender:
             elif top_product['rate_grade'] == 'good':
                 reasons.append("우수한 금리 조건 제공")
         
-        # 성별별 특화 메시지 (선택적)
-        if gender == 'male' and age <= 35 and purpose in ['funds', 'stocks']:
-            reasons.append("남성 청년층 투자 프로그램 대상")
-        
         return " | ".join(reasons) if reasons else "고객님 상황에 최적화된 상품 추천"
-    
-    def format_response(self, result):
-        """결과 포맷팅 - 최적화"""
-        lines = []
-        lines.append("금융상품 추천 결과")
-        lines.append("=" * 40)
-        
-        # 사용자 정보
-        user_info = result['user_info']
-        if user_info:
-            lines.append("고객 정보:")
-            info_items = []
-            if 'age' in user_info:
-                info_items.append(f"나이: {user_info['age']}세")
-            if 'monthly_income' in user_info:
-                info_items.append(f"월수입: {user_info['monthly_income']}만원")
-            if 'gender' in user_info:
-                gender_text = "남성" if user_info['gender'] == 'male' else "여성"
-                info_items.append(f"성별: {gender_text}")
-            if 'married' in user_info:
-                married_text = "기혼" if user_info['married'] else "미혼"
-                info_items.append(f"결혼: {married_text}")
-            
-            for item in info_items:
-                lines.append(f"   {item}")
-            lines.append("")
-        
-        # 추천 이유
-        if 'recommendation_reason' in result:
-            lines.append("추천 이유:")
-            lines.append(f"   {result['recommendation_reason']}")
-            lines.append("")
-        
-        # 추천 상품
-        products = result['products']
-        if products:
-            lines.append(f"맞춤 추천 상품 (총 {result.get('total_candidates', len(products))}개 중 선별):")
-            
-            for i, product in enumerate(products, 1):
-                lines.extend([
-                    f"{i}. {product['name']}",
-                    f"    {product['bank']}",
-                    f"    {'최저금리' if product['is_loan'] else '최고금리'}: {product['rate']:.2f}%",
-                    f"    가입방법: {product['join_way']}",
-                    f"    맞춤도: {product['score']}/100"
-                ])
-                
-                if product['features']:
-                    features = product['features'][:100] + "..." if len(product['features']) > 100 else product['features']
-                    lines.append(f"    특징: {features}")
-                
-                if product['max_limit']:
-                    lines.append(f"    한도: {product['max_limit']}")
-                lines.append("")
-        else:
-            lines.append("추천 상품이 없습니다.")
-        
-        return "\n".join(lines)
 
 def main():
     """메인 실행"""
@@ -666,23 +535,15 @@ def main():
         start_time = time.time()
         
         result = recommender.recommend(user_input)
-        response = recommender.format_response(result)
         
         end_time = time.time()
         
-        print(f"\n{response}")
         print(f"\n처리시간: {(end_time - start_time)*1000:.1f}ms")
         
-        # 계속할지 물어보기
-        while True:
-            continue_choice = input("\n다른 상품을 더 찾아보시겠습니까? (예/아니오): ").strip().lower()
-            if continue_choice in ['예', 'y', 'yes', '네']:
-                break  # 내부 while 루프 탈출하고 다시 상품 입력받기
-            elif continue_choice in ['아니오', 'n', 'no', '아니요']:
-                print("\n금융상품 추천 시스템을 종료합니다. 감사합니다!")
-                return  # 전체 함수 종료
-            else:
-                print("'예' 또는 '아니오'로 답해주세요.")
+        continue_choice = input("\n다른 상품을 더 찾아보시겠습니까? (예/아니오): ").strip().lower()
+        if continue_choice in ['아니오', 'n', 'no', '아니요']:
+            print("\n금융상품 추천 시스템을 종료합니다. 감사합니다!")
+            return
 
 if __name__ == "__main__":
     main()
