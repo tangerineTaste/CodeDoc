@@ -6,6 +6,7 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import RetrievalQA
 import os
 from langchain_core.prompts import PromptTemplate
+from sklearn.metrics.pairwise import cosine_similarity
 
 def setup_components():
     load_dotenv()
@@ -67,14 +68,11 @@ def stream_rag_response(query: str):
             yield chunk['result']
 
 def analyze_profile_with_llm(user_conversation: str):
-    """
-    LLM을 사용하여 사용자의 대화 내용에서 사용자 성향 분석,
-    """
     analysis_prompt = f"""
     You are an expert financial profiler. Analyze the following user conversation with a financial assistant.
 
     **Rules:**
-    1.  Analyze the user's personality by analyzing the words the user uses..
+    1.  Analyze the user's financial disposition by understanding the **full context and meaning** of the conversation. Pay close attention to **negations** (e.g., 'not', '~이 아닌', '원하지 않아요') and modifiers that can reverse the meaning.
     2.  Analyze whether your users prefer stability or risk-taking and proactive behavior.
     3.  If the analysis result is stable, output 1, otherwise output -1.
     4.  The output is only a real number, either 1 or -1.
@@ -83,7 +81,6 @@ def analyze_profile_with_llm(user_conversation: str):
     {user_conversation}
     """
     
-    # 이전에 정의한 분석용 LLM (CLASSIFIER_LLM 또는 새로 만든 ANALYZER_LLM)을 사용
     response = CLASSIFIER_LLM.invoke(analysis_prompt)
     
     return response.content
