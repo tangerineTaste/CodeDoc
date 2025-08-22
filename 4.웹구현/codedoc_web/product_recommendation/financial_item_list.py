@@ -49,58 +49,52 @@ class FinancialProductAPI:
                     print(f"적금 상품 조회 오류: {e}")
                     raise
         
-    def get_mortgage_loan_products(self, top_fin_grp_no='020000', page_no=1):
-        '''주택담보대출 상품 조회'''
+    def get_fund_products(self, top_fin_grp_no='020000', page_no=1):
+        '''펀드 상품 조회'''
         try:
-            url = f"{self.base_url}/mortgageLoanProductsSearch.json"
-            params = {
-                'auth': self.api_key,
-                'topFinGrpNo': top_fin_grp_no,
-                'pageNo': page_no
-            }
+            # 펀드 데이터는 로컬 JSON 파일에서 읽어옴
+            import os
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            funds_file = os.path.join(current_dir, 'data', 'funds.json')
+            
+            with open(funds_file, 'r', encoding='utf-8') as f:
+                import json
+                return json.load(f)
 
-            response = requests.get(url, params = params)
-            response.raise_for_status()
-            return response.json()
-
-        except requests.exceptions.RequestException as e:
-                    print(f"주택담보대출 상품 조회 오류: {e}")
+        except Exception as e:
+                    print(f"펀드 상품 조회 오류: {e}")
                     raise
         
-    def get_renthouse_loan_products(self, top_fin_grp_no='020000', page_no=1):
-        '''전세자금대출 상품 조회'''
+    def get_stock_products(self, top_fin_grp_no='020000', page_no=1):
+        '''주식 상품 조회'''
         try:
-            url = f"{self.base_url}/rentHouseLoanProductsSearch.json"
-            params = {
-                'auth': self.api_key,
-                'topFinGrpNo': top_fin_grp_no,
-                'pageNo': page_no
-            }
+            # 주식 데이터는 로컬 JSON 파일에서 읽어옴
+            import os
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            stocks_file = os.path.join(current_dir, 'data', 'stocks.json')
+            
+            with open(stocks_file, 'r', encoding='utf-8') as f:
+                import json
+                return json.load(f)
 
-            response = requests.get(url, params = params)
-            response.raise_for_status()
-            return response.json()
-
-        except requests.exceptions.RequestException as e:
-                    print(f"전세자금대출 상품 조회 오류: {e}")
+        except Exception as e:
+                    print(f"주식 상품 조회 오류: {e}")
                     raise
         
-    def get_credit_loan_products(self, top_fin_grp_no='020000', page_no=1):
-        '''개인신용대출 상품 조회'''
+    def get_money_market_fund_products(self, top_fin_grp_no='020000', page_no=1):
+        '''머니마켓펀드 상품 조회'''
         try:
-            url = f"{self.base_url}/creditLoanProductsSearch.json"
-            params = {
-                'auth': self.api_key,
-                'topFinGrpNo': top_fin_grp_no,
-                'pageNo': page_no
-            }
+            # 머니마켓펀드 데이터는 로컬 JSON 파일에서 읽어옴
+            import os
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            mmf_file = os.path.join(current_dir, 'data', 'money_market_funds.json')
+            
+            with open(mmf_file, 'r', encoding='utf-8') as f:
+                import json
+                return json.load(f)
 
-            response = requests.get(url, params = params)
-            response.raise_for_status()
-            return response.json()
-
-        except requests.exceptions.RequestException as e:
-                    print(f"개인신용대출 상품 조회 오류: {e}")
+        except Exception as e:
+                    print(f"머니마켓펀드 상품 조회 오류: {e}")
                     raise
         
     def get_company_list(self, top_fin_grp_no='020000', page_no=1):
@@ -205,14 +199,14 @@ class FinancialProductAPI:
             print("  - 은행 적금 상품...")
             all_data['products']['bank_savings'] = self.get_saving_products('020000')
             
-            print("  - 주택담보대출...")
-            all_data['products']['mortgage_loans'] = self.get_mortgage_loan_products('020000')
+            print("  - 펀드...")
+            all_data['products']['funds'] = self.get_fund_products('020000')
             
-            print("  - 전세자금대출...")
-            all_data['products']['rent_loans'] = self.get_renthouse_loan_products('020000')
+            print("  - 주식...")
+            all_data['products']['stocks'] = self.get_stock_products('020000')
             
-            print("  - 개인신용대출...")
-            all_data['products']['credit_loans'] = self.get_credit_loan_products('020000')
+            print("  - 머니마켓펀드...")
+            all_data['products']['money_market_funds'] = self.get_money_market_fund_products('020000')
             
             print("  - 금융회사 목록...")
             all_data['products']['companies'] = self.get_company_list('020000')
@@ -291,24 +285,24 @@ def main():
 
         print("\n" + "="*50)
 
-        # 주택담보대출 상품 조회  
-        print("주택담보대출 상품 조회")
-        mortgage_loans = api.get_mortgage_loan_products('020000')
-        api.print_product_summary(mortgage_loans, "주택담보대출 상품")
+        # 펀드 상품 조회  
+        print("펀드 상품 조회")
+        funds = api.get_fund_products('020000')
+        api.print_product_summary(funds, "펀드 상품")
         
         print("\n" + "="*50)
 
-        # 전세자금대출 상품 조회  
-        print("전세자금대출 상품 조회")
-        rent_loans = api.get_renthouse_loan_products('020000')
-        api.print_product_summary(rent_loans, "전세자금대출 상품")
+        # 주식 상품 조회  
+        print("주식 상품 조회")
+        stocks = api.get_stock_products('020000')
+        api.print_product_summary(stocks, "주식 상품")
 
         print("\n" + "="*50)
 
-        # 개인신용대출 상품 조회  
-        print("개인신용대출 상품 조회")
-        credit_loans = api.get_credit_loan_products('020000')
-        api.print_product_summary(credit_loans, "개인신용대출 상품")
+        # 머니마켓펀드 상품 조회  
+        print("머니마켓펀드 상품 조회")
+        money_market_funds = api.get_money_market_fund_products('020000')
+        api.print_product_summary(money_market_funds, "머니마켓펀드 상품")
 
         print("\n" + "="*50)
         
@@ -342,9 +336,9 @@ def main():
                 'products': {
                     'bank_deposits': deposits,
                     'bank_savings': savings,
-                    'mortgage_loans': mortgage_loans,
-                    'rent_loans': rent_loans,
-                    'credit_loans': credit_loans,
+                    'funds': funds,
+                    'stocks': stocks,
+                    'money_market_funds': money_market_funds,
                     'companies': companies,
                 }
             }
@@ -385,9 +379,9 @@ def main():
             # 각 상품별로 개별 파일 저장
             api.save_to_json(deposits, "bank_deposits")
             api.save_to_json(savings, "bank_savings")
-            api.save_to_json(mortgage_loans, "mortgage_loans")
-            api.save_to_json(rent_loans, "rent_loans")
-            api.save_to_json(credit_loans, "credit_loans")
+            api.save_to_json(funds, "funds")
+            api.save_to_json(stocks, "stocks")
+            api.save_to_json(money_market_funds, "money_market_funds")
             api.save_to_json(companies, "companies")
             
             print("✅ 모든 개별 파일이 저장되었습니다!")

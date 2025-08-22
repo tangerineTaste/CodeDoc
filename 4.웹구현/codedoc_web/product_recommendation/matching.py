@@ -50,9 +50,9 @@ class HighPerformanceFinancialRecommender:
         data_path = os.path.join(current_dir, 'data')
         
         files = {
-            'housing': os.path.join(data_path, 'mortgage_loans.json'),
-            'rent': os.path.join(data_path, 'rent_loans.json'),
-            'credit': os.path.join(data_path, 'credit_loans.json'),
+            'funds': os.path.join(data_path, 'funds.json'),
+            'stocks': os.path.join(data_path, 'stocks.json'),
+            'mmf': os.path.join(data_path, 'money_market_funds.json'),
             'deposit': os.path.join(data_path, 'bank_deposits.json'),
             'saving': os.path.join(data_path, 'bank_savings.json')
         }
@@ -88,59 +88,73 @@ class HighPerformanceFinancialRecommender:
             
             # 벡터화된 연산을 위한 딕셔너리 최적화
             rates = {}
-            is_loan = category in {'housing', 'rent', 'credit'}  # set 사용으로 O(1) 검색
+            is_investment = category in {'funds', 'stocks'}  # 투자상품 (수익률 기준)
+            is_mmf = category == 'mmf'  # MMF (특별 처리)
             
             # 옵션 데이터 빠른 처리
             for option in option_list:
-                product_id = option.get('fin_prdt_cd')
+                product_id = option.get('fin_prdt_cd') or option.get('stock_code')
                 if not product_id:
                     continue
                 
                 rate = None
-                if category == 'credit':
-                    if option.get('crdt_lend_rate_type') == 'A':
-                        rate = option.get('crdt_grad_1')
-                elif is_loan:
-                    rate = option.get('lend_rate_min')
-                else:
+                if category == 'funds':
+                    rate = option.get('return_rate')
+                elif category == 'stocks':
+                    rate = option.get('change_rate')  # 등락률
+                elif category == 'mmf':
+                    rate = option.get('return_rate') or option.get('yield_today')
+                else:  # 예금, 적금
                     rate = option.get('intr_rate2') or option.get('intr_rate')
                 
-                if rate and rate > 0:
+                if rate is not None:
                     rate = float(rate)
                     if product_id not in rates:
                         rates[product_id] = rate
                     else:
-                        # 대출은 최저금리, 예적금은 최고금리
-                        if is_loan:
-                            rates[product_id] = min(rates[product_id], rate)
-                        else:
-                            rates[product_id] = max(rates[product_id], rate)
+                        # 투자상품은 최고수익률, 예적금은 최고금리
+                        rates[product_id] = max(rates[product_id], rate)
             
             # 상품 정보 통합 - 리스트 컴프리헨션으로 최적화
             products = []
             for product in base_list:
-                product_id = product.get('fin_prdt_cd')
+                product_id = product.get('fin_prdt_cd') or product.get('stock_code')
                 if product_id in rates:
-                    if category == 'credit':
-                        features = f"상품유형: {product.get('crdt_prdt_type_nm', '')}"
-                        max_limit = "신용도에 따라 결정"
+                    if category == 'funds':
+                        features = f"펀드유형: {product.get('fund_type', '')}, 위험등급: {product.get('risk_level', '')}"
+                        max_limit = product.get('min_invest', '')
+                        is_investment_product = True
+                    elif category == 'stocks':
+                        features = f"센터: {product.get('sector', '')}, 시가총액: {product.get('market_cap', '')}"
+                        max_limit = "주가에 따라 결정"
+                        is_investment_product = True
+                    elif category == 'mmf':
+                        features = f"유동성: {product.get('liquidity', '')}, 위험등급: {product.get('risk_level', '')}"
+                        max_limit = product.get('min_invest', '')
+                        is_investment_product = False
                     else:
-                        features = product.get('spcl_cnd', '') if not is_loan else product.get('loan_inci_expn', '')
-                        max_limit = product.get('max_limit') or product.get('loan_lmt', '')
+                        features = product.get('spcl_cnd', '')
+                        max_limit = product.get('max_limit', '')
+                        is_investment_product = False
+                    
+                    # 상품명 및 회사명 처리
+                    product_name = product.get('fin_prdt_nm') or product.get('stock_nm', '')
+                    company_name = product.get('kor_co_nm', '')
                     
                     products.append({
-                        'name': product.get('fin_prdt_nm', ''),
-                        'bank': product.get('kor_co_nm', ''),
+                        'name': product_name,
+                        'bank': company_name,
                         'rate': rates[product_id],
-                        'is_loan': is_loan,
+                        'is_loan': False,  # 대출 상품이 없으므로 모두 False
+                        'is_investment': is_investment_product,
                         'join_way': product.get('join_way', '영업점'),
                         'features': features,
                         'max_limit': max_limit,
                         'product_id': product_id
                     })
             
-            # 정렬 최적화
-            return sorted(products, key=lambda x: x['rate'], reverse=not is_loan)
+            # 정렬 최적화 - 투자상품은 수익률 내림차순, 예적금은 금리 내림차순
+            return sorted(products, key=lambda x: x['rate'], reverse=True)
             
         except Exception as e:
             print(f"파싱 오류: {e}")
@@ -188,21 +202,21 @@ class HighPerformanceFinancialRecommender:
                 
                 # 금리 등급 사전 계산
                 rate = product['rate']
-                if product['is_loan']:
-                    if rate <= 3.0:
-                        product['rate_grade'] = 'excellent'
-                    elif rate <= 4.0:
-                        product['rate_grade'] = 'good'
-                    elif rate <= 5.0:
-                        product['rate_grade'] = 'average'
-                    else:
-                        product['rate_grade'] = 'high'
-                else:
-                    if rate >= 6.0:
+                if product.get('is_investment', False):  # 투자상품 (펀드, 주식)
+                    if rate >= 10.0:
                         product['rate_grade'] = 'excellent'
                     elif rate >= 5.0:
                         product['rate_grade'] = 'good'
-                    elif rate >= 4.0:
+                    elif rate >= 0.0:
+                        product['rate_grade'] = 'average'
+                    else:
+                        product['rate_grade'] = 'low'
+                else:  # 예적금, MMF
+                    if rate >= 4.0:
+                        product['rate_grade'] = 'excellent'
+                    elif rate >= 3.0:
+                        product['rate_grade'] = 'good'
+                    elif rate >= 2.0:
                         product['rate_grade'] = 'average'
                     else:
                         product['rate_grade'] = 'low'
@@ -265,12 +279,12 @@ class HighPerformanceFinancialRecommender:
         
         # 목적 추출 - 우선순위 기반 (더 정확한 키워드)
         purpose_keywords = [
-            ('housing', ['주택대출', '주택상품', '내집마련', '주택구입', '주택', '집', '마이홈', '주택배정', '매매', '분양']),
-            ('rent', ['전세대출', '전세자금', '전세']),
-            ('credit', ['신용대출', '개인대출', '대출']),  # 대출을 마지막에 배치
+            ('funds', ['펀드', '투자신탁', '자산운용', '포트폴리오']),
+            ('stocks', ['주식', '주식투자', '주식매수', '주식매매', '주식시장', '종목', '상장', '코스피', '코스닥']),
             ('saving', ['적금', '저축', '모으기']),
             ('deposit', ['예금', '예치']),
-            ('investment', ['투자', '재테크', '폀드'])
+            ('mmf', ['MMF', '머니마켓펀드', '단기금융', '현금관리']),
+            ('investment', ['투자', '재테크'])
         ]
         
         for purpose, keywords in purpose_keywords:
@@ -441,18 +455,18 @@ class HighPerformanceFinancialRecommender:
         # 기본 추천 상품 선택
         purpose = parsed.get('purpose', 'general')
         
-        if purpose == 'housing':
-            base_products = self.products['housing']
-        elif purpose == 'rent':
-            base_products = self.products['rent']
-        elif purpose == 'credit':
-            base_products = self.products['credit']
+        if purpose == 'funds':
+            base_products = self.products['funds']
+        elif purpose == 'stocks':
+            base_products = self.products['stocks']
+        elif purpose == 'mmf':
+            base_products = self.products['mmf']
         elif purpose == 'deposit':
             base_products = self.products['deposit']
         elif purpose == 'saving':
             base_products = self.products['saving']
         elif purpose == 'investment':
-            base_products = self.products['deposit'][:3] + self.products['saving'][:4]
+            base_products = self.products['funds'][:3] + self.products['stocks'][:4]
         else:
             base_products = self.products['deposit'][:3] + self.products['saving'][:4]
         
@@ -538,19 +552,23 @@ class HighPerformanceFinancialRecommender:
         
         # 결혼 여부별 맞춤 이유
         if married == False:  # 명시적으로 미혼인 경우
-            if purpose == 'housing':
-                reasons.append("미혼으로 첫 주택 마련에 적합")
-            elif purpose in ['saving', 'deposit']:
+            if purpose in ['funds', 'stocks']:
+                reasons.append("미혼으로 적극적인 투자로 자산 증식 기회")
+            elif purpose in ['saving', 'deposit', 'mmf']:
                 reasons.append("미혼으로 미래 준비를 위한 자산 형성")
         elif married == True:  # 명시적으로 기혼인 경우
-            if purpose == 'housing':
-                reasons.append("기혼 가정으로 안정적인 주택 자금 지원")
-            elif purpose in ['saving', 'deposit']:
+            if purpose in ['funds', 'stocks']:
+                reasons.append("기혼 가정으로 안정적인 포트폴리오 구성")
+            elif purpose in ['saving', 'deposit', 'mmf']:
                 reasons.append("가족을 위한 안정적인 자산 관리")
         
         # 목적별 맞춤 이유
-        if purpose == 'housing':
-            reasons.append("주택 구입/분양 전문 상품")
+        if purpose == 'funds':
+            reasons.append("펀드 투자로 수익성과 안정성 균형")
+        elif purpose == 'stocks':
+            reasons.append("주식 투자로 높은 수익 기대")
+        elif purpose == 'mmf':
+            reasons.append("단기금융 상품으로 유동성과 안전성 중시")
         elif purpose == 'saving':
             reasons.append("착실한 저축 습관 형성에 적합")
         elif purpose == 'deposit':
@@ -567,8 +585,8 @@ class HighPerformanceFinancialRecommender:
                 reasons.append("우수한 금리 조건 제공")
         
         # 성별별 특화 메시지 (선택적)
-        if gender == 'male' and age <= 35 and purpose == 'housing':
-            reasons.append("남성 청년층 주택 지원 프로그램 대상")
+        if gender == 'male' and age <= 35 and purpose in ['funds', 'stocks']:
+            reasons.append("남성 청년층 투자 프로그램 대상")
         
         return " | ".join(reasons) if reasons else "고객님 상황에 최적화된 상품 추천"
     
