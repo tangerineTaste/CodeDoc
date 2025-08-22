@@ -24,6 +24,13 @@
             <li class="nav-item">
                 <a href="{% url 'customer_support:notice_list' %}" class="nav-link">공지사항</a>
             </li>
+            <li class="nav-item">
+                {% if user.is_authenticated %}
+                    <a href="#" class="nav-link">마이페이지</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="nav-link">마이페이지</a>
+                {% endif %}
+            </li>
         </ul>
 
         <!-- 오른쪽 버튼들 - 로그인 상태에 따라 다르게 표시 -->
@@ -58,10 +65,16 @@
                 <div class="menu-column">
                     <a href="{% url 'customer_support:service_guide' %}" class="menu-item">서비스 가이드</a>
                 </div>
-                
-                {% comment %} <div class="menu-column">
+                <div class="menu-column">
                     <a href="{% url 'customer_support:notice_list' %}" class="menu-item">공지사항</a>
-                </div> {% endcomment %}
+                </div>
+                <div class="menu-column">
+                    {% if user.is_authenticated %}
+                        <a href="#" class="menu-item">정보조회/변경</a>
+                    {% else %}
+                        <a href="javascript:void(0);" class="menu-item" onclick="showLoginModal(); return false;">정보조회/변경</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

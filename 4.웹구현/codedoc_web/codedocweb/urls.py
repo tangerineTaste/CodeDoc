@@ -19,11 +19,12 @@ from django.urls import path, include
 from home import views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", views.home, name="home"),
+    path('admin/', admin.site.urls),
+    path('', views.index, name='home'),  # home_views.index → views.index로 변경
     path('accounts/', include('accounts.urls')),
-    path("chatbot/", include("chatbot.urls")),
+    path('chatbot/', include('chatbot.urls')),
     path('products/', include('product_recommendation.urls')),
-    path('support/', include('customer_support.urls')),
+    path('support/', include('customer_support.urls')), 
+    path('customer_support/', include('customer_support.urls')),  
     path('news/', include('news.urls')),
 ]

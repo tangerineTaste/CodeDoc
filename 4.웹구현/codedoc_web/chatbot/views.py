@@ -18,12 +18,11 @@ def chatbot_api(request):
                 return JsonResponse({'error': '질문(query)이 없습니다.'}, status=400)
 
             # 사용자 성향 분석 및 콘솔 출력
-            risk_profile = analyze_profile_with_llm(query)
-            print("===== 사용자 성향 분석 결과 =====")
-            print(risk_profile)
+            print("===== LLM을 사용한 사용자 성향 분석 결과 =====")
+            risk_score = analyze_profile_with_llm(query)
             # if risk_profile.isdigit():
                 # User.attitude = risk_profile
-            print("==============================")
+            print('경향(1: 안정적, -1: 위험)',risk_score)
 
             # 1. 먼저 질문이 금융 관련인지 확인
             classification = get_rag_response(query)

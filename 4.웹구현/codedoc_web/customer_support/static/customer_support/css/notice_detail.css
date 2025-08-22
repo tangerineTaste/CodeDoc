@@ -3,7 +3,7 @@
 .detail-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 60px 20px;
+    padding: 85px 20px;
     background: white;
     min-height: 100vh;
 }
@@ -19,7 +19,7 @@
 }
 
 .article-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 60px;
     padding-bottom: 30px;
     border-bottom: 1px solid #e0e0e0;
@@ -35,7 +35,7 @@
 
 /* 본문 내용 */
 .article-content {
-    margin-bottom: 80px;
+    text-align: left;
 }
 
 .content-text {
@@ -43,7 +43,6 @@
     color: #333;
     font-size: 1rem;
     max-width: 600px;
-    margin: 0 auto;
 }
 
 .content-text p {
@@ -53,7 +52,7 @@
 /* 아티클 푸터 */
 .article-footer {
     text-align: center;
-    padding: 40px 0 80px 0;
+    padding: 40px 0 0px 0;
     background: white;
 }
 

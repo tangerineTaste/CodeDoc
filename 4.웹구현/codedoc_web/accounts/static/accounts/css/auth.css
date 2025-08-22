@@ -14,10 +14,7 @@
 
 /* 카드 스타일 */
 .login-card {
-    background: var(--bg-primary);
-    border-radius: var(--border-radius-large);
-    box-shadow: var(--box-shadow);
-    padding: 50px;
+    padding: 0px 50px;
     width: 100%;
     max-width: 480px;
     text-align: center;
@@ -27,7 +24,7 @@
     background: var(--bg-primary);
     border-radius: 20px;
     box-shadow: none;
-    padding: 60px 50px;
+    padding: 0px 50px;
     width: 100%;
     max-width: 520px;
     text-align: center;
@@ -39,7 +36,7 @@
 }
 
 .login-title, .signup-title {
-    font-size: 32px;
+    font-size: 2.5rem;
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 10px;
@@ -55,10 +52,36 @@
 }
 
 .login-subtitle {
-    font-size: 16px;
+    font-size: 1.1rem;
     color: var(--text-secondary);
     line-height: 1.5;
     margin-bottom: 0;
+}
+
+/* ===============================
+    새로운 간단한 헤더 스타일
+   =============================== */
+.simple-header {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.step-indicator {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary-color);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.simple-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    letter-spacing: -0.8px;
+    line-height: 1.2;
 }
 
 /* 폼 스타일 */
@@ -308,109 +331,9 @@
     단계별 회원가입 전용 스타일
    =============================== */
 
-/* 진행률 표시 바 */
+/* 기존 프로그레스 바 숨김 */
 .progress-header {
-    margin-bottom: 50px;
-    text-align: center;
-}
-
-.progress-steps {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 0;
-    position: relative;
-    gap: 50px;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    z-index: 2;
-}
-
-.step-number {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: #f0f0f0;
-    color: #999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 18px;
-    margin-bottom: 12px;
-    transition: all 0.3s ease;
-    border: none;
-    position: relative;
-}
-
-.step-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: #999;
-    transition: color 0.3s ease;
-    white-space: nowrap;
-}
-
-.step.active .step-number {
-    background: var(--primary-color);
-    color: white;
-}
-
-.step.active .step-label {
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.step.completed .step-number {
-    background: var(--primary-color);
-    color: white;
-}
-
-.step.completed .step-label {
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-/* 단계 연결선 */
-.step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 25px;
-    left: calc(50% + 25px);
-    width: 50px;
-    height: 2px;
-    background: #e0e0e0;
-    z-index: -1;
-    transition: background 0.3s ease;
-}
-
-.step.completed:not(:last-child)::after {
-    background: var(--primary-color);
-}
-
-/* ===============================
-    단계별 프로그레스 바 표시/숨김
-   =============================== */
-
-/* 모든 단계에서 프로그레스 바 표시 */
-.progress-header {
-    display: block;
-}
-
-/* 약관동의 단계에서도 프로그레스 바 표시 */
-.signup-card.no-progress {
-    padding-top: 60px;
-}
-
-.signup-card.with-progress {
-    padding-top: 60px;
+    display: none;
 }
 
 /* 폼 단계 스타일 */
@@ -440,15 +363,14 @@
 }
 
 .step-description {
-    font-size: 14px;
+    font-size: 0.9rem;
     color: #666;
     text-align: center;
     margin-bottom: 40px;
     line-height: 1.5;
-    max-width: 350px;
+    margin: 0 auto;
+    max-width: 225px;
     word-break: keep-all;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 /* 폼 그리드 레이아웃 */
@@ -470,7 +392,7 @@
     약관 동의 섹션 - 새로운 디자인
    =============================== */
 .agreement-section {
-    margin-top: 30px;
+    margin-top: 45px;
     padding-top: 0;
     border-top: none;
     max-width: 600px;
@@ -489,7 +411,7 @@
 
 /* 전체 약관 동의 */
 .agreement-group {
-    margin-bottom: 30px;
+    margin-bottom: 0px;
     padding: 0;
     background: none;
     border-radius: 0;
@@ -572,17 +494,17 @@
 
 /* 약관 보기 링크 */
 .agreement-link {
-    color: var(--primary-color);
+    color: #333;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     padding: 4px 8px;
     border-radius: 4px;
     transition: all 0.2s ease;
     margin-left: auto;
     flex-shrink: 0;
-    border: 1px solid #e0e0e0;
-    background: #f9f9f9;
+    /*border: 1px solid #e0e0e0;
+    background: #f9f9f9;*/
 }
 
 .agreement-link:hover {
@@ -591,10 +513,10 @@
     border-color: var(--primary-color);
 }
 
-/* 체크박스 커스텀 스타일링 */
+/* 체크박스 커스텀 스타일링
 .agreement-section .checkbox-input:checked + .checkbox-label {
     color: var(--primary-color);
-}
+} */
 
 /* 필수/선택 표시 스타일 */
 .agreement-list .checkbox-label::before {
@@ -615,10 +537,16 @@
 .input-with-button {
     display: flex;
     gap: 10px;
+    width: 100%;
 }
 
 .input-with-button .form-input {
     flex: 1;
+    min-width: 0; /* flex item이 줄어들 수 있도록 */
+}
+
+.input-with-button .check-button {
+    flex-shrink: 0; /* 버튼 크기 고정 */
 }
 
 .check-button {
@@ -644,6 +572,19 @@
 .check-button:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+}
+
+.check-button.success-state {
+    pointer-events: none !important;
+}
+
+.check-button.success-state:hover {
+    background: #0078FE !important;
+    color: white !important;
+    border-color: #0078FE !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: pointer;
 }
 
 .input-help {
@@ -712,12 +653,66 @@
     font-size: 16px;
 }
 
+/* ===============================
+    가입완료 페이지 스타일
+   =============================== */
+.completion-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 45px 20px;
+}
+
+.completion-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.success-icon {
+    margin-bottom: 30px;
+    animation: successPulse 2s ease-out;
+}
+
+.completion-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+}
+
+.completion-description {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 0;
+    word-break: keep-all;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
 /* 네비게이션 버튼 */
 .step-navigation {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 50px;
+    margin-top: 0px;
     padding-top: 30px;
     border-top: 1px solid #f0f0f0;
     gap: 0;
@@ -730,7 +725,7 @@
     gap: 8px;
     padding: 16px 40px;
     border: none;
-    border-radius: 50px;
+    border-radius: 15px;
     font-size: 16px;
     font-weight: 600;
     font-family: 'NanumSquare', sans-serif;
@@ -762,18 +757,18 @@
 .submit-button:hover {
     background: var(--primary-hover);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 120, 254, 0.3);
+    /*box-shadow: 0 8px 25px rgba(0, 120, 254, 0.3);*/
 }
 
 .submit-button {
-    background: #10B981;
+    background: var(--primary-color);
     font-size: 18px;
-    padding: 18px 50px;
+    padding: 15px 45px;
 }
 
 .submit-button:hover {
-    background: #0D9668;
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    background: var(--primary-hover);
+    /*box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);*/
 }
 
 /* 로그인 섹션 */
