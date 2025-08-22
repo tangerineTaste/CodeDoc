@@ -26,6 +26,13 @@
     --container-width: 1200px;
     --nav-height: 65px;
     --box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    
+    /* 새로운 상품 타입 컬러 */
+    --fund-color: #ff9800;
+    --stock-color: #f44336;
+    --mmf-color: #4caf50;
+    --rate-positive: #2e7d32;
+    --rate-negative: #c62828;
 }
 
 * {
@@ -64,26 +71,27 @@ body {
     margin-bottom: 40px;
 }
 
-/* 필터 버튼들 */
+/* 필터 버튼들 (6개 대응) */
 .filter-tabs {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 60px;
     flex-wrap: wrap;
 }
 
 .filter-btn {
-    padding: 12px 24px;
+    padding: 12px 20px;
     border: none;
     border-radius: var(--border-radius-small);
     background-color: var(--bg-light);
     color: var(--text-muted);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'NanumSquare', sans-serif;
+    white-space: nowrap;
 }
 
 .filter-btn.active {
@@ -97,6 +105,29 @@ body {
     transform: translateY(-2px);
 }
 
+/* 반응형 필터 탭 */
+@media (max-width: 768px) {
+    .filter-tabs {
+        gap: 6px;
+    }
+    
+    .filter-btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-tabs {
+        gap: 4px;
+    }
+    
+    .filter-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+}
+
 /* 상품 섹션 */
 .products-section {
     margin-bottom: 60px;
@@ -106,9 +137,6 @@ body {
     font-size: 1.4rem;
     font-weight: 600;
     margin-bottom: 20px;
-    /*color: var(--text-primary);
-    padding-left: 20px;
-    border-left: 4px solid var(--primary-color);*/
 }
 
 .products-grid {
@@ -135,17 +163,38 @@ body {
 .product-cards:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
 }
 
 .product-badge {
     display: inline-block;
-    background-color: var(--primary-color);
     color: var(--bg-primary);
     padding: 6px 12px;
     border-radius: var(--border-radius-normal);
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 15px;
+}
+
+/* 상품 타입별 배지 색상 */
+.product-badge:contains("예금") {
+    background-color: var(--primary-color);
+}
+
+.product-badge:contains("적금") {
+    background-color: var(--primary-color);
+}
+
+.product-badge:contains("펀드") {
+    background-color: var(--fund-color);
+}
+
+.product-badge:contains("주식") {
+    background-color: var(--stock-color);
+}
+
+.product-badge:contains("MMF") {
+    background-color: var(--mmf-color);
 }
 
 .product-name {
@@ -177,6 +226,24 @@ body {
     font-size: 1rem;
     color: var(--text-primary);
     font-weight: 500;
+}
+
+/* 금리/수익률 하이라이트 */
+.rate-highlight {
+    color: var(--rate-positive);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* 상승/하락 표시 */
+.rate-positive {
+    color: var(--rate-positive);
+    font-weight: 600;
+}
+
+.rate-negative {
+    color: var(--rate-negative);
+    font-weight: 600;
 }
 
 .product-tags {

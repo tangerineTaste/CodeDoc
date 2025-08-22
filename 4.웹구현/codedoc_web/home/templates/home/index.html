@@ -70,7 +70,7 @@
             
             <!-- 자주 찾는 메뉴 -->
             <div class="frequent-menu">
-                <h3 class="menu-title">자주 찾는 메뉴</h3>
+                <h3 class="menu-title">로그인 없이 이용 가능해요</h3>
                 <div class="menu-grid">
                     <a href="{% url 'news:news_list' %}">
                         <div class="menu-item quik">
@@ -191,7 +191,7 @@
     </div>
 </section>
 
-<!-- 공지사항 섹션 - financial-products-section 다음에 추가 -->
+<!-- 기존 공지사항 섹션을 다음과 같이 수정 -->
 <section class="notice-section">
     <div class="container">
         <div class="notice-content">
@@ -207,10 +207,11 @@
             <!-- 오른쪽 공지사항 목록 섹션 -->
             <div class="right-notice-section">
                 <div class="notice-list-section">
-                    <div class="notice-item-card">
+                    {% for notice in recent_notices %}
+                    <div class="notice-item-card" data-notice-id="{{ notice.id }}">
                         <div class="notice-item-content">
-                            <h3 class="notice-item-title">금융결제원 노후 DB서버 교체 작업</h3>
-                            <span class="notice-item-date">2025.08.18</span>
+                            <h3 class="notice-item-title">{{ notice.title }}</h3>
+                            <span class="notice-item-date">{{ notice.created_at|date:"Y.m.d" }}</span>
                         </div>
                         <div class="notice-item-arrow">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -218,42 +219,15 @@
                             </svg>
                         </div>
                     </div>
-                    
+                    {% empty %}
+                    <!-- 공지사항이 없을 때 표시할 내용 -->
                     <div class="notice-item-card">
                         <div class="notice-item-content">
-                            <h3 class="notice-item-title">불법사금융 근절 및 피해구제를 위한 개정 안내</h3>
-                            <span class="notice-item-date">2025.07.29</span>
-                        </div>
-                        <div class="notice-item-arrow">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <h3 class="notice-item-title">등록된 공지사항이 없습니다.</h3>
+                            <span class="notice-item-date">-</span>
                         </div>
                     </div>
-                    
-                    <div class="notice-item-card">
-                        <div class="notice-item-content">
-                            <h3 class="notice-item-title">금융결제원 전자금융공동망 업무 일시중단</h3>
-                            <span class="notice-item-date">2025.07.30</span>
-                        </div>
-                        <div class="notice-item-arrow">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                    </div>
-                    
-                    <div class="notice-item-card">
-                        <div class="notice-item-content">
-                            <h3 class="notice-item-title">[인창공고]Mymo 복구시스템 구축</h3>
-                            <span class="notice-item-date">2025.07.24</span>
-                        </div>
-                        <div class="notice-item-arrow">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

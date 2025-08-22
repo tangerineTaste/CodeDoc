@@ -8,18 +8,12 @@ from .forms import ProfileForm, SignupForm
 
 # Create your views here.
 def signup(request):
-    print(f"=== signup view 호출, method: {request.method} ===")  # 디버깅
     if request.method == 'POST':
         form = SignupForm(request.POST)
-        print(f"Form 생성: {form}")  # 디버깅
         if form.is_valid():
-            print("Form validation 성공!")  # 디버깅
             form.save()
-            print("회원가입 완료!")
             messages.success(request, '회원가입이 완료되었습니다.')
             return redirect(settings.LOGIN_URL)
-        else:
-            print(f"Form validation 실패: {form.errors}")  # 디버깅
     else:
         form = SignupForm()
     return render(request, 'accounts/signup.html', {'form': form})
@@ -81,14 +75,14 @@ def login_view(request):
 
 def signup_view(request):
     if request.method == 'POST':
-        form = SignupForm(request.POST)  # SignupForm 사용
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'{username}님의 계정이 생성되었습니다!')
             return redirect('accounts:login')
     else:
-        form = SignupForm()  # SignupForm 사용
+        form = UserCreationForm()
     return render(request, 'accounts/signup.html', {'form': form})
 
 def logout_view(request):

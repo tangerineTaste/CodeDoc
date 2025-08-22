@@ -1,5 +1,5 @@
 // ===============================
-// 단계별 회원가입 JavaScript
+// 단계별 회원가입 JavaScript (간단한 헤더 버전)
 // ===============================
 
 console.log('step-signup.js 로드 완료!');
@@ -11,27 +11,33 @@ document.addEventListener('DOMContentLoaded', function() {
     // 변수 선언
     // ===============================
     let currentStep = 1;
-    const totalSteps = 6;
+    const totalSteps = 5;
     
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const submitBtn = document.getElementById('submitBtn');
     const formSteps = document.querySelectorAll('.form-step');
-    const progressSteps = document.querySelectorAll('.step');
+    const stepIndicator = document.querySelector('.step-indicator');
+    const simpleTitle = document.querySelector('.simple-title');
+    
+    // 단계별 헤더 정보
+    const stepHeaders = {
+        1: { indicator: 'STEP 01.', title: '약관 동의' },
+        2: { indicator: 'STEP 02.', title: '회원정보를 입력해주세요.' },
+        3: { indicator: 'STEP 03.', title: '개인정보를 입력해주세요.' },
+        4: { indicator: 'STEP 04.', title: '금융정보를 입력해주세요.' },
+        5: { indicator: 'STEP 05.', title: '가입완료' }
+    };
     
     // ===============================
-    // 프로그레스 바 업데이트
+    // 헤더 업데이트
     // ===============================
-    function updateProgressBar() {
-        progressSteps.forEach((step, index) => {
-            step.classList.remove('active', 'completed');
-            
-            if (index + 1 < currentStep) {
-                step.classList.add('completed');
-            } else if (index + 1 === currentStep) {
-                step.classList.add('active');
-            }
-        });
+    function updateHeader() {
+        const header = stepHeaders[currentStep];
+        if (stepIndicator && simpleTitle && header) {
+            stepIndicator.textContent = header.indicator;
+            simpleTitle.textContent = header.title;
+        }
     }
     
     // ===============================
@@ -49,15 +55,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         updateButtons();
-        updateProgressBar();
+        updateHeader();
     }
     
     // ===============================
     // 버튼 상태 업데이트
     // ===============================
     function updateButtons() {
-        // Step 6에서는 이전 버튼 숨김, 로그인하기 버튼 표시
-        if (currentStep === 6) {
+        // Step 5에서는 이전 버튼 숨김, 로그인하기 버튼 표시
+        if (currentStep === 5) {
             prevBtn.style.display = 'none';
             nextBtn.style.display = 'none';
             submitBtn.style.display = 'flex';
@@ -72,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             prevBtn.style.display = 'flex';
         }
         
-        // 다음 버튼 (Step 1~5까지 모두 다음 버튼)
+        // 다음 버튼 (Step 1~4까지 모두 다음 버튼)
         nextBtn.style.display = 'flex';
         submitBtn.style.display = 'none';
     }
@@ -195,21 +201,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorMessages.push('저축습관을 선택해주세요.');
                 }
                 break;
-                
-            case 5: // 투자 성향
-                const riskTolerance = document.querySelector('input[name="risk_tolerance"]:checked');
-                const riskAversion = document.querySelector('input[name="risk_aversion"]:checked');
-                
-                if (!riskTolerance) {
-                    isValid = false;
-                    errorMessages.push('금융 위험 감수 성향을 선택해주세요.');
-                }
-                
-                if (!riskAversion) {
-                    isValid = false;
-                    errorMessages.push('금융 위험 회피 성향을 선택해주세요.');
-                }
-                break;
         }
         
         if (!isValid) {
@@ -262,8 +253,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (nextBtn) {
         nextBtn.addEventListener('click', function() {
             if (validateStep(currentStep)) {
-                if (currentStep === 5) {
-                    // Step 5에서 Step 6으로 이동할 때 회원가입 처리
+                if (currentStep === 4) {
+                    // Step 4에서 Step 5으로 이동할 때 회원가입 처리
                     if (confirm('입력하신 정보로 회원가입을 진행하시겠습니까?')) {
                         this.disabled = true;
                         this.innerHTML = `
@@ -273,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         setTimeout(() => {
                             // 실제로는 document.getElementById('signupForm').submit();
-                            // 여기서는 Step 6으로 이동
+                            // 여기서는 Step 5으로 이동
                             currentStep++;
                             showStep(currentStep);
                             // 버튼 원상복구
@@ -313,17 +304,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 로그인하기 버튼 클릭 (Step 6에서만)
+    // 로그인하기 버튼 클릭 (Step 5에서만)
     if (submitBtn) {
-        submitBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            if (currentStep === 6) {
-                // Step 6에서는 로그인 페이지로 이동
-                window.location.href = '/login/';
-            }
-        });
-    }
+    submitBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        if (currentStep === 5) {
+            // Step 5에서는 로그인 페이지로 이동
+            window.location.href = "{% url 'accounts:login' %}";
+        }
+    });
+}
     
     // ===============================
     // 키보드 네비게이션
@@ -383,13 +374,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     function updateCheckboxStyle(checkbox) {
-        const wrapper = checkbox.closest('.checkbox-wrapper');
-        if (checkbox.checked) {
-            wrapper.style.color = 'var(--primary-color)';
-        } else {
-            wrapper.style.color = '';
-        }
+    const wrapper = checkbox.closest('.checkbox-wrapper');
+    // 전체 약관 동의 체크박스인 경우 색상 변경하지 않음
+    if (checkbox.id === 'agreeAll') {
+        return;
     }
+    
+    // 개별 약관 체크박스만 색상 변경
+    if (checkbox.checked) {
+        wrapper.style.color = 'var(--primary-color)';
+    } else {
+        wrapper.style.color = '';
+    }
+}
     
     // ===============================
     // Step 2: 아이디 중복확인
@@ -421,9 +418,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (isAvailable) {
                     this.textContent = '사용가능';
-                    this.style.background = '#28a745';
+                    this.style.background = '#0078FE';
                     this.style.color = 'white';
-                    usernameInput.style.borderColor = '#28a745';
+                    this.style.borderColor = '#0078FE';
+                    this.classList.add('success-state'); // CSS 클래스 추가
+                    usernameInput.style.borderColor = '#0078FE';
                     usernameInput.dataset.checked = 'true';
                     hideStepError();
                 } else {
@@ -452,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ===============================
-    // Step 5: 라디오 버튼 스타일링
+    // 라디오 버튼 스타일링
     // ===============================
     const radioInputs = document.querySelectorAll('.radio-input');
     

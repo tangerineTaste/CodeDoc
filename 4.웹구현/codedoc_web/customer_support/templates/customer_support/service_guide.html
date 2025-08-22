@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}서비스 가이드 - CODEDOC{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'customer_support/css/service_guide.css' %}?v={{ STATIC_VERSION }}">
+{% endblock %}
+
+{% block content %}
+<!-- 페이지 헤더 -->
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">CODEDOC 서비스 소개</h1>
+        <p class="page-subtitle">회원가입 후 나만을 위한 맞춤 서비스를 경험해보세요</p>
+    </div>
+</div>
+
+<!-- 메인 콘텐츠 -->
+<div class="main-content">
+    <div class="container">
+        
+        <!-- 하이라이트 카드 -->
+        <section class="highlight-section">
+            <div class="highlight-card">
+                <div class="highlight-tag">핵심</div>
+                <h2 class="highlight-title">로그인하면 이렇게 달라져요!</h2>
+                <p class="highlight-description">
+                    회원가입만 해도 기본 맞춤 추천을 받을 수 있고, AI 챗봇과 대화하면 더욱 정확하고 구체적인 맞춤 상품 추천이 가능합니다.
+                </p>
+            </div>
+        </section>
+
+        <!-- 3단계 추천 시스템 -->
+        <section class="service-types">
+            <h2 class="section-title">3단계 맞춤 추천 시스템</h2>
+            
+            <div class="service-cards">
+                <div class="service-card">
+                    <div class="card-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#0078FE" stroke-width="2"/>
+                            <circle cx="12" cy="7" r="4" stroke="#0078FE" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">1단계: 회원가입</h3>
+                    <p class="card-description">
+                        나이, 직업, 소득 등 기본 정보로 <strong>기본 맞춤 추천</strong>을 받을 수 있어요. 상품 페이지에서 나에게 맞는 상품이 상단에 표시됩니다.
+                    </p>
+                    <button class="card-button">회원가입하기</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="card-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z" stroke="#0078FE" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">2단계: AI 챗봇 대화</h3>
+                    <p class="card-description">
+                        구체적인 목표와 상황을 AI에게 말씀해주시면 <strong>더 정확한 맞춤 추천</strong>을 받을 수 있어요. "결혼 준비 중", "집 살 예정" 등 상세한 상황 반영!
+                    </p>
+                    <button class="card-button">AI 챗봇 이용</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="card-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 3v18h18" stroke="#0078FE" stroke-width="2"/>
+                            <path d="M9 9l5-5 5 5" stroke="#0078FE" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">3단계: 지속적 업데이트</h3>
+                    <p class="card-description">
+                        시간이 지나 상황이 바뀌면 <strong>추천도 자동 업데이트</strong>! 승진, 이직, 결혼 등 변화하는 라이프스타일에 맞춰 계속 새로운 추천을 받아보세요.
+                    </p>
+                    <button class="card-button">업데이트 받기</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 실제 사용 시나리오 -->
+        <section class="target-users">
+            <h2 class="section-title">실제 사용 시나리오</h2>
+            
+            <div class="target-cards">
+                <div class="target-card">
+                    <div class="target-icon">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#0078FE" stroke-width="2"/>
+                            <circle cx="12" cy="7" r="4" stroke="#0078FE" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3 class="target-title">김과장의 경우</h3>
+                    <p class="target-description">
+                        <strong>기본 추천:</strong> 30대 직장인용 적금 상품<br>
+                        <strong>챗봇 대화 후:</strong> "2년 후 집 구매 예정"이라는 구체적 목표에 맞는 주택청약종합저축 + ISA 계좌 조합 추천
+                    </p>
+                </div>
+                
+                <div class="target-card">
+                    <div class="target-icon">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" stroke="#0078FE" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3 class="target-title">이런 질문을 해보세요</h3>
+                    <p class="target-description">
+                        "결혼 준비 중인데 목돈 마련 방법은?"<br>
+                        "아이 교육비 준비하려면 어떤 상품이 좋을까요?"<br>
+                        "노후 준비 언제부터 시작해야 하나요?"
+                    </p>
+                </div>
+                
+                <div class="target-card">
+                    <div class="target-icon">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="#0078FE" stroke-width="2" fill="none"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="#0078FE" stroke-width="2"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17" stroke="#0078FE" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3 class="target-title">Before vs After</h3>
+                    <p class="target-description">
+                        <strong>Before:</strong> "30대에게 좋은 적금 추천해주세요"<br>
+                        <strong>After:</strong> "구체적 목표와 상황에 맞는 정교한 포트폴리오 + 실행 계획까지 제공"
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 왜 CODEDOC인가요 -->
+        <section class="service-types">
+            <h2 class="section-title">왜 CODEDOC인가요?</h2>
+            
+            <div class="service-cards">
+                <div class="service-card">
+                    <div class="card-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2l3.09 6.26L22 9l-5.91.74L12 16l-4.09-6.26L2 9l6.91-.74L12 2z" stroke="#0078FE" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">AI 기술의 차별화</h3>
+                    <p class="card-description">
+                        수만 건의 실제 금융 데이터로 학습한 AI가 단순한 나이, 소득만이 아닌 <strong>라이프스타일과 목표까지 반영</strong>한 추천을 제공합니다.
+                    </p>
+                    <button class="card-button">AI 기술 보기</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="card-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 12l2 2 4-4" stroke="#0078FE" stroke-width="2"/>
+                            <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3" stroke="#0078FE" stroke-width="2"/>
+                            <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3" stroke="#0078FE" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">완전 무료 서비스</h3>
+                    <p class="card-description">
+                        모든 AI 추천과 상담 서비스가 <strong>100% 무료</strong>입니다. 금융 정보의 접근성을 높여 모든 사람이 현명한 금융 결정을 할 수 있도록 돕고 있습니다.
+                    </p>
+                    <button class="card-button">무료 체험하기</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="card-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#0078FE" stroke-width="2" fill="none"/>
+                            <circle cx="12" cy="16" r="1" stroke="#0078FE" stroke-width="2" fill="none"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#0078FE" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">개인정보 보안</h3>
+                    <p class="card-description">
+                        입력하신 정보는 <strong>오직 맞춤 추천을 위해서만</strong> 사용되며, 철저한 암호화로 보호됩니다. 제3자 제공이나 마케팅 목적으로는 절대 사용하지 않습니다.
+                    </p>
+                    <button class="card-button">보안 정책 보기</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 자주 묻는 질문 -->
+        <section class="target-users">
+            <h2 class="section-title">자주 묻는 질문</h2>
+            
+            <div class="target-cards">
+                <div class="target-card">
+                    <div class="target-icon">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="#0078FE" stroke-width="2" fill="none"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="#0078FE" stroke-width="2"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17" stroke="#0078FE" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3 class="target-title">AI 추천이 정확한가요?</h3>
+                    <p class="target-description">
+                        실제 금융 데이터로 학습한 AI로 85% 이상의 높은 만족도를 보이고 있어요. 하지만 최종 결정은 항상 고객님이 하시는 것이 좋습니다.
+                    </p>
+                </div>
+                
+                <div class="target-card">
+                    <div class="target-icon">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#0078FE" stroke-width="2" fill="none"/>
+                            <path d="M2 17l10 5 10-5" stroke="#0078FE" stroke-width="2"/>
+                            <path d="M2 12l10 5 10-5" stroke="#0078FE" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3 class="target-title">추천받은 상품 꼭 가입해야 하나요?</h3>
+                    <p class="target-description">
+                        아니요! 저희는 참고용 추천만 드려요. 실제 가입은 본인이 충분히 검토한 후 결정하시면 됩니다. 강요는 절대 하지 않아요.
+                    </p>
+                </div>
+                
+                <div class="target-card">
+                    <div class="target-icon">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="#0078FE" stroke-width="2" fill="none"/>
+                            <polyline points="12,6 12,12 16,14" stroke="#0078FE" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3 class="target-title">언제든지 이용할 수 있나요?</h3>
+                    <p class="target-description">
+                        네! AI 챗봇은 24시간 연중무휴로 이용 가능해요. 새벽에 갑자기 궁금한 게 생겨도 언제든 물어보세요.
+                    </p>
+                </div>
+                
+                <div class="target-card">
+                    <div class="target-icon">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" stroke="#0078FE" stroke-width="2" fill="none"/>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke="#0078FE" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3 class="target-title">정보 업데이트는 어떻게 하나요?</h3>
+                    <p class="target-description">
+                        마이페이지에서 언제든 정보를 수정할 수 있어요. 승진, 이직, 결혼 등 상황이 바뀌면 업데이트해주시면 더 정확한 추천을 받을 수 있어요.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA 섹션 -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2 class="cta-title">지금 회원가입하고 나만의 맞춤 금융 서비스를 경험해보세요</h2>
+                
+                <div class="cta-buttons">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'product_recommendation:product_list' %}" class="cta-btn primary">맞춤 상품 보러가기</a>
+                        <a href="/chatbot/" class="cta-btn secondary">AI 챗봇 체험하기</a>
+                    {% else %}
+                        <a href="{% url 'accounts:signup' %}" class="cta-btn primary">회원가입하기</a>
+                        <a href="/chatbot/" class="cta-btn secondary">챗봇 먼저 써보기</a>
+                    {% endif %}
+                </div>
+                
+                <div class="additional-info">
+                    <h3>더 자세한 정보가 필요하다면?</h3>
+                    <div class="info-links">
+                        <a href="/chatbot/" class="info-link">
+                            AI 챗봇 체험 - 로그인 없이도 기본 상담 가능
+                        </a>
+                        <a href="{% url 'customer_support:notice_list' %}" class="info-link">
+                            공지사항 - 최신 금융 정보 및 서비스 업데이트
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'customer_support/js/service_guide.js' %}"></script>
+{% endblock %}

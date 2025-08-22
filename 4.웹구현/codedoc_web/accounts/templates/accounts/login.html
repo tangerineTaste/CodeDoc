@@ -42,7 +42,7 @@
                 <div class="password-input-group">
                     <input type="password" name="password" id="id_password" class="form-input" 
                            placeholder="비밀번호를 입력하세요" required>
-                    <button type="button" class="password-toggle" id="passwordToggle">
+                    <button type="button" class="password-toggle" data-target="id_password">
                         <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z" stroke="currentColor" stroke-width="2"/>
                             <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
@@ -77,4 +77,34 @@
 
 {% block extra_js %}
 <script src="{% static 'js/auth.js' %}"></script>
+<script>
+// 로그인 페이지 전용 비밀번호 토글
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordToggle = document.querySelector('.password-toggle');
+    
+    if (passwordToggle) {
+        passwordToggle.addEventListener('click', function() {
+            const passwordInput = document.getElementById('id_password');
+            const eyeIcon = this.querySelector('.eye-icon');
+            
+            if (passwordInput && eyeIcon) {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    eyeIcon.innerHTML = `
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94L17.94 17.94z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M1 1l22 22" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                    `;
+                } else {
+                    passwordInput.type = 'password';
+                    eyeIcon.innerHTML = `
+                        <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                    `;
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
