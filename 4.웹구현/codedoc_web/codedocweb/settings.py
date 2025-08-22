@@ -23,8 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY=config("SECRET_KEY")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -48,6 +51,7 @@ INSTALLED_APPS = [
     "news",
     "accounts",
 
+
 ]
 
 MIDDLEWARE = [
@@ -66,7 +70,6 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            BASE_DIR / 'static',
             BASE_DIR / 'codedocweb/templates',
             BASE_DIR / 'templates',
         ],
@@ -83,7 +86,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "codedocweb.wsgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -157,5 +159,4 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
