@@ -53,8 +53,7 @@ class UserProfile(models.Model):
     결혼상태 = models.IntegerField(choices=MARRIAGE_CHOICES, null=True, blank=True, verbose_name='결혼상태')
     저축여부 = models.IntegerField(choices=SAVINGS_CHOICES, null=True, blank=True, verbose_name='저축습관')
     직업분류1 = models.IntegerField(choices=JOB_CHOICES, null=True, blank=True, verbose_name='직업분류')
-    금융위험감수 = models.BooleanField(default=False, verbose_name='투자 위험 감수 의향')
-    금융위험회피 = models.BooleanField(default=False, verbose_name='안전 투자 선호')
+    금융위험태도 = models.IntegerField(default=0, null=True, blank=True, verbose_name='금융위험태도')
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -45,16 +45,6 @@ class SignupForm(UserCreationForm):
         label='직업분류',
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    금융위험감수 = forms.BooleanField(
-        required=False,
-        label='투자 위험을 감수할 의향이 있습니다',
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
-    )
-    금융위험회피 = forms.BooleanField(
-        required=False,
-        label='안전한 투자를 선호합니다',
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
-    )
     class Meta:
         model = User
         fields = ('username', 'password1', 'password2')
@@ -73,8 +63,6 @@ class SignupForm(UserCreationForm):
             profile.결혼상태 = self.cleaned_data.get('결혼상태') or None
             profile.저축여부 = self.cleaned_data.get('저축여부') or None
             profile.직업분류1 = self.cleaned_data.get('직업분류1') or None
-            profile.금융위험감수 = self.cleaned_data.get('금융위험감수', False)
-            profile.금융위험회피 = self.cleaned_data.get('금융위험회피', False)
             profile.save()
         
         return user
@@ -85,7 +73,7 @@ class ProfileForm(ModelForm):
         model = UserProfile
         fields = [
             'name', '교육수준분류', '연령대분류', '가구주성별', '결혼상태',
-            '저축여부', '직업분류1', '금융위험감수', '금융위험회피'
+            '저축여부', '직업분류1', '금융위험태도'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -95,8 +83,7 @@ class ProfileForm(ModelForm):
             '결혼상태': forms.Select(attrs={'class': 'form-control'}),
             '저축여부': forms.Select(attrs={'class': 'form-control'}),
             '직업분류1': forms.Select(attrs={'class': 'form-control'}),
-            '금융위험감수': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            '금융위험회피': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            '금융위험태도': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
 # UserEditForm은 더 이상 필요없음 (User 모델에 추가 정보 없음)
