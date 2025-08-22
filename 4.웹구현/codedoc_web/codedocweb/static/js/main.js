@@ -1,3 +1,16 @@
+// 로그인 모달 관련 함수들 (전역 함수로 정의)
+function showLoginModal() {
+    document.getElementById('loginModal').style.display = 'flex';
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+}
+
+function goToLogin() {
+    window.location.href = '/accounts/login/';  // 로그인 URL에 맞게 수정
+}
+
 // nav 부분 
 document.addEventListener('DOMContentLoaded', function() {
     const navItems = document.querySelectorAll('.nav-item');
@@ -95,5 +108,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 200);
         });
     }
-});
 
+    // 모달 외부 클릭시 닫기
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        document.addEventListener('click', function(e) {
+            if (e.target === modal || e.target.classList.contains('modal-overlay')) {
+                closeLoginModal();
+            }
+        });
+    }
+});

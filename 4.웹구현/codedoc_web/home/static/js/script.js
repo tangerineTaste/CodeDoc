@@ -116,19 +116,28 @@
         }
 
         // =================================
-        // 공지사항 아이템 클릭 이벤트
+        // 공지사항 아이템 클릭 이벤트 (수정된 버전)
         // =================================
         var noticeItems = document.querySelectorAll('.notice-item-card');
         noticeItems.forEach(function(item) {
             item.addEventListener('click', function() {
+                // data-notice-id 속성에서 공지사항 ID 가져오기
+                var noticeId = this.getAttribute('data-notice-id');
+                
+                // 공지사항 ID가 없으면 목록 페이지로 이동
+                if (!noticeId) {
+                    window.location.href = '/support/notices/';
+                    return;
+                }
+                
                 // 클릭 애니메이션
                 this.style.transform = 'translateX(8px) scale(0.98)';
                 this.style.transition = 'transform 0.15s ease';
                 
                 var self = this;
                 setTimeout(function() {
-                    // 공지사항 목록 페이지로 이동
-                    window.location.href = '/customer_support/notices/';
+                    // 개별 공지사항 상세 페이지로 이동 (support로 수정)
+                    window.location.href = '/support/notices/' + noticeId + '/';
                 }, 150);
             });
         });

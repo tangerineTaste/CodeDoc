@@ -22,6 +22,7 @@
   
   <title>{% block title %}{% endblock %}</title>
 </head>
+
 <body>
   {% include "header.html" %}  
     {% block content %}
@@ -29,5 +30,28 @@
   {% include "footer.html" with year=2025 %}
 
   {% block extra_js %}{% endblock %}
+
+  <!-- 로그인 필요 모달 -->
+<div id="loginModal" class="login-modal" style="display: none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#0078FE" stroke-width="2"/>
+                <polyline points="14,2 14,8 20,8" stroke="#0078FE" stroke-width="2"/>
+                <line x1="16" y1="13" x2="8" y2="13" stroke="#0078FE" stroke-width="2"/>
+                <line x1="16" y1="17" x2="8" y2="17" stroke="#0078FE" stroke-width="2"/>
+                <polyline points="10,9 9,9 8,9" stroke="#0078FE" stroke-width="2"/>
+            </svg>
+        </div>
+        <h3>고객정보조회/변경 화면은</h3>
+        <p>로그인이 필요한 화면입니다.</p>
+        <p>로그인 화면으로 이동하시겠습니까?</p>
+        <div class="modal-buttons">
+            <button class="modal-btn cancel-btn" onclick="closeLoginModal()">아니오</button>
+            <button class="modal-btn confirm-btn" onclick="goToLogin()">예</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

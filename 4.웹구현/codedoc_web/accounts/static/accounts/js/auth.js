@@ -8,15 +8,25 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('auth.js DOMContentLoaded 실행!');
     
     // ===============================
-    // 비밀번호 표시/숨기기 토글
-    // ===============================
-    const passwordToggles = document.querySelectorAll('.password-toggle');
-    
-    passwordToggles.forEach(function(toggle) {
-        toggle.addEventListener('click', function() {
-            const passwordInput = this.parentElement.querySelector('input[type="password"], input[type="text"]');
-            const eyeIcon = this.querySelector('.eye-icon');
-            
+// 비밀번호 표시/숨기기 토글
+// ===============================
+const passwordToggles = document.querySelectorAll('.password-toggle');
+
+passwordToggles.forEach(function(toggle) {
+    toggle.addEventListener('click', function() {
+        // data-target 속성이 있으면 해당 ID로 찾고, 없으면 부모 요소에서 찾기
+        const targetId = this.getAttribute('data-target');
+        let passwordInput;
+        
+        if (targetId) {
+            passwordInput = document.getElementById(targetId);
+        } else {
+            passwordInput = this.parentElement.querySelector('input[type="password"], input[type="text"]');
+        }
+        
+        const eyeIcon = this.querySelector('.eye-icon');
+        
+        if (passwordInput && eyeIcon) {
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 eyeIcon.innerHTML = `
@@ -31,8 +41,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
                 `;
             }
-        });
+        }
     });
+});
     
     // ===============================
     // 폼 제출 시 로딩 애니메이션
@@ -134,17 +145,21 @@ document.addEventListener('DOMContentLoaded', function() {
         errorDiv.style.marginTop = '5px';
         errorDiv.textContent = message;
         
-        input.parentElement.appendChild(errorDiv);
+        // .form-group 요소를 찾아서 그 안에 추가
+        const formGroup = input.closest('.form-group');
+        formGroup.appendChild(errorDiv);
     }
     
     function clearInputError(input) {
-        input.style.borderColor = 'var(--border-light)';
-        
-        const existingError = input.parentElement.querySelector('.field-error');
-        if (existingError) {
-            existingError.remove();
-        }
-    }
+    input.style.borderColor = 'var(--border-light)';
+    
+    // .form-group에서 모든 에러 메시지 찾아서 제거
+    const formGroup = input.closest('.form-group');
+    const existingErrors = formGroup.querySelectorAll('.field-error');
+    existingErrors.forEach(error => {
+        error.remove();
+    });
+}
     
     // ===============================
     // 체크박스 애니메이션

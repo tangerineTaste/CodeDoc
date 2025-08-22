@@ -15,12 +15,14 @@
         <p class="page-subtitle">고객님께 맞는 최적의 금융상품을 찾아보세요</p>
     </div>
 
-    <!-- 필터 탭 -->
+    <!-- 필터 탭 (6개로 확장) -->
     <div class="filter-tabs">
         <button class="filter-btn active" data-filter="all">전체</button>
         <button class="filter-btn" data-filter="deposit">예금</button>
         <button class="filter-btn" data-filter="saving">적금</button>
-        <button class="filter-btn" data-filter="loan">대출</button>
+        <button class="filter-btn" data-filter="fund">펀드</button>
+        <button class="filter-btn" data-filter="stock">주식</button>
+        <button class="filter-btn" data-filter="mmf">머니마켓펀드</button>
     </div>
 
     {% if error %}
@@ -40,8 +42,14 @@
                         <p class="product-subtitle">
                             {% if product.product_type == 'deposit' %}
                                 소중한 내 가족을 위한 현명한 선택!
-                            {% else %}
+                            {% elif product.product_type == 'saving' %}
                                 세바를골고의 든든한 세가지 약속!
+                            {% elif product.product_type == 'fund' %}
+                                전문가가 운용하는 안정적인 투자!
+                            {% elif product.product_type == 'stock' %}
+                                성장 가능성 높은 우량 주식!
+                            {% elif product.product_type == 'mmf' %}
+                                언제든지 찾을 수 있는 안전한 투자!
                             {% endif %}
                         </p>
                         
@@ -51,24 +59,66 @@
                         </div>
                         
                         <div class="product-info">
-                            <div class="info-label">금융회사</div>
+                            <div class="info-label">
+                                {% if product.product_type == 'fund' or product.product_type == 'mmf' %}
+                                    자산운용사
+                                {% elif product.product_type == 'stock' %}
+                                    종목명
+                                {% else %}
+                                    금융회사
+                                {% endif %}
+                            </div>
                             <div class="info-value">{{ product.kor_co_nm }}</div>
                         </div>
                         
-                        <div class="product-info">
-                            <div class="info-label">가입방법</div>
-                            <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
-                        </div>
+                        {% if product.product_type == 'stock' %}
+                            <div class="product-info">
+                                <div class="info-label">현재가</div>
+                                <div class="info-value rate-highlight">{{ product.current_price|floatformat:0 }}원</div>
+                            </div>
+                            <div class="product-info">
+                                <div class="info-label">등락률</div>
+                                <div class="info-value {% if product.change_rate >= 0 %}rate-positive{% else %}rate-negative{% endif %}">
+                                    {% if product.change_rate >= 0 %}+{% endif %}{{ product.change_rate|floatformat:2 }}%
+                                </div>
+                            </div>
+                        {% elif product.product_type == 'fund' or product.product_type == 'mmf' %}
+                            <div class="product-info">
+                                <div class="info-label">수익률</div>
+                                <div class="info-value rate-highlight">{{ product.return_rate|floatformat:2 }}%</div>
+                            </div>
+                            <div class="product-info">
+                                <div class="info-label">최소투자금액</div>
+                                <div class="info-value">{{ product.min_invest }}</div>
+                            </div>
+                        {% else %}
+                            <div class="product-info">
+                                <div class="info-label">가입방법</div>
+                                <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                            </div>
+                        {% endif %}
                         
                         <div class="product-tags">
                             {% if product.product_type == 'deposit' %}
                                 <span class="tag">#보장</span>
                                 <span class="tag">#예금</span>
                                 <span class="tag">#안전</span>
-                            {% else %}
+                            {% elif product.product_type == 'saving' %}
                                 <span class="tag">#성인우대혜택</span>
                                 <span class="tag">#적금</span>
                                 <span class="tag">#저축</span>
+                            {% elif product.product_type == 'fund' %}
+                                <span class="tag">#{{ product.fund_type }}</span>
+                                <span class="tag">#위험도{{ product.risk_level }}</span>
+                                <span class="tag">#전문운용</span>
+                            {% elif product.product_type == 'stock' %}
+                                <span class="tag">#{{ product.sector }}</span>
+                                <span class="tag">#{{ product.market_div }}</span>
+                                <span class="tag">#개별투자</span>
+                            {% elif product.product_type == 'mmf' %}
+                                <span class="tag">#단기금융</span>
+                                <span class="tag">#당일출금</span>
+                                <span class="tag">#안전투자</span>
                             {% endif %}
                         </div>
                     </div>
@@ -190,9 +240,6 @@
                             <span class="tag">#성인우대혜택</span>
                             <span class="tag">#적금</span>
                             <span class="tag">#저축</span>
-                            {% if "만15세부터" in product.join_way %}
-                                <span class="tag">#만15세부터 가입가능</span>
-                            {% endif %}
                         </div>
                     </div>
                 {% empty %}
@@ -229,25 +276,216 @@
             {% endif %}
         </div>
 
-        <!-- 대출 상품 섹션 -->
-        <div class="products-section" data-category="loan" style="display: none;">
-            <h2 class="section-title">대출 상품 (준비중)</h2>
+        <!-- 펀드 상품 섹션 -->
+        <div class="products-section" data-category="fund" style="display: none;">
+            <h2 class="section-title">펀드 {{ funds_total }}개 상품</h2>
             <div class="products-grid">
-                <div class="product-cards">
-                    <span class="product-badge">대출/지원</span>
-                    <h3 class="product-name">대출 상품 준비중</h3>
-                    <p class="product-subtitle">곧 다양한 대출 상품을 만나보실 수 있습니다.</p>
-                    
-                    <div class="product-info">
-                        <div class="info-label">상태</div>
-                        <div class="info-value">준비중</div>
+                {% for product in funds %}
+                    <div class="product-cards">
+                        <span class="product-badge">펀드/투자</span>
+                        <h3 class="product-name">{{ product.fin_prdt_nm }}</h3>
+                        <p class="product-subtitle">전문가가 운용하는 안정적인 투자!</p>
+                        
+                        <div class="product-info">
+                            <div class="info-label">자산운용사</div>
+                            <div class="info-value">{{ product.kor_co_nm }}</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">펀드유형</div>
+                            <div class="info-value">{{ product.fund_type }}</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">수익률(1년)</div>
+                            <div class="info-value rate-highlight">{{ product.return_rate|floatformat:2 }}%</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">최소투자금액</div>
+                            <div class="info-value">{{ product.min_invest }}</div>
+                        </div>
+                        
+                        <div class="product-tags">
+                            <span class="tag">#{{ product.fund_type }}</span>
+                            <span class="tag">#위험도{{ product.risk_level }}</span>
+                            <span class="tag">#전문운용</span>
+                        </div>
                     </div>
-                    
-                    <div class="product-tags">
-                        <span class="tag">#준비중</span>
+                {% empty %}
+                    <p>펀드 상품이 없습니다.</p>
+                {% endfor %}
+            </div>
+            
+            <!-- 펀드 페이지네이션 -->
+            {% if funds.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination">
+                        {% if funds.has_previous %}
+                            <a href="?funds_page={{ funds.previous_page_number }}">&lsaquo; 이전</a>
+                        {% endif %}
+                        
+                        {% for num in funds.paginator.page_range %}
+                            {% if num <= 5 %}
+                                {% if funds.number == num %}
+                                    <span class="current">{{ num }}</span>
+                                {% else %}
+                                    <a href="?funds_page={{ num }}">{{ num }}</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if funds.has_next %}
+                            <a href="?funds_page={{ funds.next_page_number }}">다음 &rsaquo;</a>
+                        {% endif %}
+                    </div>
+                    <div class="pagination-info">
+                        {{ funds.start_index }}-{{ funds.end_index }} / 총 {{ funds_total }}개
                     </div>
                 </div>
+            {% endif %}
+        </div>
+
+        <!-- 주식 상품 섹션 -->
+        <div class="products-section" data-category="stock" style="display: none;">
+            <h2 class="section-title">주식 {{ stocks_total }}개 상품</h2>
+            <div class="products-grid">
+                {% for product in stocks %}
+                    <div class="product-cards">
+                        <span class="product-badge">주식/투자</span>
+                        <h3 class="product-name">{{ product.stock_nm }}</h3>
+                        <p class="product-subtitle">성장 가능성 높은 우량 주식!</p>
+                        
+                        <div class="product-info">
+                            <div class="info-label">종목코드</div>
+                            <div class="info-value">{{ product.stock_code }}</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">업종</div>
+                            <div class="info-value">{{ product.sector }}</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">현재가</div>
+                            <div class="info-value rate-highlight">{{ product.current_price|floatformat:0 }}원</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">등락률</div>
+                            <div class="info-value {% if product.change_rate >= 0 %}rate-positive{% else %}rate-negative{% endif %}">
+                                {% if product.change_rate >= 0 %}+{% endif %}{{ product.change_rate|floatformat:2 }}%
+                            </div>
+                        </div>
+                        
+                        <div class="product-tags">
+                            <span class="tag">#{{ product.sector }}</span>
+                            <span class="tag">#{{ product.market_div }}</span>
+                            <span class="tag">#개별투자</span>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>주식 상품이 없습니다.</p>
+                {% endfor %}
             </div>
+            
+            <!-- 주식 페이지네이션 -->
+            {% if stocks.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination">
+                        {% if stocks.has_previous %}
+                            <a href="?stocks_page={{ stocks.previous_page_number }}">&lsaquo; 이전</a>
+                        {% endif %}
+                        
+                        {% for num in stocks.paginator.page_range %}
+                            {% if num <= 5 %}
+                                {% if stocks.number == num %}
+                                    <span class="current">{{ num }}</span>
+                                {% else %}
+                                    <a href="?stocks_page={{ num }}">{{ num }}</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if stocks.has_next %}
+                            <a href="?stocks_page={{ stocks.next_page_number }}">다음 &rsaquo;</a>
+                        {% endif %}
+                    </div>
+                    <div class="pagination-info">
+                        {{ stocks.start_index }}-{{ stocks.end_index }} / 총 {{ stocks_total }}개
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 머니마켓펀드 상품 섹션 -->
+        <div class="products-section" data-category="mmf" style="display: none;">
+            <h2 class="section-title">머니마켓펀드 {{ mmf_total }}개 상품</h2>
+            <div class="products-grid">
+                {% for product in mmf_products %}
+                    <div class="product-cards">
+                        <span class="product-badge">MMF/투자</span>
+                        <h3 class="product-name">{{ product.fin_prdt_nm }}</h3>
+                        <p class="product-subtitle">언제든지 찾을 수 있는 안전한 투자!</p>
+                        
+                        <div class="product-info">
+                            <div class="info-label">자산운용사</div>
+                            <div class="info-value">{{ product.kor_co_nm }}</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">유동성</div>
+                            <div class="info-value">{{ product.liquidity }}</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">수익률(7일)</div>
+                            <div class="info-value rate-highlight">{{ product.return_rate|floatformat:2 }}%</div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <div class="info-label">최소투자금액</div>
+                            <div class="info-value">{{ product.min_invest }}</div>
+                        </div>
+                        
+                        <div class="product-tags">
+                            <span class="tag">#단기금융</span>
+                            <span class="tag">#당일출금</span>
+                            <span class="tag">#안전투자</span>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>머니마켓펀드 상품이 없습니다.</p>
+                {% endfor %}
+            </div>
+            
+            <!-- 머니마켓펀드 페이지네이션 -->
+            {% if mmf_products.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination">
+                        {% if mmf_products.has_previous %}
+                            <a href="?mmf_page={{ mmf_products.previous_page_number }}">&lsaquo; 이전</a>
+                        {% endif %}
+                        
+                        {% for num in mmf_products.paginator.page_range %}
+                            {% if num <= 5 %}
+                                {% if mmf_products.number == num %}
+                                    <span class="current">{{ num }}</span>
+                                {% else %}
+                                    <a href="?mmf_page={{ num }}">{{ num }}</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if mmf_products.has_next %}
+                            <a href="?mmf_page={{ mmf_products.next_page_number }}">다음 &rsaquo;</a>
+                        {% endif %}
+                    </div>
+                    <div class="pagination-info">
+                        {{ mmf_products.start_index }}-{{ mmf_products.end_index }} / 총 {{ mmf_total }}개
+                    </div>
+                </div>
+            {% endif %}
         </div>
     {% endif %}
 </div>
