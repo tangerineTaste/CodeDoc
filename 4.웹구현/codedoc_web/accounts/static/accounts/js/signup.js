@@ -2,10 +2,10 @@
 // 단계별 회원가입 JavaScript (간단한 헤더 버전)
 // ===============================
 
-console.log('step-signup.js 로드 완료!');
+console.log('signup.js 로드 완료!');
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('step-signup.js DOMContentLoaded 실행!');
+    console.log('signup.js DOMContentLoaded 실행!');
     
     // ===============================
     // 변수 선언
@@ -106,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const password1 = document.getElementById('id_password1').value;
                 const password2 = document.getElementById('id_password2').value;
                 const email = document.getElementById('id_email').value.trim();
-                const usernameChecked = document.getElementById('id_username').dataset.checked;
                 
                 if (!username) {
                     isValid = false;
@@ -114,9 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else if (username.length < 4) {
                     isValid = false;
                     errorMessages.push('아이디는 4자 이상이어야 합니다.');
-                } else if (usernameChecked !== 'true') {
-                    isValid = false;
-                    errorMessages.push('아이디 중복확인을 해주세요.');
                 }
                 
                 if (!password1) {
@@ -132,17 +128,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorMessages.push('비밀번호가 일치하지 않습니다.');
                 }
                 
-                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!email) {
                     isValid = false;
                     errorMessages.push('이메일을 입력해주세요.');
-                } else if (!emailPattern.test(email)) {
-                    isValid = false;
-                    errorMessages.push('올바른 이메일 형식이 아닙니다.');
                 }
                 break;
                 
-            case 3: // 개인 정보
+            case 3: // 개인 정보  
                 const fullName = document.getElementById('id_full_name').value.trim();
                 const age = document.getElementById('id_age').value;
                 const gender = document.getElementById('id_gender').value;
@@ -152,17 +144,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!fullName) {
                     isValid = false;
                     errorMessages.push('이름을 입력해주세요.');
-                } else if (fullName.length < 2) {
-                    isValid = false;
-                    errorMessages.push('이름은 2자 이상 입력해주세요.');
                 }
                 
                 if (!age) {
                     isValid = false;
                     errorMessages.push('연령을 입력해주세요.');
-                } else if (age < 18 || age > 100) {
-                    isValid = false;
-                    errorMessages.push('올바른 연령을 입력해주세요. (18-100세)');
                 }
                 
                 if (!gender) {
@@ -183,17 +169,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             case 4: // 금융 정보
                 const jobCategory = document.getElementById('id_job_category').value;
-                const annualIncome = document.getElementById('id_annual_income').value;
                 const savingsHabit = document.getElementById('id_savings_habit').value;
                 
                 if (!jobCategory) {
                     isValid = false;
                     errorMessages.push('직업분류를 선택해주세요.');
-                }
-                
-                if (!annualIncome) {
-                    isValid = false;
-                    errorMessages.push('연간 소득을 선택해주세요.');
                 }
                 
                 if (!savingsHabit) {
@@ -223,11 +203,6 @@ document.addEventListener('DOMContentLoaded', function() {
         errorDiv.className = 'step-error-messages';
         errorDiv.innerHTML = `
             <div class="error-content">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="#dc3545" stroke-width="2"/>
-                    <line x1="15" y1="9" x2="9" y2="15" stroke="#dc3545" stroke-width="2"/>
-                    <line x1="9" y1="9" x2="15" y2="15" stroke="#dc3545" stroke-width="2"/>
-                </svg>
                 <div class="error-text">
                     ${messages.map(msg => `<div>${msg}</div>`).join('')}
                 </div>
@@ -235,7 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         currentStepElement.querySelector('.step-content').insertBefore(errorDiv, currentStepElement.querySelector('.step-content').firstChild);
-        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
     function hideStepError() {
@@ -254,40 +228,16 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.addEventListener('click', function() {
             if (validateStep(currentStep)) {
                 if (currentStep === 4) {
-                    // Step 4에서 Step 5으로 이동할 때 회원가입 처리
+                    // Step 4에서 실제 폼 제출
                     if (confirm('입력하신 정보로 회원가입을 진행하시겠습니까?')) {
-                        this.disabled = true;
-                        this.innerHTML = `
-                            <div class="spinner" style="width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px;"></div>
-                            처리중...
-                        `;
+                        console.log('폼 제출 중...');
                         
-                        setTimeout(() => {
-                            // 실제로는 document.getElementById('signupForm').submit();
-                            // 여기서는 Step 5으로 이동
-                            currentStep++;
-                            showStep(currentStep);
-                            // 버튼 원상복구
-                            this.disabled = false;
-                            this.innerHTML = `
-                                다음
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            `;
-                        }, 2000);
+                        // 실제 폼 제출
+                        document.getElementById('signupForm').submit();
                     }
                 } else if (currentStep < totalSteps) {
                     currentStep++;
                     showStep(currentStep);
-                    
-                    setTimeout(() => {
-                        const nextStepElement = document.getElementById(`step${currentStep}`);
-                        const firstInput = nextStepElement.querySelector('.form-input, .form-select, .checkbox-input');
-                        if (firstInput) {
-                            firstInput.focus();
-                        }
-                    }, 200);
                 }
             }
         });
@@ -306,42 +256,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 로그인하기 버튼 클릭 (Step 5에서만)
     if (submitBtn) {
-    submitBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        if (currentStep === 5) {
-            // Step 5에서는 로그인 페이지로 이동
-            window.location.href = "{% url 'accounts:login' %}";
-        }
-    });
-}
-    
-    // ===============================
-    // 키보드 네비게이션
-    // ===============================
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            const activeElement = document.activeElement;
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             
-            if (activeElement.classList.contains('form-input') || activeElement.classList.contains('form-select')) {
-                e.preventDefault();
-                
-                const currentStepElement = document.getElementById(`step${currentStep}`);
-                const inputs = currentStepElement.querySelectorAll('.form-input, .form-select');
-                const currentIndex = Array.from(inputs).indexOf(activeElement);
-                
-                if (currentIndex < inputs.length - 1) {
-                    inputs[currentIndex + 1].focus();
-                } else {
-                    if (currentStep < totalSteps) {
-                        nextBtn.click();
-                    } else {
-                        submitBtn.click();
-                    }
-                }
+            if (currentStep === 5) {
+                // Step 5에서는 로그인 페이지로 이동
+                window.location.href = "/accounts/login/";
             }
-        }
-    });
+        });
+    }
     
     // ===============================
     // Step 1: 전체 약관 동의
@@ -353,7 +276,6 @@ document.addEventListener('DOMContentLoaded', function() {
         agreeAllCheckbox.addEventListener('change', function() {
             agreementItems.forEach(item => {
                 item.checked = this.checked;
-                updateCheckboxStyle(item);
             });
             hideStepError();
         });
@@ -361,108 +283,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     agreementItems.forEach(item => {
         item.addEventListener('change', function() {
-            updateCheckboxStyle(this);
-            
             if (agreeAllCheckbox) {
                 const allChecked = Array.from(agreementItems).every(item => item.checked);
                 agreeAllCheckbox.checked = allChecked;
-                updateCheckboxStyle(agreeAllCheckbox);
             }
-            
-            hideStepError();
-        });
-    });
-    
-    function updateCheckboxStyle(checkbox) {
-    const wrapper = checkbox.closest('.checkbox-wrapper');
-    // 전체 약관 동의 체크박스인 경우 색상 변경하지 않음
-    if (checkbox.id === 'agreeAll') {
-        return;
-    }
-    
-    // 개별 약관 체크박스만 색상 변경
-    if (checkbox.checked) {
-        wrapper.style.color = 'var(--primary-color)';
-    } else {
-        wrapper.style.color = '';
-    }
-}
-    
-    // ===============================
-    // Step 2: 아이디 중복확인
-    // ===============================
-    const usernameInput = document.getElementById('id_username');
-    const usernameCheckBtn = document.getElementById('usernameCheck');
-    
-    if (usernameCheckBtn) {
-        usernameCheckBtn.addEventListener('click', function() {
-            const username = usernameInput.value.trim();
-            
-            if (!username) {
-                alert('아이디를 입력해주세요.');
-                usernameInput.focus();
-                return;
-            }
-            
-            if (username.length < 4) {
-                alert('아이디는 4자 이상이어야 합니다.');
-                usernameInput.focus();
-                return;
-            }
-            
-            this.disabled = true;
-            this.textContent = '확인중...';
-            
-            setTimeout(() => {
-                const isAvailable = Math.random() > 0.3;
-                
-                if (isAvailable) {
-                    this.textContent = '사용가능';
-                    this.style.background = '#0078FE';
-                    this.style.color = 'white';
-                    this.style.borderColor = '#0078FE';
-                    this.classList.add('success-state'); // CSS 클래스 추가
-                    usernameInput.style.borderColor = '#0078FE';
-                    usernameInput.dataset.checked = 'true';
-                    hideStepError();
-                } else {
-                    this.textContent = '중복확인';
-                    this.disabled = false;
-                    alert('이미 사용중인 아이디입니다.');
-                    usernameInput.focus();
-                }
-            }, 1000);
-        });
-    }
-    
-    if (usernameInput) {
-        usernameInput.addEventListener('input', function() {
-            const checkBtn = document.getElementById('usernameCheck');
-            if (checkBtn && this.dataset.checked === 'true') {
-                checkBtn.textContent = '중복확인';
-                checkBtn.style.background = '';
-                checkBtn.style.color = '';
-                checkBtn.disabled = false;
-                this.style.borderColor = '';
-                this.dataset.checked = 'false';
-            }
-            hideStepError();
-        });
-    }
-    
-    // ===============================
-    // 라디오 버튼 스타일링
-    // ===============================
-    const radioInputs = document.querySelectorAll('.radio-input');
-    
-    radioInputs.forEach(function(radio) {
-        radio.addEventListener('change', function() {
-            const sameNameRadios = document.querySelectorAll(`input[name="${this.name}"]`);
-            sameNameRadios.forEach(function(r) {
-                r.closest('.radio-wrapper').classList.remove('selected');
-            });
-            
-            this.closest('.radio-wrapper').classList.add('selected');
             hideStepError();
         });
     });

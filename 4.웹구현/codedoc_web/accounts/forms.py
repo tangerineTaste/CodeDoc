@@ -6,40 +6,35 @@ from django.forms import ModelForm
 
 class SignupForm(UserCreationForm):
     """회원가입 폼"""
-    name = forms.CharField(max_length=50, required=True, label='이름')  # 변경
-
-    # Profile 필드들
-    교육수준분류 = forms.ChoiceField(
+    full_name = forms.CharField(max_length=50, required=True, label='이름')  # name -> full_name
+    age = forms.IntegerField(required=False, label='연령', min_value=18, max_value=100)
+    
+    # Profile 필드들 - 템플릿과 이름 맞춤
+    education = forms.ChoiceField(
         choices=UserProfile.EDUCATION_CHOICES,
         required=False,
         label='교육수준',
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    연령대분류 = forms.ChoiceField(
-        choices=UserProfile.AGE_GROUP_CHOICES,
-        required=False,
-        label='연령대',
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    가구주성별 = forms.ChoiceField(
+    gender = forms.ChoiceField(
         choices=UserProfile.GENDER_CHOICES,
         required=False,
         label='성별',
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    결혼상태 = forms.ChoiceField(
+    marital_status = forms.ChoiceField(
         choices=UserProfile.MARRIAGE_CHOICES,
         required=False,
         label='결혼상태',
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    저축여부 = forms.ChoiceField(
+    savings_habit = forms.ChoiceField(
         choices=UserProfile.SAVINGS_CHOICES,
         required=False,
         label='저축습관',
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    직업분류1 = forms.ChoiceField(
+    job_category = forms.ChoiceField(
         choices=UserProfile.JOB_CHOICES,
         required=False,
         label='직업분류',
@@ -50,20 +45,76 @@ class SignupForm(UserCreationForm):
         fields = ('username', 'password1', 'password2')
     
     def save(self, commit=True):
+        print(f"=== SIGNUP FORM SAVE METHOD CALLED ===")  # 디버깅
+        print(f"Cleaned data: {self.cleaned_data}")  # 디버깅
+        
         user = super().save(commit=False)
         
         if commit:
             user.save()
-            # Profile 정보 저장
-            profile = user.profile
-            profile.name = self.cleaned_data['name']
-            profile.교육수준분류 = self.cleaned_data.get('교육수준분류') or None
-            profile.연령대분류 = self.cleaned_data.get('연령대분류') or None
-            profile.가구주성별 = self.cleaned_data.get('가구주성별') or None
-            profile.결혼상태 = self.cleaned_data.get('결혼상태') or None
-            profile.저축여부 = self.cleaned_data.get('저축여부') or None
-            profile.직업분류1 = self.cleaned_data.get('직업분류1') or None
-            profile.save()
+            print(f"User saved to DB: {user.username}")  # 디버깅
+            
+            # Profile 정보 저장 - 더 안전한 방식
+            try:
+                profile = user.profile
+                print("Profile found via signal")  # 디버깅
+            except:
+                profile = UserProfile.objects.create(user=user)
+                print("Profile created manually")  # 디버깅
+            
+            # 템플릿과 일치하는 필드 이름 사용
+            full_name = self.cleaned_data.get('full_name', '')
+            profile.name = full_name
+            print(f"Setting profile name: {full_name}")  # 디버깅
+            
+            # 나이를 연령대분류로 변환
+            age = self.cleaned_data.get('age')
+            if age:
+                if 18 <= age <= 25:
+                    profile.연령대분류 = 1
+                elif 26 <= age <= 35:
+                    profile.연령대분류 = 2
+                elif 36 <= age <= 45:
+                    profile.연령대분류 = 3
+                elif 46 <= age <= 55:
+                    profile.연령대분류 = 4
+                elif 56 <= age <= 65:
+                    profile.연령대분류 = 5
+                else:
+                    profile.연령대분류 = 6
+                print(f"Setting age group: {age} -> {profile.연령대분류}")  # 디버깅
+            
+            # 값이 비어있지 않을 때만 저장 (빈 문자열이나 None 체크)
+            education = self.cleaned_data.get('education')
+            if education:
+                profile.교육수준분류 = int(education)
+                print(f"Setting education: {education}")  # 디버깅
+            
+            gender = self.cleaned_data.get('gender')
+            if gender:
+                profile.가구주성별 = int(gender)
+                print(f"Setting gender: {gender}")  # 디버깅
+            
+            marriage = self.cleaned_data.get('marital_status')
+            if marriage:
+                profile.결혼상태 = int(marriage)
+                print(f"Setting marriage: {marriage}")  # 디버깅
+            
+            savings = self.cleaned_data.get('savings_habit')
+            if savings:
+                profile.저축여부 = int(savings)
+                print(f"Setting savings: {savings}")  # 디버깅
+            
+            job = self.cleaned_data.get('job_category')
+            if job:
+                profile.직업분류1 = int(job)
+                print(f"Setting job: {job}")  # 디버깅
+            
+            try:
+                profile.save()
+                print(f"Profile saved successfully: {profile.name}, User: {user.username}, Age Group: {profile.연령대분류}")  # 디버깅
+            except Exception as e:
+                print(f"Error saving profile: {e}")  # 디버깅
         
         return user
 

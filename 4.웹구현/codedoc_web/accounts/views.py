@@ -74,15 +74,22 @@ def login_view(request):
     return render(request, 'accounts/login.html', {'form': form})
 
 def signup_view(request):
+    print(f"=== SIGNUP_VIEW CALLED - Method: {request.method} ===")  # 디버깅
+    
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        print(f"POST data received: {request.POST}")  # 디버깅
+        form = SignupForm(request.POST)  # UserCreationForm을 SignupForm으로 변경
         if form.is_valid():
-            form.save()
+            print("Form is valid, saving user...")  # 디버깅
+            user = form.save()
+            print(f"User created: {user.username}")  # 디버깅
             username = form.cleaned_data.get('username')
             messages.success(request, f'{username}님의 계정이 생성되었습니다!')
             return redirect('accounts:login')
+        else:
+            print(f"Form errors: {form.errors}")  # 디버깅
     else:
-        form = UserCreationForm()
+        form = SignupForm()  # UserCreationForm을 SignupForm으로 변경
     return render(request, 'accounts/signup.html', {'form': form})
 
 def logout_view(request):
