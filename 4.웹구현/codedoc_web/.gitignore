@@ -1,6 +1,5 @@
 __pycache__/
 .env
 .venv/
-db.sqlite3
 .gitignore
 cleaned_scf_data.csv
