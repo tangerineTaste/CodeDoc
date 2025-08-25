@@ -3,3 +3,5 @@ __pycache__/
 .venv/
 .gitignore
 cleaned_scf_data.csv
+db.sqlite3
+.gemini/
