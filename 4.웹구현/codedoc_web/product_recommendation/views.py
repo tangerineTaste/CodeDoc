@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 from .utils import ProductDataLoader, ProductPaginator
+from .category_recommendations import get_category_recommendations_for_user, get_default_products_by_category
 import requests
 import os
 import json
@@ -67,15 +68,33 @@ def product_list(request):
     """
     상품 목록 페이지
     기존 API 데이터(예금/적금) + 새로운 파일 기반 데이터(펀드/주식/MMF) 통합
+    + 카테고리별 사용자 맞춤 AI 추천 기능
     """
     context = {}
     
     try:
-        # 1. 기존 API 데이터 (예금, 적금) - 실제 API 호출
+        # 1. 로그인한 사용자에게 AI 추천 상품 제공
+        if request.user.is_authenticated and hasattr(request.user, 'profile'):
+            try:
+                # 전체 카테고리 추천
+                recommended_products = get_ai_recommendations_for_user(request.user)
+                if recommended_products:
+                    context['recommended_products'] = recommended_products
+                    print(f"사용자 {request.user.username}에게 AI 추천 상품 {len(recommended_products)}개 제공")
+                
+                # 카테고리별 추천 상품 생성
+                category_recommendations = get_category_recommendations_for_user(request.user)
+                context.update(category_recommendations)
+                
+            except Exception as e:
+                print(f"AI 추천 시스템 오류: {e}")
+                # 오류가 발생해도 전체 페이지는 정상 로드
+        
+        # 2. 기존 API 데이터 (예금, 적금) - 실제 API 호출
         deposits = get_deposit_products()
         savings = get_saving_products()
         
-        # 2. 새로운 파일 기반 데이터 로드
+        # 3. 새로운 파일 기반 데이터 로드
         print("파일 기반 데이터 로딩 시작...")
         funds = ProductDataLoader.get_funds()
         stocks = ProductDataLoader.get_stocks()
@@ -83,7 +102,7 @@ def product_list(request):
         
         print(f"로드된 데이터: 예금 {len(deposits)}개, 적금 {len(savings)}개, 펀드 {len(funds)}개, 주식 {len(stocks)}개, MMF {len(mmf_products)}개")
         
-        # 3. 전체 상품 통합 (API + 파일 기반)
+        # 4. 전체 상품 통합 (API + 파일 기반)
         all_products_list = []
         
         # API 데이터를 통합 형식으로 변환
@@ -104,7 +123,7 @@ def product_list(request):
         
         print(f"전체 통합 상품 수: {len(all_products_list)}개")
         
-        # 4. 페이지네이션 처리
+        # 5. 페이지네이션 처리
         page = request.GET.get('page', 1)
         deposits_page = request.GET.get('deposits_page', 1)
         savings_page = request.GET.get('savings_page', 1)
@@ -138,7 +157,7 @@ def product_list(request):
             mmf_products, mmf_page, per_page=9
         )
         
-        # 5. 컨텍스트 구성
+        # 6. 컨텍스트 구성
         context.update({
             # 전체 상품
             'all_products': all_products_paginated,
@@ -387,21 +406,234 @@ def product_recommend_ai(request):
     return render(request, 'product_recommendation/product_recommend_ai.html', context)
 
 
-def get_ai_recommendations(user_input):
+def get_ai_recommendations_for_user(user):
     """
-    AI 기반 상품 추천 로직 (기존 유지)
+    로그인한 사용자에게 AI 추천 상품 제공
+    사용자의 프로필 정보를 바탕으로 머신러닝 추천
+    '전체' 카테고리에서는 사용자가 선호할 가능성이 가장 높은 카테고리 상품 3개 추천
     """
-    return {
-        'user_info': {
-            'age': 30,
-            'monthly_income': 400,
-            'gender': 'male',
-            'married': False
-        },
-        'recommendation_reason': '고객님의 연령과 소득 수준을 고려한 추천입니다.',
-        'products': [],
-        'total_candidates': 50
+    try:
+        profile = user.profile
+        
+        # 사용자 선호도 분석
+        preferred_category = analyze_user_preference(profile)
+        print(f"사용자 {user.username}의 선호 카테고리: {preferred_category}")
+        
+        # 선호 카테고리 기반으로 추천 입력 생성
+        user_input_parts = []
+        
+        # 연령대 정보
+        age_map = {
+            1: '23세',  # 18-25세
+            2: '30세',  # 26-35세 
+            3: '40세',  # 36-45세
+            4: '50세',  # 46-55세
+            5: '60세',  # 56-65세
+            6: '70세'   # 66세 이상
+        }
+        
+        if profile.연령대분류:
+            user_input_parts.append(age_map.get(profile.연령대분류, '30세'))
+        
+        # 성별 정보
+        if profile.가구주성별 == 1:
+            user_input_parts.append('남성')
+        elif profile.가구주성별 == 2:
+            user_input_parts.append('여성')
+        
+        # 결혼 상태
+        if profile.결혼상태 == 1:
+            user_input_parts.append('기혼')
+        elif profile.결혼상태 == 2:
+            user_input_parts.append('미혼')
+        
+        # 직업 및 소득 추정
+        income_map = {
+            1: '월급 350만원',  # 일반 직장인
+            2: '월급 600만원',  # 고소득 전문직
+            3: '연금 수급자',   # 은퇴자
+            4: '월급 200만원'   # 저소득층
+        }
+        
+        if profile.직업분류1:
+            user_input_parts.append(income_map.get(profile.직업분류1, '월급 300만원'))
+        
+        # 선호 카테고리에 따른 목적 결정
+        category_purpose_map = {
+            'deposit': '안전한 예금상품',
+            'saving': '꾸준한 적금상품',
+            'fund': '전문가 운용 펀드',
+            'stock': '성장 가능성 높은 주식',
+            'mmf': '유동성 좋은 머니마켓펀드'
+        }
+        purpose = category_purpose_map.get(preferred_category, '적금')
+        user_input_parts.append(purpose)
+        
+        # 가상 사용자 입력 생성
+        user_input = ' '.join(user_input_parts) + ' 추천해주세요'
+        
+        print(f"사용자 {user.username}에 대한 AI 추천 입력: {user_input}")
+        
+        # AI 추천 시스템 호출
+        from .matching import HighPerformanceFinancialRecommender
+        recommender = HighPerformanceFinancialRecommender()
+        result = recommender.recommend(user_input, top_n=3)  # 3개 추천
+        
+        # 추천 결과를 템플릿에서 사용할 수 있는 형식으로 변환
+        recommended_products = []
+        for product in result.get('products', []):
+            # 기존 상품 형식에 맞게 변환
+            converted_product = {
+                'fin_prdt_nm': product['name'],
+                'kor_co_nm': product['bank'],
+                'join_way': product.get('join_way', '온라인 가입 가능'),
+                'product_type': get_product_type_from_ai_result(product),
+                'product_type_name': get_product_type_name_from_ai_result(product),
+                'rate': product.get('rate', 0),
+                'return_rate': product.get('rate', 0),  # 펀드/MMF용
+                'score': product.get('score', 0),
+                'preferred_category': preferred_category  # 선호 카테고리 추가
+            }
+            recommended_products.append(converted_product)
+        
+        print(f"AI 추천 완료: {len(recommended_products)}개 상품 추천 (선호 카테고리: {preferred_category})")
+        return recommended_products
+        
+    except Exception as e:
+        print(f"AI 추천 오류: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+
+def analyze_user_preference(profile):
+    """
+    사용자 프로필을 분석하여 선호할 가능성이 가장 높은 상품 카테고리 결정
+    """
+    # 기본값 설정
+    risk_attitude = profile.금융위험태도 or 0
+    savings_habit = profile.저축여부 or 2
+    age_group = profile.연령대분류 or 2
+    
+    # 점수 기반 선호도 계산
+    scores = {
+        'deposit': 0,
+        'saving': 0, 
+        'fund': 0,
+        'stock': 0,
+        'mmf': 0
     }
+    
+    # 1. 연령대별 점수
+    if age_group <= 2:  # 35세 이하 - 적극적 투자 선호
+        scores['stock'] += 3
+        scores['fund'] += 2
+        scores['saving'] += 1
+    elif age_group <= 4:  # 36-55세 - 중간 위험
+        scores['fund'] += 3
+        scores['saving'] += 2
+        scores['mmf'] += 1
+    else:  # 56세 이상 - 안정성 선호
+        scores['deposit'] += 3
+        scores['saving'] += 2
+        scores['mmf'] += 1
+    
+    # 2. 금융위험태도별 점수
+    if risk_attitude < -1:  # 고위험 선호
+        scores['stock'] += 4
+        scores['fund'] += 2
+    elif risk_attitude < 0:  # 중간 위험
+        scores['fund'] += 3
+        scores['stock'] += 1
+        scores['mmf'] += 1
+    elif risk_attitude <= 1:  # 안정 선호
+        scores['saving'] += 3
+        scores['deposit'] += 2
+        scores['mmf'] += 2
+    else:  # 초안정 선호
+        scores['deposit'] += 4
+        scores['saving'] += 1
+    
+    # 3. 저축여부별 점수
+    if savings_habit == 3:  # 적극적 저축
+        scores['saving'] += 2
+        scores['deposit'] += 1
+    elif savings_habit == 2:  # 일부 저축
+        scores['fund'] += 1
+        scores['saving'] += 1
+    # savings_habit == 1 (저축 안함) - 추가 점수 없음
+    
+    # 가장 높은 점수의 카테고리 반환
+    preferred_category = max(scores, key=scores.get)
+    
+    print(f"사용자 선호도 점수: {scores}")
+    print(f"최종 선호 카테고리: {preferred_category}")
+    
+    return preferred_category
+
+
+def determine_investment_purpose(profile):
+    """
+    사용자 프로필을 기반으로 투자 목적 결정
+    """
+    # 금융위험태도가 0 이상이면 위험회피형, 미만이면 위험감수형
+    risk_attitude = profile.금융위험태도 or 0
+    savings_habit = profile.저축여부 or 2  # 기본값: 일부 저축
+    age_group = profile.연령대분류 or 2  # 기본값: 26-35세
+    
+    # 연령대가 높고 위험회피형이면 예금/적금 선호
+    if age_group >= 4 and risk_attitude >= 0:  # 46세 이상, 위험회피
+        if savings_habit == 3:  # 적극적 저축
+            return '적금'
+        else:
+            return '예금'
+    
+    # 젊고 위험감수형이면 투자상품 선호
+    elif age_group <= 2 and risk_attitude < 0:  # 35세 이하, 위험감수
+        return '주식 투자'
+    
+    # 중간 연령대와 중간 위험 성향이면 펀드 선호
+    elif 2 <= age_group <= 3:  # 26-45세
+        return '펀드 투자'
+    
+    # 기본값은 적금
+    else:
+        return '적금'
+
+
+def get_product_type_from_ai_result(product):
+    """
+    AI 추천 결과에서 상품 타입 추출
+    """
+    if product.get('is_investment', False):
+        if '펀드' in product['name']:
+            return 'fund'
+        elif '주식' in product['name'] or 'stock' in product.get('product_id', '').lower():
+            return 'stock'
+        elif 'MMF' in product['name'] or '맨이마켓' in product['name']:
+            return 'mmf'
+        else:
+            return 'fund'  # 기본값
+    else:
+        if '적금' in product['name']:
+            return 'saving'
+        else:
+            return 'deposit'
+
+
+def get_product_type_name_from_ai_result(product):
+    """
+    AI 추천 결과에서 상품 타입 이름 추출
+    """
+    product_type = get_product_type_from_ai_result(product)
+    type_name_map = {
+        'deposit': '예금',
+        'saving': '적금',
+        'fund': '펀드',
+        'stock': '주식',
+        'mmf': '머니마켓펀드'
+    }
+    return type_name_map.get(product_type, '금융상품')
 
 
 # 기존 product_list 함수 백업 (참고용)

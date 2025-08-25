@@ -55,38 +55,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 50);
     }
 
-    // 카드 호버 효과 강화
-    const productCards = document.querySelectorAll('.product-cards');
+    // AI 추천 카드 특별 효과
+    function initAIRecommendations() {
+        const aiCards = document.querySelectorAll('.ai-recommended');
+        
+        aiCards.forEach((card, index) => {
+            // AI 추천 카드에 딜레이 애니메이션 추가
+            setTimeout(() => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 150); // 연속적인 애니메이션
+        });
+        
+        // AI 추천 카드 클릭 이벤트 (추후 상세 페이지 연동)
+        aiCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // 추후 상세 페이지로 이동 또는 모달 표시
+                console.log('AI 추천 상품 클릭:', this.querySelector('.product-name').textContent);
+            });
+        });
+    }
     
-    productCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-8px) scale(1.02)';
-        });
+    // 카드 호버 효과 초기화
+    function initCardHoverEffects() {
+        const productCards = document.querySelectorAll('.product-cards');
         
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
-        });
-    });
-
-    // // 스크롤 애니메이션
-    // function animateOnScroll() {
-    //     const cards = document.querySelectorAll('.product-cards');
-        
-    //     cards.forEach(card => {
-    //         const cardTop = card.getBoundingClientRect().top;
-    //         const cardVisible = 150;
+        productCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('ai-recommended')) {
+                    this.style.transform = 'translateY(-5px) scale(1.01)';
+                } else {
+                    this.style.transform = 'translateY(-8px) scale(1.02)';
+                }
+            });
             
-    //         if (cardTop < window.innerHeight - cardVisible) {
-    //             card.classList.add('animate-in');
-    //         }
-    //     });
-    // }
-
-    // // 스크롤 이벤트 리스너
-    // window.addEventListener('scroll', animateOnScroll);
-    
-    // // 페이지 로드 시 애니메이션 실행
-    // animateOnScroll();
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    }
 
     // 검색 기능 (추후 확장 가능)
     function initSearch() {
@@ -118,32 +131,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 검색 기능 초기화
-    initSearch();
-});
+    // 카테고리별 AI 추천 상품 표시/숨김 처리
+    function handleCategoryRecommendations(filter) {
+        const categoryRecommendations = document.querySelectorAll('.category-recommendation');
+        
+        categoryRecommendations.forEach(rec => {
+            const parent = rec.closest('.products-section');
+            const parentCategory = parent.getAttribute('data-category');
+            
+            if (parentCategory === filter || (filter === 'all' && parentCategory === 'all')) {
+                rec.style.display = 'block';
+            } else {
+                rec.style.display = 'none';
+            }
+        });
+    }
 
-// // CSS 애니메이션 클래스 (추가 스타일)
-// const style = document.createElement('style');
-// style.textContent = `
-//     .animate-in {
-//         animation: slideInUp 0.6s ease forwards;
-//     }
+    // 초기화 함수들 실행
+    initSearch();
+    initAIRecommendations();
+    initCardHoverEffects();
     
-//     @keyframes slideInUp {
-//         from {
-//             opacity: 0;
-//             transform: translateY(30px);
-//         }
-//         to {
-//             opacity: 1;
-//             transform: translateY(0);
-//         }
-//     }
-    
-//     .product-cards {
-//         opacity: 0;
-//         transform: translateY(30px);
-//         transition: all 0.3s ease;
-//     }
-// `;
-// document.head.appendChild(style);
+    // 필터 버튼에 카테고리별 추천 처리 추가
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
+            handleCategoryRecommendations(filter);
+        });
+    });
+
+    console.log('상품 목록 페이지 초기화 완료');
+    console.log('AI 추천 상품 수:', document.querySelectorAll('.ai-recommended').length);
+});

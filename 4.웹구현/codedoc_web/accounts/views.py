@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, authenticate, login, logout
+from django.contrib.auth.forms import AuthenticationForm
 from django.conf import settings
 from .forms import ProfileForm, SignupForm
 
@@ -55,10 +56,6 @@ def password_change(request):
     
     return render(request, 'accounts/password_change.html', {'form': form})
 
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib import messages
-
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -93,6 +90,19 @@ def signup_view(request):
     return render(request, 'accounts/signup.html', {'form': form})
 
 def logout_view(request):
-    logout(request)
-    return redirect('/')
+    """로그아웃 봰"""
+    print(f"Logout view called - Method: {request.method}")  # 디버깅
+    
+    if request.method == 'POST':
+        print("POST request - logging out user")  # 디버깅
+        logout(request)
+        messages.success(request, '로그아웃되었습니다.')
+        return redirect('/')
+    else:
+        print("GET request - showing logout page")  # 디버깅
+        try:
+            return render(request, 'accounts/logout_simple.html')
+        except Exception as e:
+            print(f"Template error: {e}")  # 디버깅
+            return redirect('/')
 

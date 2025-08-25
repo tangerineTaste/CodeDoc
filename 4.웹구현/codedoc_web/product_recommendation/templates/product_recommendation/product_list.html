@@ -15,37 +15,6 @@
         <p class="page-subtitle">고객님께 맞는 최적의 금융상품을 찾아보세요</p>
     </div>
 
-    <!-- AI 추천 상품 섹션 -->
-    {% if recommended_products %}
-    <div class="recommendation-section">
-        <h2 class="section-title">회원님을 위한 AI 추천 상품 💎</h2>
-        <div class="products-grid">
-            {% for product in recommended_products %}
-                <div class="product-cards">
-                    <span class="product-badge recommended-badge">{{ product.product_type_name }}</span>
-                    <h3 class="product-name">{{ product.fin_prdt_nm }}</h3>
-                    <p class="product-subtitle">AI가 회원님의 프로필을 분석하여 추천하는 맞춤 상품입니다.</p>
-                    
-                    <div class="product-info">
-                        <div class="info-label">금융회사</div>
-                        <div class="info-value">{{ product.kor_co_nm }}</div>
-                    </div>
-                    
-                    <div class="product-info">
-                        <div class="info-label">가입방법</div>
-                        <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
-                    </div>
-                    
-                    <div class="product-tags">
-                        <span class="tag">#AI추천</span>
-                        <span class="tag">#맞춤상품</span>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
     <!-- 필터 탭 (6개로 확장) -->
     <div class="filter-tabs">
         <button class="filter-btn active" data-filter="all">전체</button>
@@ -64,7 +33,47 @@
     {% else %}
         <!-- 전체 상품 섹션 -->
         <div class="products-section" data-category="all">
+            
+            
+            <!-- 전체 카테고리 AI 추천 상품 섹션 -->
+            {% if recommended_products %}
+            <div class="recommendation-section category-recommendation">
+                <h3 class="section-subtitle">회원님을 위한 전체 AI 추천 상품 </h3>
+                <div class="products-grid">
+                    {% for product in recommended_products %}
+                        <div class="product-cards ai-recommended">
+                            <span class="product-badge recommended-badge">{{ product.product_type_name }}</span>
+                            <h4 class="product-name">{{ product.fin_prdt_nm }}</h4>
+                            <p class="product-subtitle">AI가 회원님의 프로필을 분석하여 추천하는 모든 카테고리의 맞춤 상품입니다.</p>
+                            
+                            <div class="product-info">
+                                <div class="info-label">금융회사</div>
+                                <div class="info-value">{{ product.kor_co_nm }}</div>
+                            </div>
+                            
+                            <div class="product-info">
+                                <div class="info-label">가입방법</div>
+                                <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                            </div>
+                            
+                            {% if product.rate %}
+                            <div class="product-info">
+                                <div class="info-label">금리/수익률</div>
+                                <div class="info-value rate-highlight">{{ product.rate|floatformat:2 }}%</div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="product-tags">
+                                <span class="tag">#AI추천</span>
+                                <span class="tag">#맞춤상품</span>
+                                <span class="tag">#전체추천</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
             <h2 class="section-title">전체 {{ all_total }}개 상품</h2>
+            {% endif %}
             <div class="products-grid">
                 {% for product in all_products %}
                     <div class="product-cards">
@@ -189,7 +198,47 @@
 
         <!-- 예금 상품 섹션 -->
         <div class="products-section" data-category="deposit" style="display: none;">
+            
+            
+            <!-- 예금 AI 추천 상품 섹션 -->
+            {% if recommended_deposit %}
+            <div class="recommendation-section category-recommendation">
+                <h3 class="section-subtitle">회원님을 위한 예금 AI 추천 상품 </h3>
+                <div class="products-grid">
+                    {% for product in recommended_deposit %}
+                        <div class="product-cards ai-recommended">
+                            <span class="product-badge recommended-badge">{{ product.product_type_name }}</span>
+                            <h4 class="product-name">{{ product.fin_prdt_nm }}</h4>
+                            <p class="product-subtitle">AI가 회원님의 프로필을 분석하여 추천하는 맞춤 예금상품입니다.</p>
+                            
+                            <div class="product-info">
+                                <div class="info-label">금융회사</div>
+                                <div class="info-value">{{ product.kor_co_nm }}</div>
+                            </div>
+                            
+                            <div class="product-info">
+                                <div class="info-label">가입방법</div>
+                                <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                            </div>
+                            
+                            {% if product.rate %}
+                            <div class="product-info">
+                                <div class="info-label">금리</div>
+                                <div class="info-value rate-highlight">{{ product.rate|floatformat:2 }}%</div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="product-tags">
+                                <span class="tag">#AI추천</span>
+                                <span class="tag">#맞춤상품</span>
+                                <span class="tag">#예금</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+            </div>
             <h2 class="section-title">예금 {{ deposits_total }}개 상품</h2>
+            {% endif %}
             <div class="products-grid">
                 {% for product in deposits %}
                     <div class="product-cards">
@@ -249,7 +298,47 @@
 
         <!-- 적금 상품 섹션 -->
         <div class="products-section" data-category="saving" style="display: none;">
+            
+            
+            <!-- 적금 AI 추천 상품 섹션 -->
+            {% if recommended_saving %}
+            <div class="recommendation-section category-recommendation">
+                <h3 class="section-subtitle">회원님을 위한 적금 AI 추천 상품 </h3>
+                <div class="products-grid">
+                    {% for product in recommended_saving %}
+                        <div class="product-cards ai-recommended">
+                            <span class="product-badge recommended-badge">{{ product.product_type_name }}</span>
+                            <h4 class="product-name">{{ product.fin_prdt_nm }}</h4>
+                            <p class="product-subtitle">AI가 회원님의 프로필을 분석하여 추천하는 맞춤 적금상품입니다.</p>
+                            
+                            <div class="product-info">
+                                <div class="info-label">금융회사</div>
+                                <div class="info-value">{{ product.kor_co_nm }}</div>
+                            </div>
+                            
+                            <div class="product-info">
+                                <div class="info-label">가입방법</div>
+                                <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                            </div>
+                            
+                            {% if product.rate %}
+                            <div class="product-info">
+                                <div class="info-label">금리</div>
+                                <div class="info-value rate-highlight">{{ product.rate|floatformat:2 }}%</div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="product-tags">
+                                <span class="tag">#AI추천</span>
+                                <span class="tag">#맞춤상품</span>
+                                <span class="tag">#적금</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
             <h2 class="section-title">적금 {{ savings_total }}개 상품</h2>
+            {% endif %}
             <div class="products-grid">
                 {% for product in savings %}
                     <div class="product-cards">
@@ -309,7 +398,47 @@
 
         <!-- 펀드 상품 섹션 -->
         <div class="products-section" data-category="fund" style="display: none;">
+            
+            
+            <!-- 펀드 AI 추천 상품 섹션 -->
+            {% if recommended_fund %}
+            <div class="recommendation-section category-recommendation">
+                <h3 class="section-subtitle">회원님을 위한 펀드 AI 추천 상품 </h3>
+                <div class="products-grid">
+                    {% for product in recommended_fund %}
+                        <div class="product-cards ai-recommended">
+                            <span class="product-badge recommended-badge">{{ product.product_type_name }}</span>
+                            <h4 class="product-name">{{ product.fin_prdt_nm }}</h4>
+                            <p class="product-subtitle">AI가 회원님의 프로필을 분석하여 추천하는 맞춤 펀드상품입니다.</p>
+                            
+                            <div class="product-info">
+                                <div class="info-label">자산운용사</div>
+                                <div class="info-value">{{ product.kor_co_nm }}</div>
+                            </div>
+                            
+                            <div class="product-info">
+                                <div class="info-label">가입방법</div>
+                                <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                            </div>
+                            
+                            {% if product.rate %}
+                            <div class="product-info">
+                                <div class="info-label">수익률</div>
+                                <div class="info-value rate-highlight">{{ product.rate|floatformat:2 }}%</div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="product-tags">
+                                <span class="tag">#AI추천</span>
+                                <span class="tag">#맞춤상품</span>
+                                <span class="tag">#펀드</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
             <h2 class="section-title">펀드 {{ funds_total }}개 상품</h2>
+            {% endif %}
             <div class="products-grid">
                 {% for product in funds %}
                     <div class="product-cards">
@@ -379,7 +508,47 @@
 
         <!-- 주식 상품 섹션 -->
         <div class="products-section" data-category="stock" style="display: none;">
+            
+            
+            <!-- 주식 AI 추천 상품 섹션 -->
+            {% if recommended_stock %}
+            <div class="recommendation-section category-recommendation">
+                <h3 class="section-subtitle">회원님을 위한 주식 AI 추천 상품 </h3>
+                <div class="products-grid">
+                    {% for product in recommended_stock %}
+                        <div class="product-cards ai-recommended">
+                            <span class="product-badge recommended-badge">{{ product.product_type_name }}</span>
+                            <h4 class="product-name">{{ product.fin_prdt_nm }}</h4>
+                            <p class="product-subtitle">AI가 회원님의 프로필을 분석하여 추천하는 맞춤 주식입니다.</p>
+                            
+                            <div class="product-info">
+                                <div class="info-label">종목명</div>
+                                <div class="info-value">{{ product.kor_co_nm }}</div>
+                            </div>
+                            
+                            <div class="product-info">
+                                <div class="info-label">거래방법</div>
+                                <div class="info-value">{{ product.join_way|default:"온라인 거래 가능" }}</div>
+                            </div>
+                            
+                            {% if product.rate %}
+                            <div class="product-info">
+                                <div class="info-label">기대수익률</div>
+                                <div class="info-value rate-highlight">{{ product.rate|floatformat:2 }}%</div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="product-tags">
+                                <span class="tag">#AI추천</span>
+                                <span class="tag">#맞춤상품</span>
+                                <span class="tag">#주식</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
             <h2 class="section-title">주식 {{ stocks_total }}개 상품</h2>
+            {% endif %}
             <div class="products-grid">
                 {% for product in stocks %}
                     <div class="product-cards">
@@ -451,7 +620,47 @@
 
         <!-- 머니마켓펀드 상품 섹션 -->
         <div class="products-section" data-category="mmf" style="display: none;">
+            
+            
+            <!-- MMF AI 추천 상품 섹션 -->
+            {% if recommended_mmf %}
+            <div class="recommendation-section category-recommendation">
+                <h3 class="section-subtitle">회원님을 위한 머니마켓펀드 AI 추천 상품 </h3>
+                <div class="products-grid">
+                    {% for product in recommended_mmf %}
+                        <div class="product-cards ai-recommended">
+                            <span class="product-badge recommended-badge">{{ product.product_type_name }}</span>
+                            <h4 class="product-name">{{ product.fin_prdt_nm }}</h4>
+                            <p class="product-subtitle">AI가 회원님의 프로필을 분석하여 추천하는 맞춤 MMF 상품입니다.</p>
+                            
+                            <div class="product-info">
+                                <div class="info-label">자산운용사</div>
+                                <div class="info-value">{{ product.kor_co_nm }}</div>
+                            </div>
+                            
+                            <div class="product-info">
+                                <div class="info-label">가입방법</div>
+                                <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                            </div>
+                            
+                            {% if product.rate %}
+                            <div class="product-info">
+                                <div class="info-label">수익률</div>
+                                <div class="info-value rate-highlight">{{ product.rate|floatformat:2 }}%</div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="product-tags">
+                                <span class="tag">#AI추천</span>
+                                <span class="tag">#맞춤상품</span>
+                                <span class="tag">#MMF</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
             <h2 class="section-title">머니마켓펀드 {{ mmf_total }}개 상품</h2>
+            {% endif %}
             <div class="products-grid">
                 {% for product in mmf_products %}
                     <div class="product-cards">
