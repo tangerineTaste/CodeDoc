@@ -3,7 +3,7 @@
 // 전역 함수로 정의 (직접 HTML에서 호출 가능)
 function goToAIRecommend() {
     console.log('goToAIRecommend 함수 호출');
-    alert('맞춤형 금융 상품 추천 페이지로 이동합니다!');
+    // alert 제거됨
     
     // 여러 방법으로 시도
     try {
