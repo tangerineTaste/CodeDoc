@@ -13,11 +13,14 @@ class ProductDataLoader:
     def load_json_file(filename):
         """JSON 파일을 로드하는 헬퍼 함수"""
         try:
-            file_path = os.path.join(settings.BASE_DIR, 'data', filename)
+            # product_recommendation 앱의 data 폴더에서 파일 로드
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            file_path = os.path.join(current_dir, 'data', filename)
+            print(f"파일 로드 시도: {file_path}")
             with open(file_path, 'r', encoding='utf-8') as file:
                 return json.load(file)
         except FileNotFoundError:
-            print(f"파일을 찾을 수 없습니다: {filename}")
+            print(f"파일을 찾을 수 없습니다: {filename} (경로: {file_path})")
             return None
         except json.JSONDecodeError:
             print(f"JSON 파싱 오류: {filename}")

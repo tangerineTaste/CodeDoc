@@ -34,7 +34,9 @@ class HighPerformanceFinancialRecommender:
             print(f" 에러 상세: {type(e).__name__}")
         
         # 데이터 로드 및 전처리
+        print(f" 데이터 로드 시작...")
         self.products = self._load_products()
+        print(f" 데이터 로드 완료: {sum(len(v) for v in self.products.values())}개 상품")
         self._precompute_product_features()
         
         # 캐시 초기화
@@ -421,20 +423,33 @@ class HighPerformanceFinancialRecommender:
         
         purpose = parsed.get('purpose', 'general')
         
+        # 목적에 따른 상품 선택 (더 많은 상품을 포함하도록 개선)
         if purpose == 'funds':
-            base_products = self.products['funds']
+            base_products = self.products.get('funds', [])[:10]  # 더 많은 후보 상품
         elif purpose == 'stocks':
-            base_products = self.products['stocks']
+            base_products = self.products.get('stocks', [])[:10]
         elif purpose == 'mmf':
-            base_products = self.products['mmf']
+            base_products = self.products.get('mmf', [])[:10]
         elif purpose == 'deposit':
-            base_products = self.products['deposit']
+            base_products = self.products.get('deposit', [])[:10]
         elif purpose == 'saving':
-            base_products = self.products['saving']
+            base_products = self.products.get('saving', [])[:10]
         elif purpose == 'investment':
-            base_products = self.products['funds'][:3] + self.products['stocks'][:4]
+            # 투자 목적일 때 다양한 상품 포함
+            base_products = (
+                self.products.get('funds', [])[:4] + 
+                self.products.get('stocks', [])[:3] + 
+                self.products.get('mmf', [])[:3]
+            )
         else:
-            base_products = self.products['deposit'][:3] + self.products['saving'][:4]
+            # 기본적으로 다양한 카테고리 제공
+            base_products = (
+                self.products.get('saving', [])[:3] + 
+                self.products.get('deposit', [])[:2] + 
+                self.products.get('funds', [])[:2] + 
+                self.products.get('mmf', [])[:2] + 
+                self.products.get('stocks', [])[:1]
+            )
         
         customized_products = self._customize_products_advanced(base_products, parsed)
         

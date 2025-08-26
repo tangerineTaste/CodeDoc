@@ -509,59 +509,71 @@ def get_ai_recommendations_for_user(user):
 def analyze_user_preference(profile):
     """
     사용자 프로필을 분석하여 선호할 가능성이 가장 높은 상품 카테고리 결정
+    펀드, 주식, MMF도 더 선호되도록 개선
     """
     # 기본값 설정
     risk_attitude = profile.금융위험태도 or 0
     savings_habit = profile.저축여부 or 2
     age_group = profile.연령대분류 or 2
     
-    # 점수 기반 선호도 계산
+    # 점수 기반 선호도 계산 (몽든 카테고리에 기회를 주도록 개선)
     scores = {
-        'deposit': 0,
-        'saving': 0, 
-        'fund': 0,
-        'stock': 0,
-        'mmf': 0
+        'deposit': 1,
+        'saving': 1, 
+        'fund': 1,
+        'stock': 1,
+        'mmf': 1
     }
     
-    # 1. 연령대별 점수
-    if age_group <= 2:  # 35세 이하 - 적극적 투자 선호
-        scores['stock'] += 3
-        scores['fund'] += 2
-        scores['saving'] += 1
-    elif age_group <= 4:  # 36-55세 - 중간 위험
+    # 1. 연령대별 점수 (더 균형적으로 조정)
+    if age_group <= 2:  # 35세 이하 - 다양한 투자 선호
         scores['fund'] += 3
+        scores['stock'] += 2
+        scores['mmf'] += 2
+        scores['saving'] += 1
+    elif age_group <= 4:  # 36-55세 - 안정성 및 수익성 균형
+        scores['fund'] += 4
+        scores['mmf'] += 3
         scores['saving'] += 2
+        scores['stock'] += 1
+    else:  # 56세 이상 - 안정성 중심 하지만 다양성 유지
+        scores['mmf'] += 3
+        scores['deposit'] += 3
+        scores['saving'] += 2
+        scores['fund'] += 1
+    
+    # 2. 금융위험태도별 점수 (투자상품에 더 많은 기회)
+    if risk_attitude < -1:  # 고위험 선호
+        scores['stock'] += 4
+        scores['fund'] += 3
         scores['mmf'] += 1
-    else:  # 56세 이상 - 안정성 선호
+    elif risk_attitude < 0:  # 중간 위험
+        scores['fund'] += 4
+        scores['stock'] += 2
+        scores['mmf'] += 3
+    elif risk_attitude <= 1:  # 안정 선호
+        scores['mmf'] += 3
+        scores['saving'] += 3
+        scores['deposit'] += 2
+        scores['fund'] += 1
+    else:  # 초안정 선호
         scores['deposit'] += 3
         scores['saving'] += 2
         scores['mmf'] += 1
     
-    # 2. 금융위험태도별 점수
-    if risk_attitude < -1:  # 고위험 선호
-        scores['stock'] += 4
-        scores['fund'] += 2
-    elif risk_attitude < 0:  # 중간 위험
-        scores['fund'] += 3
-        scores['stock'] += 1
-        scores['mmf'] += 1
-    elif risk_attitude <= 1:  # 안정 선호
-        scores['saving'] += 3
-        scores['deposit'] += 2
-        scores['mmf'] += 2
-    else:  # 초안정 선호
-        scores['deposit'] += 4
-        scores['saving'] += 1
-    
     # 3. 저축여부별 점수
     if savings_habit == 3:  # 적극적 저축
         scores['saving'] += 2
+        scores['fund'] += 1
         scores['deposit'] += 1
     elif savings_habit == 2:  # 일부 저축
-        scores['fund'] += 1
+        scores['fund'] += 2
+        scores['mmf'] += 1
         scores['saving'] += 1
-    # savings_habit == 1 (저축 안함) - 추가 점수 없음
+    # savings_habit == 1 (저축 안함) - 투자상품 선호
+    else:
+        scores['fund'] += 2
+        scores['stock'] += 1
     
     # 가장 높은 점수의 카테고리 반환
     preferred_category = max(scores, key=scores.get)
@@ -603,22 +615,38 @@ def determine_investment_purpose(profile):
 
 def get_product_type_from_ai_result(product):
     """
-    AI 추천 결과에서 상품 타입 추출
+    AI 추천 결과에서 상품 타입 추출 (개선된 버전)
     """
+    product_name = product.get('name', '').lower()
+    product_id = product.get('product_id', '').lower()
+    
+    # 1. 명시적인 키워드로 판단
+    if '펀드' in product_name or 'fund' in product_name:
+        return 'fund'
+    elif 'mmf' in product_name or '머니마켓' in product_name or 'money' in product_name:
+        return 'mmf'
+    elif '주식' in product_name or 'stock' in product_name or product_id.startswith('stock'):
+        return 'stock'
+    elif '적금' in product_name or 'saving' in product_name:
+        return 'saving'
+    elif '예금' in product_name or 'deposit' in product_name:
+        return 'deposit'
+    
+    # 2. is_investment 필드로 대분류 판단
     if product.get('is_investment', False):
-        if '펀드' in product['name']:
-            return 'fund'
-        elif '주식' in product['name'] or 'stock' in product.get('product_id', '').lower():
+        # 투자상품인 경우 - 더 세밀하게 분류
+        if any(keyword in product_name for keyword in ['성장', '배당', '대형', '업종', '주가']):
             return 'stock'
-        elif 'MMF' in product['name'] or '맨이마켓' in product['name']:
+        elif any(keyword in product_name for keyword in ['단기', '현금', '유동성']):
             return 'mmf'
         else:
-            return 'fund'  # 기본값
+            return 'fund'  # 기본 투자상품은 펀드
     else:
-        if '적금' in product['name']:
+        # 비투자상품인 경우
+        if any(keyword in product_name for keyword in ['모으기', '저축', '매월']):
             return 'saving'
         else:
-            return 'deposit'
+            return 'deposit'  # 기본 비투자상품은 예금
 
 
 def get_product_type_name_from_ai_result(product):
