@@ -33,8 +33,6 @@
     {% else %}
         <!-- 전체 상품 섹션 -->
         <div class="products-section" data-category="all">
-            
-            
             <!-- 전체 카테고리 AI 추천 상품 섹션 -->
             {% if recommended_products %}
             <div class="recommendation-section category-recommendation">
@@ -72,8 +70,8 @@
                     {% endfor %}
                 </div>
             </div>
-            <h2 class="section-title">전체 {{ all_total }}개 상품</h2>
             {% endif %}
+            <h2 class="section-title">전체 {{ all_total }}개 상품</h2>
             <div class="products-grid">
                 {% for product in all_products %}
                     <div class="product-cards">
@@ -172,21 +170,19 @@
                 <div class="pagination-container">
                     <div class="pagination">
                         {% if all_products.has_previous %}
-                            <a href="?page={{ all_products.previous_page_number }}">&lsaquo; 이전</a>
+                            <a href="?page={{ all_products.previous_page_number }}">이전</a>
                         {% endif %}
                         
-                        {% for num in all_products.paginator.page_range %}
-                            {% if num <= 5 %}
-                                {% if all_products.number == num %}
-                                    <span class="current">{{ num }}</span>
-                                {% else %}
-                                    <a href="?page={{ num }}">{{ num }}</a>
-                                {% endif %}
+                        {% for num in all_products_page_range %}
+                            {% if all_products.number == num %}
+                                <span class="current">{{ num }}</span>
+                            {% else %}
+                                <a href="?page={{ num }}">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                         
                         {% if all_products.has_next %}
-                            <a href="?page={{ all_products.next_page_number }}">다음 &rsaquo;</a>
+                            <a href="?page={{ all_products.next_page_number }}">다음</a>
                         {% endif %}
                     </div>
                     <div class="pagination-info">
@@ -237,8 +233,8 @@
                     {% endfor %}
                     </div>
             </div>
-            <h2 class="section-title">예금 {{ deposits_total }}개 상품</h2>
             {% endif %}
+            <h2 class="section-title">예금 {{ deposits_total }}개 상품</h2>
             <div class="products-grid">
                 {% for product in deposits %}
                     <div class="product-cards">
@@ -272,25 +268,20 @@
                 <div class="pagination-container">
                     <div class="pagination">
                         {% if deposits.has_previous %}
-                            <a href="?deposits_page={{ deposits.previous_page_number }}">&lsaquo; 이전</a>
+                            <a href="?category=deposit&deposits_page={{ deposits.previous_page_number }}">이전</a>
                         {% endif %}
                         
-                        {% for num in deposits.paginator.page_range %}
-                            {% if num <= 5 %}
-                                {% if deposits.number == num %}
-                                    <span class="current">{{ num }}</span>
-                                {% else %}
-                                    <a href="?deposits_page={{ num }}">{{ num }}</a>
-                                {% endif %}
+                        {% for num in deposits_page_range %}
+                            {% if deposits.number == num %}
+                                <span class="current">{{ num }}</span>
+                            {% else %}
+                                <a href="?category=deposit&deposits_page={{ num }}">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                         
                         {% if deposits.has_next %}
-                            <a href="?deposits_page={{ deposits.next_page_number }}">다음 &rsaquo;</a>
+                            <a href="?category=deposit&deposits_page={{ deposits.next_page_number }}">다음</a>
                         {% endif %}
-                    </div>
-                    <div class="pagination-info">
-                        {{ deposits.start_index }}-{{ deposits.end_index }} / 총 {{ deposits_total }}개
                     </div>
                 </div>
             {% endif %}
@@ -337,8 +328,8 @@
                     {% endfor %}
                 </div>
             </div>
-            <h2 class="section-title">적금 {{ savings_total }}개 상품</h2>
             {% endif %}
+            <h2 class="section-title">적금 {{ savings_total }}개 상품</h2>
             <div class="products-grid">
                 {% for product in savings %}
                     <div class="product-cards">
@@ -372,21 +363,19 @@
                 <div class="pagination-container">
                     <div class="pagination">
                         {% if savings.has_previous %}
-                            <a href="?savings_page={{ savings.previous_page_number }}">&lsaquo; 이전</a>
+                            <a href="?category=saving&savings_page={{ savings.previous_page_number }}">이전</a>
                         {% endif %}
                         
-                        {% for num in savings.paginator.page_range %}
-                            {% if num <= 5 %}
-                                {% if savings.number == num %}
-                                    <span class="current">{{ num }}</span>
-                                {% else %}
-                                    <a href="?savings_page={{ num }}">{{ num }}</a>
-                                {% endif %}
+                        {% for num in savings_page_range %}
+                            {% if savings.number == num %}
+                                <span class="current">{{ num }}</span>
+                            {% else %}
+                                <a href="?category=saving&savings_page={{ num }}">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                         
                         {% if savings.has_next %}
-                            <a href="?savings_page={{ savings.next_page_number }}">다음 &rsaquo;</a>
+                            <a href="?category=saving&savings_page={{ savings.next_page_number }}">다음</a>
                         {% endif %}
                     </div>
                     <div class="pagination-info">
@@ -437,8 +426,8 @@
                     {% endfor %}
                 </div>
             </div>
-            <h2 class="section-title">펀드 {{ funds_total }}개 상품</h2>
             {% endif %}
+            <h2 class="section-title">펀드 {{ funds_total }}개 상품</h2>
             <div class="products-grid">
                 {% for product in funds %}
                     <div class="product-cards">
@@ -482,21 +471,19 @@
                 <div class="pagination-container">
                     <div class="pagination">
                         {% if funds.has_previous %}
-                            <a href="?funds_page={{ funds.previous_page_number }}">&lsaquo; 이전</a>
+                            <a href="?category=fund&funds_page={{ funds.previous_page_number }}">이전</a>
                         {% endif %}
                         
-                        {% for num in funds.paginator.page_range %}
-                            {% if num <= 5 %}
-                                {% if funds.number == num %}
-                                    <span class="current">{{ num }}</span>
-                                {% else %}
-                                    <a href="?funds_page={{ num }}">{{ num }}</a>
-                                {% endif %}
+                        {% for num in funds_page_range %}
+                            {% if funds.number == num %}
+                                <span class="current">{{ num }}</span>
+                            {% else %}
+                                <a href="?category=fund&funds_page={{ num }}">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                         
                         {% if funds.has_next %}
-                            <a href="?funds_page={{ funds.next_page_number }}">다음 &rsaquo;</a>
+                            <a href="?category=fund&funds_page={{ funds.next_page_number }}">다음</a>
                         {% endif %}
                     </div>
                     <div class="pagination-info">
@@ -547,8 +534,8 @@
                     {% endfor %}
                 </div>
             </div>
-            <h2 class="section-title">주식 {{ stocks_total }}개 상품</h2>
             {% endif %}
+            <h2 class="section-title">주식 {{ stocks_total }}개 상품</h2>
             <div class="products-grid">
                 {% for product in stocks %}
                     <div class="product-cards">
@@ -594,21 +581,19 @@
                 <div class="pagination-container">
                     <div class="pagination">
                         {% if stocks.has_previous %}
-                            <a href="?stocks_page={{ stocks.previous_page_number }}">&lsaquo; 이전</a>
+                            <a href="?category=stock&stocks_page={{ stocks.previous_page_number }}">이전</a>
                         {% endif %}
                         
-                        {% for num in stocks.paginator.page_range %}
-                            {% if num <= 5 %}
-                                {% if stocks.number == num %}
-                                    <span class="current">{{ num }}</span>
-                                {% else %}
-                                    <a href="?stocks_page={{ num }}">{{ num }}</a>
-                                {% endif %}
+                        {% for num in stocks_page_range %}
+                            {% if stocks.number == num %}
+                                <span class="current">{{ num }}</span>
+                            {% else %}
+                                <a href="?category=stock&stocks_page={{ num }}">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                         
                         {% if stocks.has_next %}
-                            <a href="?stocks_page={{ stocks.next_page_number }}">다음 &rsaquo;</a>
+                            <a href="?category=stock&stocks_page={{ stocks.next_page_number }}">다음</a>
                         {% endif %}
                     </div>
                     <div class="pagination-info">
@@ -659,8 +644,8 @@
                     {% endfor %}
                 </div>
             </div>
-            <h2 class="section-title">머니마켓펀드 {{ mmf_total }}개 상품</h2>
             {% endif %}
+            <h2 class="section-title">머니마켓펀드 {{ mmf_total }}개 상품</h2>
             <div class="products-grid">
                 {% for product in mmf_products %}
                     <div class="product-cards">
@@ -704,21 +689,19 @@
                 <div class="pagination-container">
                     <div class="pagination">
                         {% if mmf_products.has_previous %}
-                            <a href="?mmf_page={{ mmf_products.previous_page_number }}">&lsaquo; 이전</a>
+                            <a href="?category=mmf&mmf_page={{ mmf_products.previous_page_number }}">이전</a>
                         {% endif %}
                         
-                        {% for num in mmf_products.paginator.page_range %}
-                            {% if num <= 5 %}
-                                {% if mmf_products.number == num %}
-                                    <span class="current">{{ num }}</span>
-                                {% else %}
-                                    <a href="?mmf_page={{ num }}">{{ num }}</a>
-                                {% endif %}
+                        {% for num in mmf_page_range %}
+                            {% if mmf_products.number == num %}
+                                <span class="current">{{ num }}</span>
+                            {% else %}
+                                <a href="?category=mmf&mmf_page={{ num }}">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                         
                         {% if mmf_products.has_next %}
-                            <a href="?mmf_page={{ mmf_products.next_page_number }}">다음 &rsaquo;</a>
+                            <a href="?category=mmf&mmf_page={{ mmf_products.next_page_number }}">다음</a>
                         {% endif %}
                     </div>
                     <div class="pagination-info">

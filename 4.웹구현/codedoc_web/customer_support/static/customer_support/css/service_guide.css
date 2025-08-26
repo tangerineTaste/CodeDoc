@@ -10,9 +10,8 @@
 /* 페이지 헤더 */
 .page-header {
     background: var(--bg-primary);
-    padding: 80px 0 60px;
+    padding: 85px 0 0px;
     text-align: center;
-    border-bottom: 1px solid var(--border-light);
 }
 
 .page-title {
@@ -20,7 +19,7 @@
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 15px;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.05rem;
 }
 
 .page-subtitle {
@@ -32,7 +31,7 @@
 
 /* 메인 콘텐츠 */
 .main-content {
-    padding: 60px 0 80px;
+    padding: 60px 0 0px;
 }
 
 /* 하이라이트 섹션 */
@@ -46,7 +45,7 @@
     border-radius: var(--border-radius-normal);
     padding: 30px;
     position: relative;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -77,15 +76,23 @@
 
 /* 섹션 타이틀 */
 .section-title {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 30px;
+    text-align: center;
+}
+
+.why-codedoc-section{
+    background: #e7f2ff;
+    padding: 60px 0;
 }
 
 /* 서비스 유형 섹션 */
 .service-types {
     margin-bottom: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .service-cards {
@@ -98,13 +105,13 @@
     background: var(--bg-primary);
     border: 1px solid var(--border-light);
     border-radius: var(--border-radius-normal);
-    padding: 30px;
-    text-align: center;
+    padding: 45px 30px;
+    text-align: left;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .card-icon {
-    margin-bottom: 20px;
+    margin-bottom: 45px;
 }
 
 .card-title {
@@ -115,10 +122,39 @@
 }
 
 .card-description {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-size: 1rem;
     line-height: 1.5;
-    margin-bottom: 25px;
+    max-width: 750px;
+    margin: 0 auto;
+    word-break: keep-all;
+    text-align: left;
+}
+
+.text-description {
+    color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 750px;
+    margin: 0 auto;
+    word-break: keep-all;
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+.text-description2{
+    max-width: 650px;
+    margin: 0 auto;
+    word-break: keep-all;
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+.text-description3{
+    max-width: 550px;
+    margin: 0 auto;
+    word-break: keep-all;
+    text-align: center;
 }
 
 .card-button {
@@ -171,13 +207,19 @@
     margin: 0;
 }
 
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
 /* CTA 섹션 */
 .cta-section {
-    background: var(--bg-secondary);
-    padding: 50px 0;
-    border-radius: var(--border-radius-normal);
+    background: linear-gradient(135deg, #0078FE 0%, #005cbf 100%);
+    padding: 80px 0;
     text-align: center;
-    margin-top: 40px;
+    margin-top: 60px;
 }
 
 .cta-content {
@@ -185,12 +227,19 @@
     margin: 0 auto;
 }
 
+.cta-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 15px;
+    font-weight: 400;
+}
+
 .cta-title {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: white;
     margin-bottom: 30px;
-    line-height: 1.4;
+    text-align: center;
 }
 
 .cta-buttons {
@@ -198,27 +247,74 @@
     justify-content: center;
     gap: 15px;
     flex-wrap: wrap;
-    margin-bottom: 40px;
 }
 
+/* index.html의 search-btn 스타일을 정확히 참고 */
 .cta-btn {
-    padding: 12px 24px;
-    border-radius: var(--border-radius-small);
-    font-size: 1rem;
-    font-weight: 500;
+    background: var(--bg-primary);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 15px;
+    padding: 15px 34px;
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: var(--box-shadow);
     text-decoration: none;
-    display: inline-block;
     min-width: 120px;
-    border: 1px solid var(--primary-color);
+}
+
+.cta-btn:hover {
+    background: var(--bg-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+    opacity: 0.9;
 }
 
 .cta-btn.primary {
-    background: var(--primary-color);
-    color: var(--bg-primary);
+    background: var(--bg-primary);
+    color: var(--primary-color);
 }
 
 .cta-btn.secondary {
+    background: transparent;
+    color: var(--bg-primary);
+    border: 1px solid var(--bg-primary);
+}
+
+.cta-btn.secondary:hover {
     background: var(--bg-primary);
+    color: var(--primary-color);
+}
+
+.search-btn.primary {
+    background: white;
+    color: var(--primary-color);
+    border: 1px solid white;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.search-btn.primary:hover {
+    background: transparent;
+    color: white;
+    border-color: white;
+}
+
+.search-btn.secondary {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.search-btn.secondary:hover {
+    background: white;
     color: var(--primary-color);
 }
 

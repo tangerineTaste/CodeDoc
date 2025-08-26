@@ -294,7 +294,7 @@ html, body{
 
 /* 로그인 박스 */
 .login-box {
-    padding: 30px 25px;
+    padding: 34px 25px;
     background: var(--bg-primary);
     border-radius: var(--border-radius-large);
     box-shadow: var(--box-shadow);
@@ -359,12 +359,17 @@ html, body{
     transition: all 0.3s ease;
     width: 100%;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .login-button:hover {
     background: var(--primary-hover);
     opacity: 0.9;
     transform: translateY(-1px);
+}
+
+.login-a{
+    text-decoration: none;
 }
 
 .login-links {
@@ -387,6 +392,56 @@ html, body{
 
 .separator {
     color: var(--border-light);
+}
+
+/* 로그인 상태일 때 로그인박스 스타일 */
+.user-welcome {
+    text-align: left;
+}
+
+.welcome-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 23.4px;
+    font-size: 14px;
+}
+
+.welcome-message span{
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.balance-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.balance-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.balance-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.balance-period {
+    font-size: 14px;
+    color: #0078FE;
+    font-weight: 600;
+}
+
+.balance-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    text-align: right;
 }
 
 /* 자주 찾는 메뉴 */

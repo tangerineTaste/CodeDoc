@@ -45,6 +45,17 @@ class UserProfile(models.Model):
         (3, '은퇴자/연금수급자'),
         (4, '저소득층/학생/비정규직'),
     ]
+
+    # # 추가 필드들
+    # phone = models.CharField(max_length=20, blank=True, verbose_name='휴대폰 번호')
+    # annual_income = models.IntegerField(choices=[
+    #     (1, '2,000만원 미만'),
+    #     (2, '2,000만원 ~ 4,000만원'),
+    #     (3, '4,000만원 ~ 6,000만원'),
+    #     (4, '6,000만원 ~ 8,000만원'),
+    #     (5, '8,000만원 ~ 1억원'),
+    #     (6, '1억원 이상'),
+    # ], null=True, blank=True, verbose_name='연간 소득')
     
     # 필드 정의
     교육수준분류 = models.IntegerField(choices=EDUCATION_CHOICES, null=True, blank=True, verbose_name='교육수준')

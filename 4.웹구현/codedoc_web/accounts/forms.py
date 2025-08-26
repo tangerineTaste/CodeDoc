@@ -124,7 +124,7 @@ class ProfileForm(ModelForm):
         model = UserProfile
         fields = [
             'name', '교육수준분류', '연령대분류', '가구주성별', '결혼상태',
-            '저축여부', '직업분류1', '금융위험태도'
+            '저축여부', '직업분류1', # '금융위험태도'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -134,7 +134,7 @@ class ProfileForm(ModelForm):
             '결혼상태': forms.Select(attrs={'class': 'form-control'}),
             '저축여부': forms.Select(attrs={'class': 'form-control'}),
             '직업분류1': forms.Select(attrs={'class': 'form-control'}),
-            '금융위험태도': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            # '금융위험태도': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
 # UserEditForm은 더 이상 필요없음 (User 모델에 추가 정보 없음)
