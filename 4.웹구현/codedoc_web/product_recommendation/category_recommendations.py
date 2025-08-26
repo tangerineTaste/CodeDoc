@@ -52,9 +52,9 @@ def get_category_recommendations_for_user(user):
         categories = {
             'deposit': '안전한 예금상품',
             'saving': '꾸준한 적금상품', 
-            'fund': '전문가 운용 펀드',
-            'stock': '성장 가능성 높은 주식',
-            'mmf': '유동성 좋은 머니마켓펀드'
+            'fund': '펀드 투자',
+            'stock': '주식 투자',
+            'mmf': 'MMF 단기투자'
         }
         
         for category_key, category_desc in categories.items():
@@ -66,28 +66,27 @@ def get_category_recommendations_for_user(user):
                 # AI 추천 실행
                 result = recommender.recommend(category_input, top_n=3)
                 
-                # 결과 변환
+                # 결과 변환 - 카테고리 필터링 없이 모든 추천 상품 사용
                 category_products = []
                 for product in result.get('products', []):
-                    # 해당 카테고리에 맞는 상품만 필터링
                     from .views import get_product_type_from_ai_result, get_product_type_name_from_ai_result
                     product_type = get_product_type_from_ai_result(product)
                     
-                    if product_type == category_key or (category_key == 'deposit' and product_type == 'saving'):
-                        converted_product = {
-                            'fin_prdt_nm': product['name'],
-                            'kor_co_nm': product['bank'],
-                            'join_way': product.get('join_way', '온라인 가입 가능'),
-                            'product_type': product_type,
-                            'product_type_name': get_product_type_name_from_ai_result(product),
-                            'rate': product.get('rate', 0),
-                            'score': product.get('score', 0)
-                        }
-                        category_products.append(converted_product)
+                    converted_product = {
+                        'fin_prdt_nm': product['name'],
+                        'kor_co_nm': product['bank'],
+                        'join_way': product.get('join_way', '온라인 가입 가능'),
+                        'product_type': product_type,
+                        'product_type_name': get_product_type_name_from_ai_result(product),
+                        'rate': product.get('rate', 0),
+                        'score': product.get('score', 0)
+                    }
+                    category_products.append(converted_product)
                 
                 # 추천 상품이 3개 미만인 경우 기본 상품으로 채우기
                 if len(category_products) < 3:
                     category_products.extend(get_default_products_by_category(category_key, 3 - len(category_products)))
+                    print(f"카테고리 {category_key}: AI 추천 {len(result.get('products', []))}개 + 기본 상품 {3 - len(category_products)}개 보충")
                 
                 category_recs[f'recommended_{category_key}'] = category_products[:3]
                 print(f"카테고리 {category_key} 추천 완료: {len(category_products[:3])}개 상품")
@@ -173,8 +172,8 @@ def get_default_products_by_category(category, count=3):
         ],
         'fund': [
             {
-                'fin_prdt_nm': 'AI 추천 안정형 펀드',
-                'kor_co_nm': '자산운용사',
+                'fin_prdt_nm': '삼성자산운용 안정형펀드',
+                'kor_co_nm': '삼성자산운용',
                 'join_way': '온라인 가입 가능',
                 'product_type': 'fund',
                 'product_type_name': '펀드',
@@ -182,8 +181,8 @@ def get_default_products_by_category(category, count=3):
                 'score': 78
             },
             {
-                'fin_prdt_nm': 'AI 추천 성장형 펀드',
-                'kor_co_nm': '자산운용사',
+                'fin_prdt_nm': '미래자산 성장형펀드',
+                'kor_co_nm': '미래자산운용',
                 'join_way': '온라인 가입 가능',
                 'product_type': 'fund',
                 'product_type_name': '펀드',
@@ -191,8 +190,8 @@ def get_default_products_by_category(category, count=3):
                 'score': 75
             },
             {
-                'fin_prdt_nm': 'AI 추천 혼합형 펀드',
-                'kor_co_nm': '자산운용사',
+                'fin_prdt_nm': '한투자증권 혼합형펀드',
+                'kor_co_nm': '한투자증권',
                 'join_way': '온라인 가입 가능',
                 'product_type': 'fund',
                 'product_type_name': '펀드',
@@ -202,7 +201,7 @@ def get_default_products_by_category(category, count=3):
         ],
         'stock': [
             {
-                'fin_prdt_nm': 'AI 추천 대형주',
+                'fin_prdt_nm': '삼성전자',
                 'kor_co_nm': '삼성전자',
                 'join_way': '온라인 거래 가능',
                 'product_type': 'stock',
@@ -211,7 +210,7 @@ def get_default_products_by_category(category, count=3):
                 'score': 68
             },
             {
-                'fin_prdt_nm': 'AI 추천 성장주',
+                'fin_prdt_nm': 'SK하이닉스',
                 'kor_co_nm': 'SK하이닉스',
                 'join_way': '온라인 거래 가능',
                 'product_type': 'stock',
@@ -220,7 +219,7 @@ def get_default_products_by_category(category, count=3):
                 'score': 65
             },
             {
-                'fin_prdt_nm': 'AI 추천 배당주',
+                'fin_prdt_nm': 'LG화학',
                 'kor_co_nm': 'LG화학',
                 'join_way': '온라인 거래 가능',
                 'product_type': 'stock',
@@ -231,8 +230,8 @@ def get_default_products_by_category(category, count=3):
         ],
         'mmf': [
             {
-                'fin_prdt_nm': 'AI 추천 단기자금 MMF',
-                'kor_co_nm': '자산운용사',
+                'fin_prdt_nm': '대신 단기자금MMF',
+                'kor_co_nm': '대신자산운용',
                 'join_way': '온라인 가입 가능',
                 'product_type': 'mmf',
                 'product_type_name': '머니마켓펀드',
@@ -240,8 +239,8 @@ def get_default_products_by_category(category, count=3):
                 'score': 85
             },
             {
-                'fin_prdt_nm': 'AI 추천 고수익 MMF',
-                'kor_co_nm': '자산운용사',
+                'fin_prdt_nm': '삼성 고수익MMF',
+                'kor_co_nm': '삼성자산운용',
                 'join_way': '온라인 가입 가능',
                 'product_type': 'mmf',
                 'product_type_name': '머니마켓펀드',
@@ -249,8 +248,8 @@ def get_default_products_by_category(category, count=3):
                 'score': 88
             },
             {
-                'fin_prdt_nm': 'AI 추천 안정형 MMF',
-                'kor_co_nm': '자산운용사',
+                'fin_prdt_nm': '미래자산 안정형MMF',
+                'kor_co_nm': '미래자산운용',
                 'join_way': '온라인 가입 가능',
                 'product_type': 'mmf',
                 'product_type_name': '머니마켓펀드',
