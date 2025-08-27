@@ -23,7 +23,7 @@
                             쉽고 빠른 <b>상담 서비스</b>
                         </h1>
                         <p class="description">24시간 고객을 위한 AI 상담 지원</p>
-                        <button class="cta-button">챗봇 체험하기</button>
+                        <button class="cta-button" data-url="/chatbot/">챗봇 체험하기</button>
                     </div>
                 </div>
 
@@ -37,7 +37,7 @@
                             <b>AI</b>가 똑똑하게 찾아드려요
                         </h1>
                         <p class="description">머신러닝 기술로 개인 맞춤 추천!</p>
-                        <button class="cta-button">상품 추천받기</button>
+                        <button class="cta-button" data-url="{% url 'product_recommendation:product_recommend' %}">상품 추천받기</button>
                     </div>
                 </div>
             </div>
@@ -55,49 +55,81 @@
         <div class="right-section">
             <!-- 로그인 박스 -->
             <div class="login-box">
-                <div class="greeting">
-                    <span><b>로그인 후</b> 모든 서비스를 이용해보세요!</span>
+                {% if user.is_authenticated %}
+                    <!-- 로그인 상태일 때 -->
+                    <div class="user-welcome">
+                    <div class="welcome-message">
+                        <span>{{ user.full_name|default:user.username }}님, <br>오늘도 현명한 금융 관리 하세요!</span>
+                    </div>
+                    
+                    <div class="balance-info">
+                        <div class="balance-row">
+                            <span class="balance-label">이번 달 추천 상품</span>
+                            <span class="balance-period">3건</span>
+                        </div>
+                        
+                        <div class="balance-row">
+                            <span class="balance-label">AI 상담 이용 횟수</span>
+                            <span class="balance-amount">12회</span>
+                        </div>
+                        
+                        <div class="balance-row">
+                            <span class="balance-label">관심 금융상품</span>
+                            <span class="balance-amount">5개 등록</span>
+                        </div>
+                    </div>
                 </div>
-                <button type="button" class="login-button">로그인</button>
-                <div class="login-links">
-                    <a href="#" class="login-link">회원가입</a>
-                    <span class="separator">|</span>
-                    <a href="#" class="login-link">아이디찾기</a>
-                    <span class="separator">|</span>
-                    <a href="#" class="login-link">비밀번호찾기</a>
-                </div>
+                {% else %}
+                    <!-- 로그아웃 상태일 때 기존 코드 -->
+                    <div class="greeting">
+                        <span><b>로그인 후</b> 모든 서비스를 이용해보세요!</span>
+                    </div>
+                    <a href="{% url 'accounts:login' %}" class="login-a">
+                        <p class="login-button">로그인</p>
+                    </a>
+                    <div class="login-links">
+                        <a href="#" class="login-link">회원가입</a>
+                        <span class="separator">|</span>
+                        <a href="#" class="login-link">아이디찾기</a>
+                        <span class="separator">|</span>
+                        <a href="#" class="login-link">비밀번호찾기</a>
+                    </div>
+                {% endif %}
             </div>
             
             <!-- 자주 찾는 메뉴 -->
             <div class="frequent-menu">
                 <h3 class="menu-title">로그인 없이 이용 가능해요</h3>
                 <div class="menu-grid">
+                    <a href="{% url 'product_recommendation:product_recommend' %}">
+                        <div class="menu-item quik">
+                            <div class="menu-icon menu-icon-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </div>
+                            <div class="menu-text">상품찾기</div>
+                        </div>
+                    </a>
                     <a href="{% url 'news:news_list' %}">
                         <div class="menu-item quik">
-                        <div class="menu-icon menu-icon-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-thumbs-up">
-                                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
-                            </svg>
+                            <div class="menu-icon menu-icon-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-thumbs-up">
+                                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                </svg>
+                            </div>
+                            <div class="menu-text">금융뉴스</div>
                         </div>
-                        <div class="menu-text">금융뉴스</div>
-                    </div>
                     </a>
-                    <div class="menu-item quik">
-                        <div class="menu-icon menu-icon-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
+                    <a href="{% url 'customer_support:service_guide' %}">
+                        <div class="menu-item quik">
+                            <div class="menu-icon menu-icon-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </div>
+                            <div class="menu-text">서비스 가이드</div>
                         </div>
-                        <div class="menu-text">서비스 가이드</div>
-                    </div>
-                    <div class="menu-item quik">
-                        <div class="menu-icon menu-icon-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </div>
-                        <div class="menu-text">프로필 관리</div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -126,13 +158,10 @@
                 </button>
                 <div class="products-slider">                    
                     <div class="products-container" id="productsContainer">
-                        <div class="product-card active" data-category="savings">
+                        <div class="product-card" data-category="savings">
                             <div class="product-icon">
-                                <svg width="50" height="50" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 1L3 5L12 9L21 5L12 1Z" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M3 17L12 21L21 17" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M3 12L12 16L21 12" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-database"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
                             </div>
                             <h3 class="product-title">예금</h3>
                             <p class="product-description">
@@ -142,10 +171,8 @@
 
                         <div class="product-card" data-category="loan">
                             <div class="product-icon">
-                                <svg width="50" height="50" viewBox="0 0 24 24" fill="none">
-                                    <path d="M19 14C20.49 12.54 22 10.79 22 8.5C22 5.42 19.58 3 16.5 3C14.76 3 13.26 3.94 12.33 5.29" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M12 5.69C11.07 3.94 9.24 3 7.5 3C4.42 3 2 5.42 2 8.5C2 12 5.5 17.5 12 21.5C18.5 17.5 22 12 22 8.5" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                    <polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                             </div>
                             <h3 class="product-title">적금</h3>
                             <p class="product-description">
@@ -155,13 +182,10 @@
 
                         <div class="product-card" data-category="investment">
                             <div class="product-icon">
-                                <svg width="50" height="50" viewBox="0 0 24 24" fill="none">
-                                    <path d="M3 3V21H21" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M9 9L12 6L16 10L21 5" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M21 5H16V10" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart">
+                                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
                             </div>
-                            <h3 class="product-title">대출</h3>
+                            <h3 class="product-title">펀드</h3>
                             <p class="product-description">
                                 법원의 담보제공명령 시 현금 대신 제출
                             </p>
@@ -169,12 +193,21 @@
 
                         <div class="product-card" data-category="insurance">
                             <div class="product-icon">
-                                <svg width="50" height="50" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 22S8 18 8 13V6L12 4L16 6V13C16 18 12 22 12 22Z" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M9 12L11 14L15 10" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trending-up">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                             </div>
-                            <h3 class="product-title">보험</h3>
+                            <h3 class="product-title">주식</h3>
+                            <p class="product-description">
+                                계약이행의무 불이행에 따른 손해 보장
+                            </p>
+                        </div>
+
+                        <div class="product-card" data-category="insurance">
+                            <div class="product-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            </div>
+                            <h3 class="product-title">머니마켓펀드</h3>
                             <p class="product-description">
                                 계약이행의무 불이행에 따른 손해 보장
                             </p>

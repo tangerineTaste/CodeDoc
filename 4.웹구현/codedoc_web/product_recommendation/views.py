@@ -123,13 +123,22 @@ def product_list(request):
         
         print(f"전체 통합 상품 수: {len(all_products_list)}개")
         
-        # 5. 페이지네이션 처리
+        # 5. 페이지네이션 처리 - 이 부분을 추가해야 합니다
         page = request.GET.get('page', 1)
         deposits_page = request.GET.get('deposits_page', 1)
         savings_page = request.GET.get('savings_page', 1)
         funds_page = request.GET.get('funds_page', 1)
         stocks_page = request.GET.get('stocks_page', 1)
         mmf_page = request.GET.get('mmf_page', 1)
+        
+        # 페이지네이션 범위 계산 함수
+        def calculate_page_range(page_obj):
+            current_page = page_obj.number
+            total_pages = page_obj.paginator.num_pages
+            page_group = ((current_page - 1) // 5) * 5
+            start_page = max(1, page_group + 1)
+            end_page = min(total_pages, page_group + 5)
+            return range(start_page, end_page + 1)
         
         # 전체 상품 페이지네이션
         all_products_paginated, all_total = ProductPaginator.paginate_products(
@@ -162,20 +171,29 @@ def product_list(request):
             # 전체 상품
             'all_products': all_products_paginated,
             'all_total': all_total,
+            'all_products_page_range': calculate_page_range(all_products_paginated),
             
             # 기존 API 상품 (예금, 적금)
             'deposits': deposits_paginated,
             'deposits_total': deposits_total,
+            'deposits_page_range': calculate_page_range(deposits_paginated),
+            
             'savings': savings_paginated,
             'savings_total': savings_total,
+            'savings_page_range': calculate_page_range(savings_paginated),
             
             # 새로운 파일 기반 상품 (펀드, 주식, MMF)
             'funds': funds_paginated,
             'funds_total': funds_total,
+            'funds_page_range': calculate_page_range(funds_paginated),
+            
             'stocks': stocks_paginated,
             'stocks_total': stocks_total,
+            'stocks_page_range': calculate_page_range(stocks_paginated),
+            
             'mmf_products': mmf_paginated,
             'mmf_total': mmf_total,
+            'mmf_page_range': calculate_page_range(mmf_paginated),
         })
         
         print(f"컨텍스트 구성 완료: 전체 {all_total}개 상품")

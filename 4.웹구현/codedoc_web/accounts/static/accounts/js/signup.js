@@ -45,11 +45,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===============================
     function showStep(stepNumber) {
         formSteps.forEach((step, index) => {
-            step.classList.remove('active', 'slide-in', 'slide-out');
+            step.classList.remove('active');
             
             if (index + 1 === stepNumber) {
                 setTimeout(() => {
-                    step.classList.add('active', 'slide-in');
+                    step.classList.add('active');
                 }, 100);
             }
         });
@@ -102,6 +102,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
                 
             case 2: // 기본 정보
+                clearAllFieldErrors();
+                
                 const username = document.getElementById('id_username').value.trim();
                 const password1 = document.getElementById('id_password1').value;
                 const password2 = document.getElementById('id_password2').value;
@@ -109,28 +111,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (!username) {
                     isValid = false;
-                    errorMessages.push('아이디를 입력해주세요.');
+                    showFieldError('id_username', '아이디를 입력해주세요.');
                 } else if (username.length < 4) {
                     isValid = false;
-                    errorMessages.push('아이디는 4자 이상이어야 합니다.');
+                    showFieldError('id_username', '아이디는 4자 이상이어야 합니다.');
                 }
                 
+                // 강화된 비밀번호 검증
                 if (!password1) {
                     isValid = false;
-                    errorMessages.push('비밀번호를 입력해주세요.');
-                } else if (password1.length < 8) {
-                    isValid = false;
-                    errorMessages.push('비밀번호는 8자 이상이어야 합니다.');
+                    showFieldError('id_password1', '비밀번호를 입력해주세요.');
+                } else {
+                    if (password1.length < 8) {
+                        isValid = false;
+                        showFieldError('id_password1', '비밀번호는 8자 이상이어야 합니다.');
+                    } else if (/^\d+$/.test(password1)) {
+                        isValid = false;
+                        showFieldError('id_password1', '숫자로만 구성된 비밀번호는 사용할 수 없습니다.');
+                    } else if (/^[a-zA-Z]+$/.test(password1)) {
+                        isValid = false;
+                        showFieldError('id_password1', '영문자로만 구성된 비밀번호는 사용할 수 없습니다.');
+                    } else if (isCommonPassword(password1)) {
+                        isValid = false;
+                        showFieldError('id_password1', '일상적인 단어는 비밀번호로 사용할 수 없습니다.');
+                    }
                 }
                 
-                if (password1 !== password2) {
+                if (!password2) {
                     isValid = false;
-                    errorMessages.push('비밀번호가 일치하지 않습니다.');
+                    showFieldError('id_password2', '비밀번호 확인을 입력해주세요.');
+                } else if (password1 !== password2) {
+                    isValid = false;
+                    showFieldError('id_password2', '비밀번호가 일치하지 않습니다.');
                 }
                 
                 if (!email) {
                     isValid = false;
-                    errorMessages.push('이메일을 입력해주세요.');
+                    showFieldError('id_email', '이메일을 입력해주세요.');
                 }
                 break;
                 
@@ -195,21 +212,49 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===============================
     // 에러 메시지 표시/숨김
     // ===============================
-    function showStepError(messages) {
-        hideStepError();
+    function showFieldError(fieldId, message) {
+        // 기존 에러 메시지 제거
+        clearFieldError(fieldId);
         
-        const currentStepElement = document.getElementById(`step${currentStep}`);
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'step-error-messages';
-        errorDiv.innerHTML = `
-            <div class="error-content">
-                <div class="error-text">
-                    ${messages.map(msg => `<div>${msg}</div>`).join('')}
-                </div>
-            </div>
-        `;
+        const field = document.getElementById(fieldId);
+        if (field) {
+            const formGroup = field.closest('.form-group');
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'field-error';
+            errorDiv.style.color = '#e74c3c';
+            errorDiv.style.fontSize = '12px';
+            errorDiv.style.marginTop = '5px';
+            errorDiv.textContent = message;
+            
+            formGroup.appendChild(errorDiv);
+            
+            // 입력 필드 테두리 색상 변경
+            field.style.borderColor = '#e74c3c';
+        }
+    }
+
+    function clearFieldError(fieldId) {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            const formGroup = field.closest('.form-group');
+            const existingError = formGroup.querySelector('.field-error');
+            if (existingError) {
+                existingError.remove();
+            }
+            // 테두리 색상 원복
+            field.style.borderColor = 'var(--border-light)';
+        }
+    }
+
+    function clearAllFieldErrors() {
+        const allErrors = document.querySelectorAll('.field-error');
+        allErrors.forEach(error => error.remove());
         
-        currentStepElement.querySelector('.step-content').insertBefore(errorDiv, currentStepElement.querySelector('.step-content').firstChild);
+        const allInputs = document.querySelectorAll('.form-input');
+        allInputs.forEach(input => {
+            input.style.borderColor = 'var(--border-light)';
+        });
     }
     
     function hideStepError() {
@@ -222,6 +267,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===============================
     // 이벤트 리스너
     // ===============================
+
+    // 일상적인 비밀번호 체크 함수
+    function isCommonPassword(password) {
+        const commonPasswords = [
+            'password', '12345678', '123456789', 'qwerty123', 'abcdefgh',
+            'password1', 'password123', '11111111', '00000000', 'aaaaaaaa',
+            'qwertyui', 'asdfghjk', 'zxcvbnm123', '1qaz2wsx', 'qwer1234',
+            'admin123', 'test1234', 'user1234', 'welcome123'
+        ];
+        
+        const lowerPassword = password.toLowerCase();
+        return commonPasswords.some(common => lowerPassword.includes(common));
+    }
     
     // 다음 버튼 클릭
     if (nextBtn) {
@@ -294,7 +352,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===============================
     // 초기화
     // ===============================
+    // 실시간 에러 메시지 제거 및 비밀번호 실시간 검증
+    document.querySelectorAll('.form-input').forEach(input => {
+        input.addEventListener('input', function() {
+            clearFieldError(this.id);
+            
+            // 비밀번호 실시간 검증
+            if (this.id === 'id_password1' && this.value.length > 0) {
+                const password = this.value;
+                
+                if (password.length < 8) {
+                    showFieldError('id_password1', '비밀번호는 8자 이상이어야 합니다.');
+                } else if (/^\d+$/.test(password)) {
+                    showFieldError('id_password1', '숫자로만 구성된 비밀번호는 사용할 수 없습니다.');
+                } else if (/^[a-zA-Z]+$/.test(password)) {
+                    showFieldError('id_password1', '영문자로만 구성된 비밀번호는 사용할 수 없습니다.');
+                } else if (isCommonPassword(password)) {
+                    showFieldError('id_password1', '일상적인 단어는 비밀번호로 사용할 수 없습니다.');
+                }
+            }
+            
+            // 비밀번호 확인 실시간 검증
+            if (this.id === 'id_password2' && this.value.length > 0) {
+                const password1 = document.getElementById('id_password1').value;
+                if (this.value !== password1) {
+                    showFieldError('id_password2', '비밀번호가 일치하지 않습니다.');
+                }
+            }
+        });
+    });
+
     showStep(currentStep);
-    
+
     console.log('단계별 회원가입 초기화 완료!');
 });

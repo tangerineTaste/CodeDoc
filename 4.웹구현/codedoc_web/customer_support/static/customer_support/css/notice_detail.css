@@ -3,7 +3,7 @@
 .detail-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 85px 20px;
+    padding: 85px 20px 50px;
     background: white;
     min-height: 100vh;
 }
@@ -20,7 +20,7 @@
 
 .article-header {
     text-align: left;
-    margin-bottom: 60px;
+    margin-bottom: 30px;
     padding-bottom: 30px;
     border-bottom: 1px solid #e0e0e0;
 }
@@ -42,7 +42,7 @@
     line-height: 1.8;
     color: #333;
     font-size: 1rem;
-    max-width: 600px;
+    max-width: 100%;
 }
 
 .content-text p {
@@ -57,19 +57,24 @@
 }
 
 .back-to-list-btn {
-    padding: 12px 40px;
-    background: transparent;
-    color: #0078FE;
-    border: 1px solid #0078FE;
-    border-radius: 25px;
-    font-size: 1rem;
-    font-weight: 500;
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 15px;
+    padding: 15px 34px;
+    font-size: 16px;
+    font-weight: 400;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     transition: all 0.3s ease;
+    box-shadow: var(--box-shadow);
+    text-decoration: none;
 }
 
 .back-to-list-btn:hover {
-    background: #0078FE;
-    color: white;
+    background: var(--primary-hover);
     transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
 }

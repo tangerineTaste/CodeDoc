@@ -226,22 +226,17 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 class ProductPaginator:
     """상품 리스트 페이지네이션 헬퍼"""
-    
+
     @staticmethod
     def paginate_products(products, page_number, per_page=9):
         """상품 리스트를 페이지네이션"""
-        if not products:
-            return None, 0
-        
-        paginator = Paginator(products, per_page)
-        
+        paginator = Paginator(products or [], per_page)  # products가 None/빈 리스트여도 paginator 생성
+
         try:
             paginated_products = paginator.page(page_number)
         except PageNotAnInteger:
-            # 페이지 번호가 정수가 아닌 경우 첫 번째 페이지 반환
             paginated_products = paginator.page(1)
         except EmptyPage:
-            # 페이지가 범위를 벗어난 경우 마지막 페이지 반환
             paginated_products = paginator.page(paginator.num_pages)
-        
-        return paginated_products, len(products)
+
+        return paginated_products, paginator.count  # 항상 Page 객체 + 총 개수 반환

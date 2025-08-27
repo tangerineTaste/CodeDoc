@@ -28,7 +28,7 @@
                 {% if user.is_authenticated %}
                     <a href="#" class="nav-link">마이페이지</a>
                 {% else %}
-                    <a href="{% url 'accounts:login' %}" class="nav-link">마이페이지</a>
+                    <a href="#" class="nav-link">마이페이지</a>
                 {% endif %}
             </li>
         </ul>
@@ -70,9 +70,9 @@
                 </div>
                 <div class="menu-column">
                     {% if user.is_authenticated %}
-                        <a href="#" class="menu-item">정보조회/변경</a>
+                        <a href="{% url 'accounts:profile' %}" class="menu-item">내 프로필 관리</a>
                     {% else %}
-                        <a href="javascript:void(0);" class="menu-item" onclick="showLoginModal(); return false;">정보조회/변경</a>
+                        <a href="javascript:void(0);" class="menu-item" onclick="showLoginModal(); return false;">내 프로필 관리</a>
                     {% endif %}
                 </div>
             </div>

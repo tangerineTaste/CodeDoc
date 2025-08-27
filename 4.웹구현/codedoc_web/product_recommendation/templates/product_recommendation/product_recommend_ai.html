@@ -10,7 +10,7 @@
 .ai-recommend-container {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 85px 20px;
 }
 
 .ai-header {
@@ -38,15 +38,54 @@
 
 .recommendation-form {
     background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    margin-bottom: 40px;
 }
 
 .form-group {
     margin-bottom: 30px;
 }
+
+/* AI 추천 폼 어떤 금융상품을 찾고 계신가요? */
+
+.lightbulb-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 8px;
+}
+
+.lightbulb-icon {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    /* 애니메이션 제거 */
+}
+
+.speech-bubble {
+    position: relative;
+    background: #0078FE;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 18px;
+    font-size: 1rem;
+    font-weight: 400;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    max-width: 350px;
+    line-height: 1.3;
+}
+
+.speech-bubble::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 12px;  /* bottom에서 top으로 변경 */
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-right: 8px solid #0078FE;
+    border-top: 8px solid #0078FE;  /* border-bottom에서 border-top으로 변경 */
+    border-radius: 0 4px 0 0;  /* 모서리 둥글게 처리도 위쪽에 맞게 조정 */
+}
+/*  AI 추천 폼 어떤 금융상품을 찾고 계신가요?  끝 */
 
 .form-label {
     display: block;
@@ -58,9 +97,9 @@
 
 .user-input {
     width: 100%;
-    padding: 15px 20px;
+    padding: 20px;
     border: 2px solid #e0e0e0;
-    border-radius: 10px;
+    border-radius: 15px;
     font-size: 1rem;
     transition: border-color 0.3s;
     resize: vertical;
@@ -75,9 +114,9 @@
 
 .input-examples {
     margin-top: 15px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
+    padding: 20px 25px;
+    background: #f8f8f8;
+    border-radius: 15px;
 }
 
 .example-title {
@@ -88,8 +127,7 @@
 
 .example-item {
     color: #666;
-    margin-bottom: 5px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     cursor: pointer;
     padding: 5px;
     border-radius: 4px;
@@ -97,27 +135,30 @@
 }
 
 .example-item:hover {
-    background-color: #e9ecef;
+    color: var(--primary-color);
 }
 
 .recommend-btn {
-    background: linear-gradient(135deg, #0078FE, #0056b3);
-    color: white;
-    padding: 15px 40px;
+    background: var(--primary-color);
+    color: var(--bg-primary);
     border: none;
-    border-radius: 25px;
-    font-size: 1.1rem;
-    font-weight: 600;
+    border-radius: 15px;
+    padding: 15px 34px;
+    font-size: 16px;
+    font-weight: 400;
     cursor: pointer;
-    transition: all 0.3s;
-    display: block;
-    margin: 0 auto;
-    min-width: 200px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: var(--box-shadow);
+    text-decoration: none;
 }
 
 .recommend-btn:hover {
+    background: var(--primary-hover);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,120,254,0.3);
+    box-shadow: var(--box-shadow);
 }
 
 .recommend-btn:disabled {
@@ -156,30 +197,33 @@
     text-align: center;
 }
 
-.results-container {
-    margin-top: 40px;
-}
+{% comment %} .results-container {
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    padding: 35px 30px;
+} {% endcomment %}
 
 .user-info-card {
     background: #f8f9fa;
     padding: 20px;
     border-radius: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 .reason-card {
-    background: linear-gradient(135deg, #0078FE, #0056b3);
+    background: white;
     color: white;
     padding: 20px;
     border-radius: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
 }
 
 .products-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-    margin-bottom: 30px;
+    gap: 20px;
+    /*margin-bottom: 30px;*/
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
@@ -189,19 +233,18 @@
     width: 100%;
     height: 100%;
     text-align: left;
-    background: #fff;
+    background: #f8f8f8;
     border-radius: 15px;
-    padding: 25px;
+    padding: 20px;
     transition: all 0.3s ease;
-    border: 1px solid #e0e0e0;
     position: relative;
     overflow: hidden;
 }
 
-.product-card:hover {
+{% comment %} .product-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-}
+    /*box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);*/
+} {% endcomment %}
 
 .product-badge {
     display: inline-block;
@@ -218,14 +261,15 @@
     font-size: 1.3rem;
     font-weight: 600;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     line-height: 1.4;
+    word-break: keep-all;
 }
 
 .product-subtitle {
     font-size: 1rem;
     color: #666;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     line-height: 1.5;
 }
 
@@ -278,43 +322,6 @@
     font-weight: 600;
 }
 
-/* 반응형 개선 */
-@media (max-width: 1200px) {
-    .products-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-    }
-}
-
-@media (max-width: 768px) {
-    .products-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .product-card {
-        padding: 20px;
-    }
-    
-    .product-name {
-        font-size: 1.2rem;
-    }
-    
-    .product-subtitle {
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .product-card {
-        padding: 15px;
-    }
-    
-    .product-name {
-        font-size: 1.1rem;
-    }
-}
-
 .processing-time {
     text-align: center;
     color: #888;
@@ -323,35 +330,38 @@
 }
 
 .back-button {
-    background: #6c757d;
-    color: white;
-    padding: 10px 20px;
+    background: var(--primary-color);
+    color: var(--bg-primary);
     border: none;
-    border-radius: 20px;
+    border-radius: 15px;
+    padding: 15px 34px;
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: var(--box-shadow);
     text-decoration: none;
-    display: inline-block;
-    margin-bottom: 20px;
-    transition: background-color 0.3s;
 }
 
 .back-button:hover {
-    background: #5a6268;
-    color: white;
-    text-decoration: none;
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
 }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="ai-recommend-container">
-    <!-- 뒤로가기 버튼 -->
-    <a href="{% url 'product_recommendation:product_recommend' %}" class="back-button">← 이전으로</a>
     
     <!-- AI 추천 헤더 -->
     <div class="ai-header">
         <h1 class="ai-title"> AI 금융상품 추천</h1>
         <p class="ai-subtitle">머신러닝 기반 개인 맞춤 추천 시스템</p>
-        <p class="ai-description">나이, 소득, 목적을 자유롭게 입력하면 AI가 최적의 상품을 추천해드립니다</p>
+        {% comment %} <p class="ai-description">나이, 소득, 목적을 자유롭게 입력하면 AI가 최적의 상품을 추천해드립니다</p> {% endcomment %}
     </div>
 
     <!-- 추천 폼 -->
@@ -359,27 +369,40 @@
         <form method="post" id="recommendForm">
             {% csrf_token %}
             <div class="form-group">
-                <label for="user_input" class="form-label">어떤 금융상품을 찾고 계신가요?</label>
+                <div class="lightbulb-label">
+                    <img src="{% static 'product_recommendation/images/Lightbulb.png' %}" alt="전구" class="lightbulb-icon">
+                    <div class="speech-bubble">
+                        <span class="bubble-text" id="labelText">어떤 금융상품을 찾고 계신가요?</span>
+                    </div>
+                </div>
                 <textarea 
                     name="user_input" 
                     id="user_input" 
                     class="user-input" 
-                    placeholder="예: 30대 남성이고 월급 400만원인데 적금 추천해줘"
+                    placeholder="입력 예시 : 30대 남성이고 월급 400만원인데 적금 추천해줘"
                     required>{{ user_input }}</textarea>
                 
-                <div class="input-examples">
-                    <div class="example-title"> 입력 예시:</div>
-                    <div class="example-item">• "25살 미혼 여성, 월급 350만원, 결혼자금 모으려고 적금 찾아요"</div>
-                    <div class="example-item">• "40대 기혼 남성, 연봉 6000만원, 주택구입을 위한 대출 상품"</div>
-                    <div class="example-item">• "20대 대학생, 용돈 50만원, 단기 예금 상품 추천"</div>
-                    <div class="example-item">• "50대 부부, 노후준비용 장기 투자상품"</div>
+                <div class="input-examples" id="inputExamples">
+                    <div class="example-title"> 아래 예시를 클릭하면 입력창에 자동으로 입력됩니다!</div>
+                    <div class="example-item">• &nbsp;25살 미혼 여성, 월급 350만원, 결혼자금 모으려고 적금 찾아요</div>
+                    <div class="example-item">• &nbsp;40대 기혼 남성, 연봉 6000만원, 주택구입을 위한 대출 상품</div>
+                    <div class="example-item">• &nbsp;20대 대학생, 용돈 50만원, 단기 예금 상품 추천</div>
+                    <div class="example-item">• &nbsp;50대 부부, 노후준비용 장기 투자상품</div>
                 </div>
             </div>
             
-            <button type="submit" class="recommend-btn" id="submitBtn">
-                AI 추천 받기
-            </button>
+            <!-- AI 추천 받기 버튼만 (초기 상태) -->
+            <div style="text-align: center;" id="submitBtnContainer">
+                <button type="submit" class="recommend-btn" id="submitBtn">AI 추천 받기</button>
+            </div>
         </form>
+        
+        <!-- 결과 영역 -->
+        <!-- 다시 숨김 상태로 -->
+        <div style="text-align: center; margin-top: 30px; display: none;" id="backBtnContainer">
+            <button type="button" class="back-button" id="resetBtn">이전으로</button>
+        </div>
+    </div>
         
         <!-- 로딩 상태 -->
         <div class="loading" id="loading">
@@ -400,9 +423,9 @@
     <div class="results-container">
         <!-- 사용자 정보 -->
         {% if recommendations.user_info %}
-        <div class="user-info-card">
+        <div class="user-info-card" style="background:#fff; padding:20px; border:1px solid #ddd; border-radius: 15px;">
             <h3> 분석된 고객 정보</h3>
-            <div style="margin-top: 15px;">
+            <div style="margin-top: 10px; ">
                 {% if recommendations.user_info.age %}
                     <span style="margin-right: 20px;"> 나이: {{ recommendations.user_info.age }}세</span>
                 {% endif %}
@@ -421,14 +444,17 @@
 
         <!-- 추천 이유 -->
         {% if recommendations.recommendation_reason %}
-        <div class="reason-card">
-            <h3> 추천 이유</h3>
-            <p style="margin-top: 10px; font-size: 1.1rem;">{{ recommendations.recommendation_reason }}</p>
+        <div class="reason-card" style="background:#fff; padding:20px; border:1px solid #ddd; border-radius: 15px;">
+            <h3 style="color: #333;"> 추천 이유</h3>
+            <p style="margin-top: 10px; font-size: 1rem; color: #333; ">
+                {{ recommendations.recommendation_reason }}
+            </p>
         </div>
         {% endif %}
 
-        <!-- 추천 상품들 -->
-        <h3 style="margin-bottom: 25px;"> 맞춤 추천 상품 (총 {{ recommendations.total_candidates }}개 중 선별)</h3>
+        <div style="background:#fff; padding:20px; border:1px solid #ddd; border-radius: 15px;">
+            <!-- 추천 상품들 -->
+        <h3 style="margin-bottom: 15px;"> 맞춤 추천 상품 (총 {{ recommendations.total_candidates }}개 중 선별)</h3>
         
         <div class="products-grid">
             {% for product in recommendations.products %}
@@ -450,36 +476,40 @@
                     {% endif %}
                 </p>
                 
-                <div class="product-info">
-                    <div class="info-label">상품 유형</div>
-                    <div class="info-value">
-                        {% if product.is_loan %}
-                            대출
-                        {% else %}
-                            예적금
-                        {% endif %}
+                <div>
+                    <div class="product-info">
+                        <div class="info-label">상품 유형</div>
+                        <div class="info-value">
+                            {% if product.is_loan %}
+                                대출
+                            {% else %}
+                                예적금
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="product-info">
+                        <div class="info-label">금융회사</div>
+                        <div class="info-value">{{ product.bank }}</div>
                     </div>
                 </div>
-                
-                <div class="product-info">
-                    <div class="info-label">금융회사</div>
-                    <div class="info-value">{{ product.bank }}</div>
-                </div>
-                
-                <div class="product-info">
-                    <div class="info-label">
-                        {% if product.is_loan %}
-                            최저금리
-                        {% else %}
-                            최고금리
-                        {% endif %}
+
+                <div>
+                    <div class="product-info">
+                        <div class="info-label">
+                            {% if product.is_loan %}
+                                최저금리
+                            {% else %}
+                                최고금리
+                            {% endif %}
+                        </div>
+                        <div class="info-value rate-highlight">{{ product.rate|floatformat:2 }}%</div>
                     </div>
-                    <div class="info-value rate-highlight">{{ product.rate|floatformat:2 }}%</div>
-                </div>
-                
-                <div class="product-info">
-                    <div class="info-label">가입방법</div>
-                    <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                    
+                    <div class="product-info">
+                        <div class="info-label">가입방법</div>
+                        <div class="info-value">{{ product.join_way|default:"온라인 가입 가능" }}</div>
+                    </div>
                 </div>
                 
                 <div class="product-tags">
@@ -497,13 +527,14 @@
             </div>
             {% endfor %}
         </div>
+        </div>
         
-        <!-- 처리 시간 정보 -->
+        {% comment %} <!-- 처리 시간 정보 -->
         {% if processing_time %}
         <div class="processing-time">
             AI 분석 완료 ({{ processing_time }}ms)
         </div>
-        {% endif %}
+        {% endif %} {% endcomment %}
     </div>
     {% endif %}
 </div>
@@ -523,30 +554,101 @@ document.querySelectorAll('.example-item').forEach(function(item) {
     });
 });
 
-// 페이지 로드 후 추천 결과가 있으면 스크롤
-window.addEventListener('load', function() {
-    // 추천 결과가 있는지 확인
+    window.addEventListener('load', function() {
     const resultsContainer = document.querySelector('.results-container');
+    const inputExamples = document.getElementById('inputExamples');
+    const userInput = document.getElementById('user_input');
+    const formGroup = document.querySelector('.form-group');
+    
     if (resultsContainer) {
-        // 추천 이유 카드로 스크롤
-        const reasonCard = document.querySelector('.reason-card');
-        if (reasonCard) {
-            // 부드러운 스크롤 애니메이션
-            reasonCard.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start'
-            });
-        } else {
-            // 추천 이유가 없으면 결과 컨테이너로 스크롤
-            resultsContainer.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start'
-            });
+        // 입력 관련 요소들 숨기기
+        if (inputExamples) {
+            inputExamples.style.display = 'none';
         }
+        if (userInput) {
+            userInput.style.display = 'none';
+        }
+        
+        // 결과를 입력 필드 위치로 이동
+        if (formGroup) {
+            formGroup.appendChild(resultsContainer);
+        }
+    }
+});
+
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        const resultsContainer = document.querySelector('.results-container');
+        const inputExamples = document.getElementById('inputExamples');
+        const userInput = document.getElementById('user_input');
+        const lightbulbLabel = document.querySelector('.lightbulb-label'); // 전구 라벨 찾기
+        const submitBtnContainer = document.getElementById('submitBtnContainer');
+        const backBtnContainer = document.getElementById('backBtnContainer');
+        
+        if (resultsContainer) {
+            // 입력 요소들 숨기기
+            if (inputExamples) inputExamples.style.display = 'none';
+            if (userInput) userInput.style.display = 'none';
+            
+            // 전구 말풍선 텍스트 변경
+            if (lightbulbLabel) {
+                const bubbleText = lightbulbLabel.querySelector('.bubble-text');
+                if (bubbleText) {
+                    bubbleText.textContent = '고객님의 연령과 소득 수준을 고려한 추천입니다.';
+                }
+            }
+            
+            // 버튼 상태 변경
+            if (submitBtnContainer) submitBtnContainer.style.display = 'none';
+            if (backBtnContainer) {
+                backBtnContainer.style.display = 'block';
+                backBtnContainer.style.visibility = 'visible';
+            }
+        }
+    }, 10);
+});
+
+// 이전으로 버튼 클릭 시
+document.addEventListener('DOMContentLoaded', function() {
+    const resetBtn = document.getElementById('resetBtn');
+    
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const userInput = document.getElementById('user_input');
+            const inputExamples = document.getElementById('inputExamples');
+            const lightbulbLabel = document.querySelector('.lightbulb-label');
+            const submitBtnContainer = document.getElementById('submitBtnContainer');
+            const backBtnContainer = document.getElementById('backBtnContainer');
+            const resultsContainer = document.querySelector('.results-container');
+            
+            // 원래 상태로 복원
+            if (userInput) {
+                userInput.style.display = 'block';
+                userInput.value = '';
+            }
+            if (inputExamples) inputExamples.style.display = 'block';
+            
+            // 전구 말풍선 텍스트를 원래대로 되돌리기
+            if (lightbulbLabel) {
+                const bubbleText = lightbulbLabel.querySelector('.bubble-text');
+                if (bubbleText) {
+                    bubbleText.textContent = '어떤 금융상품을 찾고 계신가요?';
+                }
+            }
+            
+            if (resultsContainer) resultsContainer.style.display = 'none';
+            
+            // 버튼 상태 변경: AI 추천 받기 보이고, 이전으로 숨기기
+            if (submitBtnContainer) submitBtnContainer.style.display = 'block';
+            if (backBtnContainer) backBtnContainer.style.display = 'none';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
 });
 </script>
 {% endblock %}
 {% block extra_js %}
-<!-- 필요시 추가 JavaScript -->
 {% endblock %}

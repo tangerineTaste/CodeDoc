@@ -1,0 +1,272 @@
+/* ===============================
+    프로필 수정 페이지 전용 스타일
+   =============================== */
+
+.profile-edit-page-container {
+    min-height: calc(100vh - 65px - 150px);
+    padding: 85px 0px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.profile-edit-card {
+    background: var(--bg-primary);
+}
+
+/* 헤더 스타일 */
+.profile-edit-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-edit-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.profile-edit-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+/* 성공 메시지 */
+.success-messages {
+    max-width:800px;
+    margin: 0 auto;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: var(--border-radius-normal);
+    padding: 15px;
+}
+
+.success-message {
+    color: #155724;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.success-message:last-child {
+    margin-bottom: 0;
+}
+
+/* 폼 섹션 스타일 */
+.form-sections {
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    margin: 0 auto;
+}
+
+.form-section {
+    background: white;
+    border-bottom: 1px solid #ddd;
+    padding: 45px 0;
+}
+
+/* .form-section:hover {
+    box-shadow: 0 4px 15px rgba(0, 120, 254, 0.1);
+    border-color: rgba(0, 120, 254, 0.2);
+} */
+
+.section-header {
+    margin-bottom: 15px;
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-icon {
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+/* 폼 그리드 레이아웃 */
+.form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 800px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* 폼 그룹 스타일 */
+.form-group {
+    display: flex;
+    flex-direction: row;
+}
+
+.form-label {
+    width: 100px;
+    display: block;
+    font-size: 16px;
+    padding-top: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+}
+
+.field-help {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-left: 5px;
+}
+
+/* 폼 입력 요소들 */
+.profile-edit-form input,
+.profile-edit-form select {
+    width: 100%;
+    padding: 14px 14px 16px;
+    border: 2px solid var(--border-light);
+    border-radius: var(--border-radius-normal);
+    font-size: 15px;
+    font-family: 'NanumSquare', sans-serif;
+    transition: all 0.3s ease;
+    outline: none;
+    background: var(--bg-primary);
+    box-sizing: border-box;
+}
+
+.profile-edit-form input:focus,
+.profile-edit-form select:focus {
+    border-color: var(--primary-color);
+    /* transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 120, 254, 0.1); */
+}
+
+.profile-edit-form input[readonly] {
+    background-color: #f8f9fa;
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+.field-description {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 5px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid var(--primary-color);
+}
+
+/* 버튼 영역 */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    padding: 40px 0 0;
+}
+
+.save-button,
+.view-recommendations-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 34px;
+    border-radius: var(--border-radius-normal);
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-family: 'NanumSquare', sans-serif;
+}
+
+.save-button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.save-button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+}
+
+.view-recommendations-button {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-color: var(--border-light);
+}
+
+.view-recommendations-button:hover {
+    background: var(--text-secondary);
+    color: white;
+    border-color: var(--text-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 추가 정보 카드 */
+.profile-info {
+    margin-top: 0;
+}
+
+.info-card {
+    background: #f8f9fa;
+    border-radius: var(--border-radius-normal);
+    padding: 25px;
+    border: 1px solid #e9ecef;
+}
+
+.info-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-title::before {
+    content: "💡";
+    font-size: 1.2rem;
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.info-icon {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.info-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}

@@ -22,7 +22,7 @@
             
             if (container && prevBtn && nextBtn) {
                 var currentIndex = 0;
-                var maxIndex = 1;
+                var maxIndex = 2;
                 var slideWidth = 235;
                 
                 console.log('상품 슬라이더 초기화 완료');
@@ -59,10 +59,25 @@
         // =================================
 
         let currentSlide = 0;
+        let slideInterval;
+        const slideDelay = 3000; // 초마다 자동 전환
         const slides = document.querySelectorAll('.main-slide .slide-content');
         const indicators = document.querySelectorAll('.carousel-indicators .indicator');
         const prevBtn = document.querySelector('.carousel-btn.prev');
         const nextBtn = document.querySelector('.carousel-btn.next');
+
+        // 자동재생 시작 함수
+        function startAutoSlide() {
+            slideInterval = setInterval(() => {
+                let newIndex = (currentSlide + 1) % slides.length;
+                showSlide(newIndex);
+            }, slideDelay);
+        }
+
+        // 자동재생 중지 함수
+        function stopAutoSlide() {
+            clearInterval(slideInterval);
+        }
 
         function showSlide(index) {
             // 먼저 모든 슬라이드 비활성화
@@ -80,21 +95,39 @@
         }
 
         if (prevBtn && nextBtn) {
-            prevBtn.addEventListener('click', () => {
-                let newIndex = (currentSlide - 1 + slides.length) % slides.length;
-                showSlide(newIndex);
-            });
-
-            nextBtn.addEventListener('click', () => {
-                let newIndex = (currentSlide + 1) % slides.length;
-                showSlide(newIndex);
-            });
-        }
-
-        // 인디케이터 클릭
-        indicators.forEach((indicator, i) => {
-            indicator.addEventListener('click', () => showSlide(i));
+        prevBtn.addEventListener('click', () => {
+            stopAutoSlide();
+            let newIndex = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(newIndex);
+            startAutoSlide(); // 클릭 후 자동재생 재시작
         });
+
+        nextBtn.addEventListener('click', () => {
+            stopAutoSlide();
+            let newIndex = (currentSlide + 1) % slides.length;
+            showSlide(newIndex);
+            startAutoSlide(); // 클릭 후 자동재생 재시작
+        });
+    }
+
+    // 인디케이터 클릭
+    indicators.forEach((indicator, i) => {
+        indicator.addEventListener('click', () => {
+            stopAutoSlide();
+            showSlide(i);
+            startAutoSlide(); // 클릭 후 자동재생 재시작
+        });
+    });
+
+    // 마우스 호버 시 자동재생 중지/재시작
+    const mainSlide = document.querySelector('.main-slide');
+    if (mainSlide) {
+        mainSlide.addEventListener('mouseenter', stopAutoSlide);
+        mainSlide.addEventListener('mouseleave', startAutoSlide);
+    }
+
+    // 자동재생 시작
+    startAutoSlide();
 
         // =================================
         // 챗봇 아이콘 클릭 이벤트
@@ -165,9 +198,9 @@
         // 기타 UI 기능들
         // =================================
         
-        // CTA 버튼 클릭 이벤트
-        var ctaButton = document.querySelector('.cta-button');
-        if (ctaButton) {
+        // CTA 버튼 클릭 이벤트 (모든 CTA 버튼에 대해)
+        var ctaButtons = document.querySelectorAll('.cta-button');
+        ctaButtons.forEach(function(ctaButton) {
             ctaButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 
@@ -175,13 +208,27 @@
                 this.style.transform = 'scale(0.95) translateY(-2px)';
                 this.style.transition = 'transform 0.15s ease';
                 
+                var targetUrl = this.getAttribute('data-url');
+                var self = this;
+                
                 setTimeout(function() {
-                    ctaButton.style.transform = 'translateY(-2px)';
+                    self.style.transform = 'translateY(-2px)';
+                    
+                    // URL로 이동
+                    if (targetUrl) {
+                        if (targetUrl === '/chatbot/') {
+                            // 챗봇은 새 창으로 열기
+                            window.open(targetUrl, '_blank', 'width=400,height=550');
+                        } else {
+                            // 다른 페이지는 현재 창에서 이동
+                            window.location.href = targetUrl;
+                        }
+                    }
                 }, 150);
 
-                console.log('상품 추천받기 클릭됨');
+                console.log('CTA 버튼 클릭됨:', targetUrl);
             });
-        }
+        });
 
         // 자주 찾는 메뉴 클릭 이벤트
         var menuItems = document.querySelectorAll('.frequent-menu .quik');

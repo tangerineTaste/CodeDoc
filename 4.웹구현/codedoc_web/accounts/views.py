@@ -39,7 +39,7 @@ def profile_edit(request):
     else:
         form = ProfileForm(instance=request.user.profile)
     
-    return render(request, 'accounts/profile_edit.html', {'form': form})
+    return render(request, 'accounts/profile.html', {'form': form})
 
 @login_required
 def password_change(request):

@@ -120,7 +120,8 @@ body {
 
 /* 상품 카드 */
 .product-cards {
-    width: 100%;
+    width: 100%;       /* 자동으로 그리드 칸 맞춤 */
+    max-width: 372px;  /* 카드 최대 크기 제한 (선택) */
     height: 100%;
     text-align: left;
     background: var(--bg-primary);
@@ -134,7 +135,9 @@ body {
 
 .product-cards:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--box-shadow);
+    border-color: var(--primary-color);
+    cursor: pointer;
 }
 
 .product-badge {
@@ -161,6 +164,7 @@ body {
     color: var(--text-secondary);
     margin-bottom: 20px;
     line-height: 1.5;
+    word-break: keep-all;
 }
 
 .product-info {
@@ -282,7 +286,7 @@ body {
     color: rgba(255, 255, 255, 0.9);
     text-align: center;
     margin-bottom: 25px;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
 }
 
 .category-recommendation {
