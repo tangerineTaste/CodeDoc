@@ -79,22 +79,23 @@
         {% if page_obj.has_other_pages %}
             <div class="pagination-container">
                 <div class="pagination">
-                    {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}">이전</a>
+                    <!-- 이전 10개 구간 -->
+                    {% if page_obj.paginator.page_range.0 > 1 %}
+                        <a href="?page={{ page_obj.paginator.page_range.0|add:'-10' }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}">이전</a>
                     {% endif %}
                     
+                    <!-- 페이지 번호들 (10개 단위 고정) -->
                     {% for num in page_obj.paginator.page_range %}
-                        {% if num <= 5 %}
-                            {% if page_obj.number == num %}
-                                <span class="current">{{ num }}</span>
-                            {% else %}
-                                <a href="?page={{ num }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}">{{ num }}</a>
-                            {% endif %}
+                        {% if page_obj.number == num %}
+                            <span class="current">{{ num }}</span>
+                        {% else %}
+                            <a href="?page={{ num }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}">{{ num }}</a>
                         {% endif %}
                     {% endfor %}
                     
-                    {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}">다음</a>
+                    <!-- 다음 10개 구간 -->
+                    {% if page_obj.paginator.page_range|last < page_obj.paginator.num_pages %}
+                        <a href="?page={{ page_obj.paginator.page_range|last|add:'1' }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}">다음</a>
                     {% endif %}
                 </div>
             </div>

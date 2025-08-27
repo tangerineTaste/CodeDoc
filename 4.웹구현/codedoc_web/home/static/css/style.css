@@ -210,26 +210,25 @@ html, body{
 .description {
     color: var(--text-primary);
     font-size: 16px;
-    margin-bottom: 30px;
+    margin-bottom: 80px;
     line-height: 1.5;
 }
 
 .cta-button {
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
+    background-color: #fff;
     border: none;
+    color: var(--text-primary);
     padding: 14px 28px;
     border-radius: 15px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: var(--box-shadow);
 }
 
 .cta-button:hover {
     background-color: var(--primary-color);
-    color: var(--bg-primary);
+    color: white;
     transform: translateY(-2px);
     box-shadow: var(--box-shadow);
 }

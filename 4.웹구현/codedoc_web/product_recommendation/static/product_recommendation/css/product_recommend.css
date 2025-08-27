@@ -51,8 +51,19 @@ body {
 
 .service-row {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     margin-bottom: 30px;
+    flex-direction: column;
+}
+
+.service-card-first{
+    display: flex;
+    gap: 20px;
+}
+
+.service-card-second{
+    display: flex;
+    gap: 20px;
 }
 
 .service-card {
@@ -61,12 +72,12 @@ body {
     padding: 30px;
     display: flex;
     align-items: flex-start;
-    flex-direction: column;
+    flex-direction: row;
     transition: all 0.3s ease;
     cursor: pointer;
     color: #333;
     flex: 1;
-    min-height: 200px;
+    min-height: 150px;
     border: 1px solid #ddd;
 }
 
@@ -102,7 +113,7 @@ body {
 .service-title {
     font-size: 1.4rem;
     font-weight: 700;
-    margin: 3px 0 15px 0;
+    margin: 8px 0 15px 0;
     color: #333;
     line-height: 1.3;
 }
