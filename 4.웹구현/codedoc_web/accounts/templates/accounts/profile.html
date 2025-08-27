@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}CodeDoc - 내 프로필 관리{% endblock %}
+{% block title %}내 프로필 관리 - CODEDOC{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'accounts/css/auth.css' %}?v={{ STATIC_VERSION }}">
@@ -19,83 +19,44 @@
             </p>
         </div>
 
-        {% if messages %}
-            <div class="success-messages">
-                {% for message in messages %}
-                    <div class="success-message">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
         <form class="profile-edit-form" method="post">
             {% csrf_token %}
-            
-            {% if form.errors %}
-                <div class="error-messages">
-                    {% for field, errors in form.errors.items %}
-                        {% for error in errors %}
-                            <div class="error-message">{{ error }}</div>
-                        {% endfor %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            <div class="form-sections">
-                <!-- 기본 정보 섹션 -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            기본 정보
-                        </h2>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">
-                                이름 
-                            </label>
-                            {{ form.name }}
-                        </div>
-                    </div>
-                </div>
 
                 <!-- 개인 정보 섹션 -->
                 <div class="form-section">
                     <div class="section-header">
-                        <h2 class="section-title">
-                            개인 정보
-                        </h2>
+                        <h2 class="section-title">개인 정보</h2>
                     </div>
                     
                     <div class="form-grid">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="{{ form.연령대분류.id_for_label }}" class="form-label">
-                                    연령대 
-                                </label>
+                                <label for="{{ form.name.id_for_label }}" class="form-label">이름</label>
+                                {{ form.name }}
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">이메일</label>
+                                <input type="email" name="email" class="form-control" value="{{ user.email|default:'' }}" placeholder="example@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.연령대분류.id_for_label }}" class="form-label">연령대</label>
                                 {{ form.연령대분류 }}
                             </div>
                             
                             <div class="form-group">
-                                <label for="{{ form.가구주성별.id_for_label }}" class="form-label">
-                                    성별 
-                                </label>
+                                <label for="{{ form.가구주성별.id_for_label }}" class="form-label">성별</label>
                                 {{ form.가구주성별 }}
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="{{ form.교육수준분류.id_for_label }}" class="form-label">
-                                    교육수준
-                                </label>
+                                <label for="{{ form.교육수준분류.id_for_label }}" class="form-label">교육수준</label>
                                 {{ form.교육수준분류 }}
                             </div>
                             
                             <div class="form-group">
-                                <label for="{{ form.결혼상태.id_for_label }}" class="form-label">
-                                    결혼상태
-                                </label>
+                                <label for="{{ form.결혼상태.id_for_label }}" class="form-label">결혼상태</label>
                                 {{ form.결혼상태 }}
                             </div>
                         </div>
@@ -105,24 +66,18 @@
                 <!-- 금융 정보 섹션 -->
                 <div class="form-section" style="border-bottom: none;">
                     <div class="section-header">
-                        <h2 class="section-title">
-                            금융 정보
-                        </h2>
+                        <h2 class="section-title">금융 정보</h2>
                     </div>
                     
                     <div class="form-grid">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="{{ form.직업분류1.id_for_label }}" class="form-label">
-                                    직업분류
-                                </label>
+                                <label for="{{ form.직업분류1.id_for_label }}" class="form-label">직업분류</label>
                                 {{ form.직업분류1 }}
                             </div>
                             
                             <div class="form-group">
-                                <label for="{{ form.저축여부.id_for_label }}" class="form-label">
-                                    저축습관
-                                </label>
+                                <label for="{{ form.저축여부.id_for_label }}" class="form-label">저축습관</label>
                                 {{ form.저축여부 }}
                             </div>
                         </div>
@@ -132,13 +87,8 @@
 
             <!-- 버튼 영역 -->
             <div class="form-actions">
-                <button type="submit" class="save-button">
-                    저장하기
-                </button>
-                
-                <a href="{% url 'product_recommendation:product_list' %}" class="view-recommendations-button">
-                    맞춤 상품 보기
-                </a>
+                <button type="submit" class="save-button">저장하기</button>
+                {% comment %} <a href="{% url 'product_recommendation:product_list' %}" class="view-recommendations-button">맞춤 상품 보기</a> {% endcomment %}
             </div>
         </form>
     </div>

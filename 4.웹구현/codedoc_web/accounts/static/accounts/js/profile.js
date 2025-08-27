@@ -6,6 +6,14 @@ console.log('profile.js 로드 완료!');
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('프로필 수정 페이지 초기화 시작');
+
+    // 여기에 추가 - URL 파라미터 확인
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('saved') === 'true') {
+        showSuccessNotification('수정한 내용으로 저장되었습니다.');
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+    }
     
     // ===============================
     // 폼 유효성 검사
@@ -58,6 +66,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('필수 항목을 모두 입력해주세요.');
                 return false;
             }
+
+            // 폼 제출 시 변경사항 플래그 초기화
+            hasChanges = false;
             
             // 로딩 상태로 변경
             saveButton.disabled = true;
@@ -138,18 +149,22 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSaveButtonState() {
         if (saveButton) {
             if (hasChanges) {
-                saveButton.style.background = 'var(--primary-color)';
-                saveButton.style.transform = 'translateY(-1px)';
+                saveButton.classList.add('active');
+                saveButton.disabled = false;
             } else {
-                saveButton.style.background = '#ccc';
-                saveButton.style.transform = 'translateY(0)';
+                saveButton.classList.remove('active');
+                saveButton.disabled = true;
             }
         }
     }
-    
-    // ===============================
+
+    // 초기 상태 설정
+    if (saveButton) {
+        saveButton.classList.remove('active');
+        saveButton.disabled = true;
+    }
+
     // 페이지 이탈 경고
-    // ===============================
     window.addEventListener('beforeunload', function(e) {
         if (hasChanges) {
             e.preventDefault();
@@ -218,49 +233,188 @@ document.addEventListener('DOMContentLoaded', function() {
     //         this.parentElement.style.transform = 'translateY(0)';
     //     });
     // });
-    
-    // ===============================
-    // 성공 메시지 자동 숨김
-    // ===============================
-    const successMessages = document.querySelectorAll('.success-message');
-
-    successMessages.forEach(message => {
-        const parent = message.parentElement; // 배경 역할 요소가 부모일 경우
-
-            setTimeout(() => {
-                message.style.transition = 'opacity 0.5s ease';
-                message.style.opacity = '0';
-
-                if (parent) {
-                parent.style.transition = 'opacity 0.5s ease';
-                parent.style.opacity = '0';
-                }
-
-                setTimeout(() => {
-                if (parent) parent.remove();
-                else message.remove();
-                }, 500);
-            }, 2000);
-        });
 
     console.log('프로필 수정 페이지 초기화 완료');
     });
 
+function showSuccessNotification(message) {
+    // 모달 컨테이너 생성
+    const modal = document.createElement('div');
+    modal.className = 'login-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    
+    // 배경 오버레이
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+    `;
+    
+    // 모달 콘텐츠
+    const content = document.createElement('div');
+    content.className = 'modal-content';
+    content.style.cssText = `
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        position: relative;
+        z-index: 10000;
+        width: 450px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    `;
+    
+    // 아이콘
+    const icon = document.createElement('div');
+    icon.className = 'modal-icon';
+    icon.style.marginBottom = '20px';
+    icon.innerHTML = `
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#0078FE" stroke-width="2"/>
+            <polyline points="14,2 14,8 20,8" stroke="#0078FE" stroke-width="2"/>
+            <line x1="16" y1="13" x2="8" y2="13" stroke="#0078FE" stroke-width="2"/>
+            <line x1="16" y1="17" x2="8" y2="17" stroke="#0078FE" stroke-width="2"/>
+            <polyline points="10,9 9,9 8,9" stroke="#0078FE" stroke-width="2"/>
+        </svg>
+    `;
+    
+    // 제목 수정
+    const title = document.createElement('h3');
+    title.textContent = '프로필 정보 수정 완료';
+    title.style.cssText = `
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 15px;
+    `;
+    
+    // 메시지 수정
+    const messageP1 = document.createElement('p');
+    const messageP2 = document.createElement('p');
+    messageP1.textContent = '프로필 정보가 업데이트 되었습니다.';
+    messageP2.textContent = '맞춤 상품을 확인하시겠습니까?';
+    messageP1.style.cssText = `
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+        line-height: 1.4;
+    `;
+    messageP2.style.cssText = `
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+        line-height: 1.4;
+    `;
+    
+    // 버튼 영역
+    const buttons = document.createElement('div');
+    buttons.className = 'modal-buttons';
+    buttons.style.cssText = `
+        display: flex;
+        gap: 12px;
+        margin-top: 30px;
+        justify-content: center;
+    `;
+    
+    // 홈으로 돌아가기 버튼
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'modal-btn cancel-btn';
+    cancelBtn.textContent = '홈으로 돌아가기';
+    cancelBtn.style.cssText = `
+        padding: 15px 34px;
+        border: none;
+        border-radius: 15px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        min-width: 80px;
+        background: #f0f0f0;
+        color: var(--text-secondary);
+    `;
+
+    // 맞춤 상품 보기 버튼
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'modal-btn confirm-btn';
+    confirmBtn.textContent = '맞춤 상품 보기';
+    confirmBtn.style.cssText = `
+        padding: 15px 34px;
+        border: none;
+        border-radius: 15px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        min-width: 80px;
+        background: var(--primary-color);
+        color: white;
+    `;
+    
+    // 버튼 이벤트 수정
+    cancelBtn.addEventListener('click', () => {
+        modal.remove();
+        window.location.href = '/'; // 홈으로 이동
+    });
+    confirmBtn.addEventListener('click', () => {
+        modal.remove();
+        window.location.href = '/products/list/'; // 맞춤 상품 추천 페이지로 이동
+    });
+    
+    overlay.addEventListener('click', () => modal.remove());
+
+    // 요소들 조립
+    buttons.appendChild(cancelBtn);
+    buttons.appendChild(confirmBtn);
+    content.appendChild(icon);
+    content.appendChild(title);
+    content.appendChild(messageP1);
+    content.appendChild(messageP2);
+    content.appendChild(buttons);
+    modal.appendChild(overlay);
+    modal.appendChild(content);
+
+    // DOM에 추가
+    document.body.appendChild(modal);
+}
+
 // CSS 애니메이션 추가
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    @keyframes modalSlideIn {
+    from { 
+        opacity: 0; 
+        transform: scale(0.8) translateY(-50px); 
     }
-    
-    .field-tooltip {
-        animation: fadeIn 0.3s ease;
+    to { 
+        opacity: 1; 
+        transform: scale(1) translateY(0); 
     }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-5px); }
-        to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalSlideOut {
+    from { 
+        opacity: 1; 
+        transform: scale(1) translateY(0); 
     }
+    to { 
+        opacity: 0; 
+        transform: scale(0.8) translateY(-50px); 
+    }
+}
 `;
 document.head.appendChild(style);

@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY=config("SECRET_KEY")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 
-
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

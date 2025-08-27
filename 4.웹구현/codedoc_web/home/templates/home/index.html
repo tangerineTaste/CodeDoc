@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}CodeDoc - 메인화면{% endblock %}
+{% block title %}메인화면 - CODEDOC{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}?v={{ STATIC_VERSION }}">
@@ -14,7 +14,7 @@
         <!-- 왼쪽 메인 슬라이드 영역 -->
         <div class="main-slide">
             <div class="slides-wrapper">
-                <!-- Slide 1 (파란색 - 상품추천) -->
+                <!-- Slide 1 (파란색 - 챗봇) -->
                 <div class="slide-content slide-blue active">
                     <div class="text-content">
                         <div class="subtitle">AI 챗봇 서비스</div>
@@ -27,8 +27,7 @@
                     </div>
                 </div>
 
-                <!-- Slide 2 (연두색 - 챗봇 소개) -->
-
+                <!-- Slide 2 (보라색 - 상품 추천) -->
                 <div class="slide-content slide-green">
                     <div class="text-content">
                         <div class="subtitle">AI 기반 맞춤형 금융상품 추천</div>
@@ -158,7 +157,7 @@
                 </button>
                 <div class="products-slider">                    
                     <div class="products-container" id="productsContainer">
-                        <div class="product-card" data-category="savings">
+                        <div class="product-card active" data-category="savings">
                             <div class="product-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0078FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-database"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
                                     <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>

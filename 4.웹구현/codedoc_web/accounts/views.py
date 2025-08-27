@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash, authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.conf import settings
 from .forms import ProfileForm, SignupForm
+from django.contrib import messages
+from django.contrib.messages import get_messages
 
 # Create your views here.
 def signup(request):
@@ -13,7 +14,6 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, '회원가입이 완료되었습니다.')
             return redirect(settings.LOGIN_URL)
     else:
         form = SignupForm()
@@ -27,19 +27,38 @@ def profile(request):
         'profile': request.user.profile
     })
 
-@login_required
 def profile_edit(request):
     """프로필 수정"""
+    
+    # GET 요청 시 모든 기존 메시지 강제 삭제
+    if request.method == 'GET':
+        # 메시지 스토리지 직접 접근해서 완전 삭제
+        storage = messages.get_messages(request)
+        storage.used = True  # 모든 메시지를 사용된 것으로 표시
+        storage._queued_messages = []  # 대기 중인 메시지 삭제
+    
     if request.method == 'POST':
         form = ProfileForm(request.POST, instance=request.user.profile)
+        
+        # 이메일 처리
+        email = request.POST.get('email', '')
+        if email:
+            request.user.email = email
+            request.user.save()
+        
         if form.is_valid():
-            form.save()
-            messages.success(request, '프로필이 성공적으로 수정되었습니다.')
-            return redirect('accounts:profile')
+            profile = form.save()
+            return redirect('/accounts/profile/?saved=true')
+        else:
+            messages.error(request, '입력 정보를 다시 확인해주세요.')
     else:
         form = ProfileForm(instance=request.user.profile)
     
-    return render(request, 'accounts/profile.html', {'form': form})
+    return render(request, 'accounts/profile.html', {
+        'form': form,
+        'user': request.user,
+        'profile': request.user.profile
+    })
 
 @login_required
 def password_change(request):
@@ -81,7 +100,6 @@ def signup_view(request):
             user = form.save()
             print(f"User created: {user.username}")  # 디버깅
             username = form.cleaned_data.get('username')
-            messages.success(request, f'{username}님의 계정이 생성되었습니다!')
             return redirect('accounts:login')
         else:
             print(f"Form errors: {form.errors}")  # 디버깅
@@ -96,7 +114,6 @@ def logout_view(request):
     if request.method == 'POST':
         print("POST request - logging out user")  # 디버깅
         logout(request)
-        messages.success(request, '로그아웃되었습니다.')
         return redirect('/')
     else:
         print("GET request - showing logout page")  # 디버깅

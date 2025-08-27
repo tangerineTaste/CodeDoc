@@ -41,11 +41,14 @@ def news_list(request):
     previous_page = page_number - 1 if has_previous else None
     next_page = page_number + 1 if has_next else None
     
-    # 페이지 범위 (최대 5개 페이지 번호 표시)
-    start_page = max(1, page_number - 2)
-    end_page = min(total_pages, start_page + 4)
-    if end_page - start_page < 4:
-        start_page = max(1, end_page - 4)
+    # 페이지 범위 계산 - 10개 단위 구간으로 고정
+    # 현재 페이지가 속한 10개 단위 구간 계산
+    current_group = ((page_number - 1) // 10) + 1
+    start_page = (current_group - 1) * 10 + 1
+    end_page = min(current_group * 10, total_pages)
+    
+    page_range = range(start_page, end_page + 1)
+    
     page_range = range(start_page, end_page + 1)
     
     # 카테고리 목록
