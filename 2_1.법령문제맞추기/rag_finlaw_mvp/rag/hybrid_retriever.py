@@ -1,0 +1,490 @@
+"""
+hybrid_retriever.py - 개선된 검색기
+"""
+import os
+import pickle
+import re
+from typing import List, Dict, Any, Optional, Tuple
+from pathlib import Path
+
+from rag.embedder_upstage import get_embedder
+from rag.utils import SearchResult, log_message  # log_message 추가
+
+# 기존 log_message 함수 전체 삭제 (15줄 정도)
+
+class HybridRetriever:
+    """개선된 하이브리드 검색기 - BM25 임계값 조정 및 Vector fallback 강화"""
+    
+    def __init__(self, config, silent=False):
+        if not silent:
+            log_message("INFO", "하이브리드 검색기 초기화 중...", "RETRIEVER")
+        self.config = config
+        
+        self.embedder = get_embedder()
+        
+        self.bm25_index = None
+        self.corpus = None
+        self._load_bm25()
+        
+        self.pinecone_index = None
+        self._init_pinecone()
+        
+        # 검색 통계
+        self.search_stats = {
+            'bm25_failures': 0,
+            'vector_fallbacks': 0,
+            'total_queries': 0,
+            'improved_fallbacks': 0
+        }
+        
+        success_msg = f"초기화 완료 (BM25: {self.bm25_index is not None}, Vector: {self.pinecone_index is not None})"
+        log_message("SUCCESS", success_msg, "RETRIEVER")
+
+    def _load_bm25(self):
+        """BM25 인덱스 로드"""
+        if not os.path.exists(self.config.bm25_index_path):
+            log_message("FAILURE", "BM25 인덱스 파일이 존재하지 않음", "RETRIEVER")
+            return
+        
+        try:
+            with open(self.config.bm25_index_path, 'rb') as f:
+                data = pickle.load(f)
+            
+            if isinstance(data, dict) and "bm25" in data and "corpus" in data:
+                self.bm25_index = data["bm25"]
+                self.corpus = data["corpus"]
+                log_message("SUCCESS", f"BM25 로드 성공 ({len(self.corpus)}개 문서)", "RETRIEVER")
+            else:
+                log_message("FAILURE", "BM25 데이터 형식이 올바르지 않음", "RETRIEVER")
+        except Exception as e:
+            log_message("FAILURE", f"BM25 로드 실패: {e}", "RETRIEVER")
+
+    # 나머지 메서드들도 동일하게 log_message("타입", "메시지", "RETRIEVER") 형태로 수정...
+
+    def _init_pinecone(self):
+        """Pinecone 초기화"""
+        if not self.config.pinecone_api_key:
+            log_message("INFO", "Pinecone API 키가 설정되지 않음")
+            return
+        
+        try:
+            from pinecone import Pinecone
+            pc = Pinecone(api_key=self.config.pinecone_api_key)
+            self.pinecone_index = pc.Index(self.config.pinecone_index_name)
+            log_message("SUCCESS", "Pinecone 연결 완료")
+        except Exception as e:
+            log_message("FAILURE", f"Pinecone 연결 실패: {e}")
+
+    def _enhanced_legal_tokenize(self, text: str) -> List[str]:
+        """향상된 법령 토크나이저 - 키워드 추출 개선"""
+        tokens = []
+        
+        # 1. 조문 패턴 (최고 우선순위)
+        articles = re.findall(r'제\s*\d+\s*조(?:제\s*\d+\s*항)?(?:제\s*\d+\s*호)?', text)
+        tokens.extend(articles * 5)  # 3배 → 5배로 가중치 증가
+        
+        # 2. 기관명 동의어 매핑 (확장)
+        expanded_synonyms = {
+            "중소벤처기업부": ["중기부", "중소기업부", "중벤부", "중소벤처부"],
+            "금융위원회": ["금위", "금융위", "금융위원회"],
+            "금융감독원": ["금감원", "금융감독청"],
+            "공정거래위원회": ["공정위", "공거위", "공정거래위"],
+            "방송통신위원회": ["방통위", "방송위"],
+            "기획재정부": ["기재부", "기획재정청"],
+            "보건복지부": ["복지부", "보건부"],
+            "산업통상자원부": ["산업부", "산자부"],
+            "과학기술정보통신부": ["과기부", "과기정통부"],
+            "국토교통부": ["국토부", "국토교통청"]
+        }
+        
+        for standard, variants in expanded_synonyms.items():
+            if standard in text:
+                tokens.extend(variants)
+            else:
+                for variant in variants:
+                    if variant in text:
+                        tokens.extend([standard] + [v for v in variants if v != variant])
+                        break
+        
+        # 3. 기본 토큰
+        korean_words = re.findall(r'[가-힣]{2,}', text)  # 2글자 이상으로 완화
+        tokens.extend(korean_words)
+        
+        numbers = re.findall(r'\d+', text)
+        tokens.extend(numbers)
+        
+        # 4. 확장된 법령 패턴
+        patterns = [
+            r'\d+(?:년|개월|일)(?:\s*(?:이내|이상|미만|전|후))?',
+            r'\d+(?:억|만)?원(?:\s*(?:이상|이하|미만))?',
+            r'별지\s*(?:제\s*)?\d+\s*(?:호|번)(?:서식|양식)?',
+            r'[가-힣]+(?:위원회|청|부|처|원)(?:장관?|위원장)?',
+            r'(?:신청|허가|승인|등록|신고|접수|처리|발급|제출)(?:서|절차|방법)?',
+            r'(?:규제|법령)(?:신속|적용)(?:확인|절차)?',  # 새로 추가
+            r'(?:샌드박스|임시허가|특례)',  # 새로 추가
+        ]
+        
+        for pattern in patterns:
+            matches = re.findall(pattern, text)
+            tokens.extend(matches)
+        
+        # 5. 중복 제거 (순서 보존)
+        seen = set()
+        unique_tokens = []
+        for token in tokens:
+            if token not in seen:
+                unique_tokens.append(token)
+                seen.add(token)
+        
+        return unique_tokens
+
+    def _bm25_search(self, query: str, top_k: int) -> List[SearchResult]:
+        """BM25 검색 - 향상된 토크나이저"""
+        if not self.bm25_index:
+            log_message("FAILURE", "BM25 인덱스를 사용할 수 없음")
+            return []
+        
+        query_tokens = self._enhanced_legal_tokenize(query)
+        
+        if not query_tokens:
+            query_tokens = query.split()
+        
+        if not query_tokens:
+            log_message("FAILURE", "검색 토큰이 없음")
+            return []
+        
+        try:
+            scores = self.bm25_index.get_scores(query_tokens)
+        except Exception as e:
+            log_message("FAILURE", f"BM25 점수 계산 오류: {e}")
+            return []
+        
+        if len(scores) == 0:
+            log_message("FAILURE", "BM25 점수 결과 없음")
+            return []
+        
+        max_score = max(scores)
+        
+        if max_score == 0.0:
+            self.search_stats['bm25_failures'] += 1
+            log_message("FAILURE", f"BM25 매칭 실패 (누적: {self.search_stats['bm25_failures']}회)")
+        else:
+            log_message("SUCCESS", f"BM25 매칭 성공 (최고:{max_score:.2f})")
+        
+        top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:top_k]
+        
+        results = []
+        for idx in top_indices:
+            if idx < len(self.corpus) and scores[idx] > 0:
+                results.append(SearchResult(
+                    content=self.corpus[idx].get('text', ''),
+                    score=float(scores[idx]),
+                    metadata={
+                        'search_method': 'bm25',
+                        'index': idx,
+                        'query_tokens_used': len(query_tokens),
+                        **self.corpus[idx].get('metadata', {})
+                    }
+                ))
+        
+        return results
+
+    def _vector_search(self, query: str, top_k: int) -> List[SearchResult]:
+        """Vector 검색 - 키워드 fallback 강화"""
+        if not self.pinecone_index:
+            log_message("FAILURE", "Vector 검색 불가 (Pinecone 없음)")
+            return []
+        
+        try:
+            # 1차: 원본 쿼리로 검색
+            results = self._vector_search_single(query, top_k)
+            max_score = 0
+            for r in results:
+                if hasattr(r, 'score'):
+                    max_score = max(max_score, r.score)
+            
+            log_message("SUCCESS", f"Vector 검색 완료 (최고점수: {max_score:.1f})")
+            
+            # ★ 2차: 점수가 낮으면 키워드만으로 재검색 (임계값 45→40으로 완화) ★
+            if max_score < 40:  # 45 → 40으로 완화
+                keywords = self._extract_enhanced_keywords(query)
+                if keywords:
+                    keyword_query = " ".join(keywords[:5])  # 최대 5개 키워드
+                    fallback_results = self._vector_search_single(keyword_query, top_k * 2)
+                    
+                    fallback_max = 0
+                    for r in fallback_results:
+                        if hasattr(r, 'score'):
+                            fallback_max = max(fallback_max, r.score)
+                    
+                    if fallback_max > max_score:
+                        results = fallback_results
+                        self.search_stats['improved_fallbacks'] += 1
+                        log_message("INFO", f"키워드 fallback 적용 (개선: {max_score:.1f}→{fallback_max:.1f})")
+            
+            return results[:top_k]
+            
+        except Exception as e:
+            log_message("FAILURE", f"Vector 검색 오류: {e}")
+            return []
+
+    def _extract_enhanced_keywords(self, query: str) -> List[str]:
+        """향상된 키워드 추출 - 법령 특화"""
+        keywords = []
+        
+        # 1. 고중요도 패턴 (조문, 기관명 등)
+        high_priority = re.findall(
+            r'제\d+조|[가-힣]+(?:위원회|청|부|처|원)|' +
+            r'\d+(?:년|개월|일)|' +
+            r'\d+(?:억|만)?원|' +
+            r'별지\s*제\s*\d+\s*호', 
+            query
+        )
+        keywords.extend(high_priority)
+        
+        # 2. 중요도 명사 (3글자 이상)
+        important_nouns = re.findall(r'[가-힣]{3,}', query)
+        # 이미 포함된 것들 제외
+        important_nouns = [noun for noun in important_nouns 
+                          if not any(noun in hp for hp in high_priority)]
+        keywords.extend(important_nouns[:3])  # 최대 3개
+        
+        # 3. 숫자
+        numbers = re.findall(r'\d+', query)
+        keywords.extend(numbers[:2])  # 최대 2개
+        
+        return keywords
+
+    def _vector_search_single(self, query: str, top_k: int) -> List[SearchResult]:
+        """단일 Vector 검색 실행"""
+        query_embedding = self.embedder.embed_query(query)
+        if not query_embedding:
+            log_message("FAILURE", "임베딩 생성 실패")
+            return []
+        
+        try:
+            response = self.pinecone_index.query(
+                vector=query_embedding,
+                top_k=top_k,
+                include_metadata=True
+            )
+        except Exception as e:
+            log_message("FAILURE", f"Pinecone 쿼리 오류: {e}")
+            return []
+        
+        results = []
+        for match in response['matches']:
+            metadata = match['metadata'].copy()
+            
+            results.append(SearchResult(
+                content=metadata.get('text', ''),
+                score=float(match['score']) * 100,
+                metadata={
+                    'search_method': 'vector',
+                    'vector_score': float(match['score']),
+                    **metadata
+                }
+            ))
+        
+        return results
+
+    def search(self, query: str, question_type: str = "general", top_k: int = None) -> List[SearchResult]:
+        """메인 검색 함수 - 임계값 조정 및 컨텍스트 확장"""
+        
+        self.search_stats['total_queries'] += 1
+        query_preview = query[:50] + "..." if len(query) > 50 else query
+        log_message("INFO", f"검색 시작 (쿼리: '{query_preview}' 유형: {question_type})")
+        
+        if question_type == "MCQ":
+            bm25_count = 5  # 4→5로 증가
+            vector_count = 8
+            bm25_weight = 0.35  # 0.3→0.35로 증가 (컨텍스트 품질 강화)
+            vector_weight = 0.65
+            target_results = 12  # 10→12로 확장
+        elif question_type == "short":
+            bm25_count = 7  # 6→7로 증가
+            vector_count = 8  # 6→8로 확장
+            bm25_weight = 0.45  # 0.4→0.45로 증가
+            vector_weight = 0.55
+            target_results = 15  # 10→15로 확장
+        else:
+            bm25_count = 6
+            vector_count = 8
+            bm25_weight = 0.35
+            vector_weight = 0.65
+            target_results = 12
+        
+        # BM25 검색
+        bm25_results = self._bm25_search(query, bm25_count * 2)
+        bm25_max_score = max([r.score for r in bm25_results], default=0)
+        
+        # *** BM25 실패 시 Vector 강화 모드 - 임계값 완화 ***
+        if question_type == "short" and bm25_max_score < 0.25:  # 0.5→0.3으로 완화
+            log_message("INFO", f"BM25 실패 (최고:{bm25_max_score:.2f}), Vector 강화 모드 진입")
+            
+            vector_results = self._vector_search(query, vector_count * 4)  # 3배→4배로 확장
+            self.search_stats['vector_fallbacks'] += 1
+            
+            final_results = self._diversify_by_source_and_score(vector_results, max_per_source=5)  # 4→5로 확장
+            log_message("SUCCESS", f"Vector 강화 완료: {len(final_results)}개 결과")
+            return final_results
+        else:
+            vector_results = self._vector_search(query, vector_count * 2)
+            log_message("INFO", f"하이브리드 모드: BM25({bm25_count}) + Vector({vector_count})")
+        
+        # 결과 병합 (개선된 버전 사용)
+        merged_results = self._merge_results_enhanced(
+            bm25_results[:bm25_count], 
+            vector_results[:vector_count],
+            bm25_weight, 
+            vector_weight, 
+            target_results,
+            question_type
+        )
+        
+        # 다양성 확보
+        final_results = self._diversify_by_source_and_score(merged_results, max_per_source=5)
+        
+        log_message("SUCCESS", f"검색 완료: {len(final_results)}개 결과")
+        return final_results
+
+    def _diversify_by_source_and_score(self, results: List[SearchResult], max_per_source: int = 4) -> List[SearchResult]:
+        """소스별 다양성 + 점수 균형 확보"""
+        source_counts = {}
+        diversified = []
+        high_score_threshold = 0.7  # 고점수 임계값
+        
+        # 1차: 고점수 결과 우선 선택 (소스 제한 완화)
+        for result in results:
+            if result.score >= high_score_threshold:
+                source = result.metadata.get('source_file', 'unknown')
+                current_count = source_counts.get(source, 0)
+                
+                if current_count < max_per_source + 1:  # 고점수는 1개 더 허용
+                    diversified.append(result)
+                    source_counts[source] = current_count + 1
+        
+        # 2차: 나머지 결과로 다양성 확보
+        for result in results:
+            if result in diversified:
+                continue
+                
+            source = result.metadata.get('source_file', 'unknown')
+            current_count = source_counts.get(source, 0)
+            
+            if current_count < max_per_source:
+                diversified.append(result)
+                source_counts[source] = current_count + 1
+            
+            if len(diversified) >= 12:
+                break
+        
+        # 3차: 결과가 부족하면 소스 제한 완화
+        if len(diversified) < 8:
+            for result in results:
+                if result not in diversified:
+                    diversified.append(result)
+                    if len(diversified) >= 12:
+                        break
+        
+        return diversified
+
+    def _merge_results_enhanced(self, bm25_results: List[SearchResult], vector_results: List[SearchResult], 
+                            bm25_weight: float, vector_weight: float, target_count: int, question_type: str) -> List[SearchResult]:
+        """결과 병합 - BM25 점수 0.0 버그 수정"""
+        all_results = []
+        seen_content = set()
+        
+        log_message("INFO", f"결과 병합 시작: BM25 {len(bm25_results)}개, Vector {len(vector_results)}개")
+        
+        # 질문 유형별 우선순위 조정
+        if question_type == "MCQ" or question_type == "short":
+            primary_results = vector_results
+            secondary_results = bm25_results
+            primary_weight = vector_weight
+            secondary_weight = bm25_weight
+        else:
+            primary_results = bm25_results
+            secondary_results = vector_results
+            primary_weight = bm25_weight
+            secondary_weight = vector_weight
+        
+        # 1차: 주요 결과 추가
+        for result in primary_results:
+            content_key = self._get_content_key(result.content)
+            if content_key not in seen_content:
+                # *** 버그 수정: 메타데이터 초기화 방지 ***
+                if 'bm25_contribution' not in result.metadata:
+                    result.metadata['bm25_contribution'] = 0.0
+                if 'vector_contribution' not in result.metadata:
+                    result.metadata['vector_contribution'] = 0.0
+                    
+                result.metadata['final_score'] = result.score * primary_weight
+                if result.metadata.get('search_method') == 'bm25':
+                    result.metadata['bm25_contribution'] = result.score * primary_weight
+                else:
+                    result.metadata['vector_contribution'] = result.score * primary_weight
+                
+                all_results.append(result)
+                seen_content.add(content_key)
+        
+        # 2차: 보조 결과 추가 (중복 확인 후)
+        for result in secondary_results:
+            content_key = self._get_content_key(result.content)
+            if content_key not in seen_content:
+                # *** 버그 수정: 메타데이터 보존 ***
+                if 'bm25_contribution' not in result.metadata:
+                    result.metadata['bm25_contribution'] = 0.0
+                if 'vector_contribution' not in result.metadata:
+                    result.metadata['vector_contribution'] = 0.0
+                    
+                result.metadata['final_score'] = result.score * secondary_weight
+                if result.metadata.get('search_method') == 'bm25':
+                    result.metadata['bm25_contribution'] = result.score * secondary_weight
+                else:
+                    result.metadata['vector_contribution'] = result.score * secondary_weight
+                
+                all_results.append(result)
+                seen_content.add(content_key)
+            else:
+                # 중복 시 점수 합산 - *** 기존 값 보존 ***
+                for existing in all_results:
+                    if self._get_content_key(existing.content) == content_key:
+                        existing.metadata['final_score'] += result.score * secondary_weight
+                        if result.metadata.get('search_method') == 'bm25':
+                            existing.metadata['bm25_contribution'] += result.score * secondary_weight
+                        else:
+                            existing.metadata['vector_contribution'] += result.score * secondary_weight
+                        break
+        
+        # final_score로 정렬
+        all_results.sort(key=lambda x: x.metadata.get('final_score', 0), reverse=True)
+        
+        final_results = all_results[:target_count]
+        
+        # 점수 업데이트
+        for result in final_results:
+            result.score = result.metadata.get('final_score', result.score)
+        
+        log_message("SUCCESS", f"개선된 병합 완료: {len(final_results)}개 최종 결과")
+        return final_results
+
+    def _get_content_key(self, content: str) -> str:
+        """컨텐츠 중복 판단용 키 생성"""
+        return content[:150].strip()
+
+    def _print_enhanced_search_stats(self):
+        """향상된 검색 통계 출력"""
+        total = self.search_stats['total_queries']
+        failures = self.search_stats['bm25_failures']
+        vector_fallbacks = self.search_stats['vector_fallbacks']
+        improved_fallbacks = self.search_stats['improved_fallbacks']
+        
+        failure_rate = (failures / total * 100) if total > 0 else 0
+        vector_rate = (vector_fallbacks / total * 100) if total > 0 else 0
+        improvement_rate = (improved_fallbacks / total * 100) if total > 0 else 0
+        
+        log_message("INFO", f"검색 통계 - 총:{total}회")
+        log_message("INFO", f"  - BM25실패:{failures}회({failure_rate:.1f}%)")
+        log_message("INFO", f"  - Vector강화:{vector_fallbacks}회({vector_rate:.1f}%)")
+        log_message("INFO", f"  - 키워드개선:{improved_fallbacks}회({improvement_rate:.1f}%)")
