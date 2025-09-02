@@ -1,0 +1,6 @@
+.idea/
+.venv/
+.ipynb_checkpoints/
+.env
+app/.ipynb_checkpoints/
+rag/.ipynb_checkpoints/
