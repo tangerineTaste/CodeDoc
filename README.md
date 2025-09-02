@@ -85,3 +85,5 @@
 <img width="2400" height="1350" alt="Image" src="https://github.com/user-attachments/assets/27a34e90-6f27-4842-9a4f-af7b85df4310" />
 
 <img width="2400" height="1350" alt="Image" src="https://github.com/user-attachments/assets/d89474ac-7188-4e84-942b-140281dae31d" />
+
+http://3.39.48.77:8000
